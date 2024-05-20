@@ -1,0 +1,18 @@
+//rutas
+export const RUTA_BACK_LOCAL = 'http://localhost:9003/';
+export const RUTA_BACK_PRODUCCION = 'http://optimus:9003/';
+//login
+export const INICIAR_SESION = "INICIAR_SESION";
+export const OBTENER_TOKEN = "OBTENER_TOKEN";
+export const OBTENER_DECODE_TOKEN = "OBTENER_DECODE_TOKEN";
+//logout
+export const CERRAR_SESION = "CERRAR_SESION";
+//sidebar
+export const OCULTAR_BARRA_LATERAL = "OCULTAR_BARRA_LATERAL";
+export const MOSTRAR_BARRA_LATERAL = "MOSTRAR_BARRA_LATERAL";
+//innoProduc
+export const INNPRODUC_OBTENER = "INNPRODUC_OBTENER";
+export const INNPRODUC_NO_DATA= "INNPRODUC_NO_DATA";
+//regchangepass
+export const REGCHANGEPASS_INFO_USUARIO = "REGCHANGEPASS_INFO_USUARIO";
+export const REGCHANGEPASS_TIME_EXPIRED = "REGCHANGEPASS_TIME_EXPIRED";

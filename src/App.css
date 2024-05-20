@@ -1,0 +1,159 @@
+/* ---------------------------------------------------
+   SIDEBAR STYLE
+----------------------------------------------------- */
+
+/* Estilo del contenedor principal */
+.wrapper {
+    display: flex; /* Usa el modelo de caja flexible */
+    width: 100%; /* Ancho completo */
+    align-items: stretch; /* Estira los elementos para que ocupen toda la altura */
+}
+
+/* Estilo del sidebar */
+#sidebar {
+    min-width: 250px; /* Ancho mínimo del sidebar */
+    max-width: 250px; /* Ancho máximo del sidebar */
+    background: #1B2440; /* Color de fondo del sidebar */
+    color: #fff; /* Color del texto del sidebar */
+    transition: all 0.3s; /* Transición para suavizar cambios */
+}
+
+/* Estilo del sidebar cuando está activo (oculto) */
+#sidebar.active {
+    margin-left: -250px; /* Oculta el sidebar moviéndolo fuera de la pantalla */
+}
+
+/* Estilo del encabezado del sidebar */
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: #1e2847; /* Color de fondo del encabezado */
+}
+
+/* Estilo de la lista de elementos del sidebar */
+#sidebar ul.components {
+    padding: 20px 0; /* 20px de relleno arriba y abajo, 0 de relleno izquierdo y derecho */
+    border-bottom: 1px solid #626673; /* Borde inferior */
+}
+
+/* Estilo del texto dentro de la lista del sidebar */
+#sidebar ul p {
+    color: #f2f2f2; /* Color del texto */
+    padding: 10px; /* Espaciado */
+}
+
+/* Estilo de los enlaces dentro de la lista del sidebar */
+#sidebar ul li a {
+    padding: 10px; /* Espaciado */
+    font-size: 1.1em; /* Tamaño del texto */
+    display: block; /* Convertir enlaces en bloques para ocupar todo el ancho */
+    color: #fff; /* Color del texto */
+    text-decoration: none; /* Sin subrayado */
+}
+
+/* Estilo de los enlaces sin estilo específico */
+.sin-estilo {
+    color: #fff; /* Color del texto */
+    text-decoration: none; /* Sin subrayado */
+}
+
+/* Estilo de los enlaces en hover */
+#sidebar ul li a:hover {
+    color: #010326; /* Cambio de color del texto */
+    background: #f2f2f2; /* Cambio de color de fondo */
+}
+
+/* Estilo de los enlaces en hover para el dropdown*/
+#sidebar ul li.specialmenu a:hover {
+    color: #ffffff; /* Cambio de color del texto */
+    background: #2c3e6e99; /* Cambio de color de fondo */
+    font-size: 1.1em; /* Aumenta el tamaño del texto */
+    font-weight: bold; /* Establece el peso del texto en negrita */
+}
+
+/* Estilo de los enlaces en hover para el dropdown*/
+#sidebar ul li.specialmenu a {
+    color: #000;/* Cambio de color del texto */
+    background-color: #ffffff; /* Cambio de color de fondo */
+}
+
+/* Estilo de los enlaces activos */
+#sidebar ul li.active > a,
+a[aria-expanded="true"] {
+    color: #f2f2f2; /* Color del texto */
+    background: #D9A711; /* Color de fondo */
+}
+
+/* Estilo de los enlaces con atributo data-toggle="collapse" */
+a[data-toggle="collapse"] {
+    position: relative; /* Posición relativa */
+}
+
+/* Estilo del ícono de desplegado (dropdown) */
+.dropdown-toggle::after {
+    display: block;
+    position: absolute; /* Posición absoluta */
+    top: 50%; /* Alineado verticalmente al 50% */
+    right: 20px; /* Alineado a la derecha */
+    transform: translateY(-50%); /* Corrección para centrar verticalmente */
+}
+
+/* Estilo de los enlaces secundarios */
+ul ul a {
+    font-size: 0.9em !important; /* Tamaño del texto */
+    padding-left: 30px !important; /* Espaciado a la izquierda */
+    background: #2c3e6e; /* Color de fondo */
+}
+
+/* ---------------------------------------------------
+   CONTENT STYLE
+----------------------------------------------------- */
+
+/* Estilo del contenido principal */
+#content {
+    width: 100%;
+    padding: 20px; /* Espaciado interno */
+    min-height: 100vh; /* Altura mínima */
+    transition: all 0.3s; /* Transición para suavizar cambios */
+}
+
+/* ---------------------------------------------------
+   MEDIAQUERIES
+----------------------------------------------------- */
+
+/* Estilos aplicados cuando el ancho de la pantalla es igual o menor a 768px */
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -250px; /* Oculta el sidebar */
+    }
+
+    #sidebar.active {
+        margin-left: 0; /* Muestra el sidebar */
+    }
+
+    #sidebarCollapse span {
+        display: none; /* Oculta el span dentro del sidebarCollapse */
+    }
+}
+
+/* COLORES DE FONDO */
+
+.color-fondo{
+    background-color: #2c3e6e;
+}
+
+/* Estilo del footer */
+.footer {
+    background-color: #ffffff;
+    color: #000000;
+    width: 97%;
+    position: absolute;
+    bottom: 0;
+    padding: 0px 0;
+    text-align: center;
+  }
+  
+  /* Estilo del contenido principal */
+  #content {
+    position: relative;
+    padding-bottom: 30px; /* Ajusta el espacio para el footer */
+  }
