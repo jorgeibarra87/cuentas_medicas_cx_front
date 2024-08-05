@@ -9,6 +9,7 @@ import { obtenerDecodeToken, obtenerToken } from '../../actions/loginActions';
 import UpdateInnProduc from '../innProduc/UpdateInnProduc';
 import FormSolDocumento from '../forgetpass/FormSolDocumento';
 import HumanizacionSolicitudes from '../humanizacion/HumanizacionSolicitudes';
+import OpcionesUsuario from '../ajustes/OpcionesUsuario';
 
 export default function RutasConfig() {
     
@@ -45,6 +46,9 @@ export default function RutasConfig() {
                 </Route>
                 <Route path='/humanizacion'>
                     <Route path='solicitudes'element={<RequireAuth isLogged={isLogged}><Sidebar componente={HumanizacionSolicitudes}/></RequireAuth>}/>
+                </Route>
+                <Route path='/ajustes'>
+                    <Route path='usuario' element={<RequireAuth isLogged={isLogged}><Sidebar componente={OpcionesUsuario}/></RequireAuth>}></Route>
                 </Route>
                 <Route path='*' element={<Error404 />} />
             </Routes>
