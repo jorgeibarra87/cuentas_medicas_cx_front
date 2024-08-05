@@ -1,27 +1,31 @@
 import { useDispatch, useSelector } from "react-redux"
 import { mostrarBarraLateral, ocultarBarraLateral } from "../../actions/sidebarActions";
 import { cerrarSesionAction } from "../../actions/loginActions";
+import { useState } from "react";
 
 export default function Navbar() {
 
     const stateSidebar = useSelector(state => state.sidebar);
-    
+    const statelogin = useSelector(state => state.login);
+//    const [usuario] = useState(statelogin.decodeToken);
+    const [username] = useState(statelogin.username);
     const dispatch = useDispatch();
-    
-    const handleSidebar = () =>{
-        if(stateSidebar.state == false){ 
+
+    const handleSidebar = () => {
+        if (stateSidebar.state == false) {
             dispatch(ocultarBarraLateral());
-        }else{
+        } else {
             dispatch(mostrarBarraLateral());
         }
     }
 
-    const handleLogout = () =>{
+    const handleLogout = () => {
         dispatch(cerrarSesionAction());
-        window.location.href="/";
+        window.location.href = "/";
     }
-  return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-end">
+
+    return (
+        <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-end">
             <div className="container-fluid">
                 <button type="button" id="sidebarCollapse" onClick={handleSidebar} className="btn">
                     <i className="bi bi-distribute-vertical"></i>
@@ -30,21 +34,14 @@ export default function Navbar() {
                     <i className="fas fa-align-justify"></i>
                 </button>
                 <ul className="nav navbar-nav ml-auto justify-content-end">
-                    <li className="nav-item active">
-                        <a className="nav-link" href="/">Page</a>
+                    <li className="nav-item">
+                        <a className="nav-link">Usuario: {username}</a>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link" href="/">Page</a>
-                    </li>
-                    <li className="nav-item">
-                        <a className="nav-link" href="/">Page</a>
-                    </li>
-                    <li className="nav-item">
-                        
-                        <a className="nav-link" onClick={handleLogout}>Logout</a>
+                        <a className="nav-link" onClick={handleLogout}>Salir</a>
                     </li>
                 </ul>
             </div>
         </nav>
-  )
+    )
 }
