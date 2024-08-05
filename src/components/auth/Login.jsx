@@ -2,7 +2,7 @@ import { useState } from "react"
 import { RUTA_BACK_PRODUCCION } from "../../types";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { almacenarUsername, iniciarSesionAction } from "../../actions/loginActions";
+import { iniciarSesionAction } from "../../actions/loginActions";
 import Swal from "sweetalert2";
 import spinnerLoginText from "../Loading";
 import { jwtDecode } from "jwt-decode";
