@@ -30,6 +30,13 @@ export default function Sidebar({ componente: Componente }) {
                 },
                 // { nombre: 'Opcion B', ruta: '/b', roles: ['ROLE_ADMIN'] }
             ]
+        },
+        {
+            nombre: 'Ajustes',
+            roles: ['ROLE_ADMIN'],
+            submenu: [
+                { nombre: 'Usuario', ruta: '/ajustes/usuario', roles: ['ROLE_ADMIN']}
+            ]
         }
         // Agrega más opciones de menú aquí si es necesario
     ];
