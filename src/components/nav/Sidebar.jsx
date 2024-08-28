@@ -3,6 +3,7 @@ import imgLogo from '../../img/favicon.ico'
 import Navbar from './Navbar'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 export default function Sidebar({ componente: Componente }) {
 
     const stateSidebar = useSelector(state => state.sidebar);
@@ -122,4 +123,9 @@ export default function Sidebar({ componente: Componente }) {
             </div>
         </div>
     )
+}
+
+//agregamos para que se valinden errores de prop.types
+Sidebar.propTypes = {
+    componente: PropTypes.elementType.isRequired,
 }
