@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: '21.2.0'
       - name: Intall dependencies
-        run: npm install
+        run: npm install --no-audit --no-fund --no-optional
       - name: Lint
         run: npm run lint
             
