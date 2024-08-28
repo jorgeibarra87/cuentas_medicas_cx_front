@@ -5,7 +5,6 @@ import { useDispatch } from "react-redux";
 import { iniciarSesionAction } from "../../actions/loginActions";
 import Swal from "sweetalert2";
 import spinnerLoginText from "../Loading";
-import { jwtDecode } from "jwt-decode";
 // import { useNavigate } from "react-router-dom";
 
 const initailForm = {
@@ -39,16 +38,16 @@ const Login = () => {
 
         try{
             const response = await axios.post(`${RUTA_BACK_PRODUCCION}auth/login`, datos);
-            const decodeToken = jwtDecode(response.data.jwt);
-            const userResponse = await axios.get(`${RUTA_BACK_PRODUCCION}usuario/${decodeToken.sub}`, {
-                headers: {
-                    'Authorization': `Bearer ${response.data.jwt}`,
-                }
-            });
+            // const decodeToken = jwtDecode(response.data.jwt);
+            // const userResponse = await axios.get(`${RUTA_BACK_PRODUCCION}usuario/${decodeToken.sub}`, {
+            //     headers: {
+            //         'Authorization': `Bearer ${response.data.jwt}`,
+            //     }
+            // });
 
             const data = {
                 jwt: response.data.jwt,
-                username: userResponse.data.nombrecompleto,
+                // username: userResponse.data.nombrecompleto,
             }
             dispatch(iniciarSesionAction(data));
             Swal.close();
