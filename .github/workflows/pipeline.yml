@@ -1,0 +1,22 @@
+name: Deplyment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '21.2.0'
+      - name: Intall dependencies
+        run: npm install
+      - name: Lint
+        run: npm run lint
+            
