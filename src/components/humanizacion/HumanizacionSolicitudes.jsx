@@ -1,4 +1,3 @@
-import axios from "axios";
 import Swal from "sweetalert2"
 
 export default function HumanizacionSolicitudes() {
@@ -12,7 +11,7 @@ export default function HumanizacionSolicitudes() {
             showCancelButton: true,
             confirmButtonText: 'Buscar',
             showLoaderOnConfirm: true,
-            preConfirm: (searchTerm) => {
+            preConfirm: () => {
                 //console.log("presiono buscar", searchTerm)
                 // return axios.get(`https://api.example.com/search?query=`)
                 //     .then(response => {
