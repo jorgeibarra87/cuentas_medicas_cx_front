@@ -19,6 +19,5 @@ jobs:
         run: npm install --no-audit --no-fund --no-optional
       - name: Lint
         run: npm run lint
-      - name: build
+      - name: Build
         run: npm run build
-        
