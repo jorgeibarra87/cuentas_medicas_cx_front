@@ -7,8 +7,8 @@ export default function Navbar() {
 
     const stateSidebar = useSelector(state => state.sidebar);
     const statelogin = useSelector(state => state.login);
-//    const [usuario] = useState(statelogin.decodeToken);
-    const [username] = useState(statelogin.username);
+    const [usuario] = useState(statelogin.decodeToken);
+
     const dispatch = useDispatch();
 
     const handleSidebar = () => {
@@ -35,7 +35,7 @@ export default function Navbar() {
                 </button>
                 <ul className="nav navbar-nav ml-auto justify-content-end">
                     <li className="nav-item">
-                        <a className="nav-link">Usuario: {username}</a>
+                        <a className="nav-link">Usuario: {usuario.name_user}</a>
                     </li>
                     <li className="nav-item">
                         <a className="nav-link" onClick={handleLogout}>Salir</a>

@@ -1,11 +1,10 @@
 //rutas
-export const RUTA_BACK_LOCAL = 'http://localhost:9003/';
-export const RUTA_BACK_PRODUCCION = 'http://localhost:9003/';
+export const RUTA_BACK_LOCAL = 'http://localhost:8000/';
+export const RUTA_BACK_PRODUCCION = 'http://localhost:8000/';
 //login
 export const INICIAR_SESION = "INICIAR_SESION";
 export const OBTENER_TOKEN = "OBTENER_TOKEN";
 export const OBTENER_DECODE_TOKEN = "OBTENER_DECODE_TOKEN";
-export const ALMACENAR_USERNAME = "ALMACENAR_USERNAME";
 export const OBTENER_USERNAME = "OBTENER_USERNAME";
 //logout
 export const CERRAR_SESION = "CERRAR_SESION";
