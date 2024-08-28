@@ -19,5 +19,25 @@ jobs:
         run: npm install --no-audit --no-fund --no-optional
       - name: Lint
         run: npm run lint
+      - name: Bootstrap icons
+        run: npm i bootstrap-icons
+      - name: Bootstrap
+        run: npm i bootstrap@5.3.3
+      - name: SweetAlert
+        run: npm install sweetalert2
+      - name: Axios
+        run: npm i axios
+      - name: decode
+        run: npm i jwt-decode
+      - name: proptypes
+        run: npm install prop-types
+      - name: react router dom
+        run: npm i react-router-dom
+      - name: redux
+        run: npm i redux
+      - name: redux react
+        run: npm i react-redux
+      - name: redux toolkit
+        run: npm install @reduxjs/toolkit
       - name: Build
         run: npm run build
