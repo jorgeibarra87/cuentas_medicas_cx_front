@@ -2,14 +2,23 @@ import { useDispatch, useSelector } from "react-redux"
 import { mostrarBarraLateral, ocultarBarraLateral } from "../../actions/sidebarActions";
 import { cerrarSesionAction } from "../../actions/loginActions";
 import { useState } from "react";
+import axios from "axios";
+import { RUTA_BACK_PRODUCCION } from "../../types";
 
 export default function Navbar() {
 
     const stateSidebar = useSelector(state => state.sidebar);
     const statelogin = useSelector(state => state.login);
     const [usuario] = useState(statelogin.decodeToken);
-
     const dispatch = useDispatch();
+    const token = statelogin.token;
+
+    const axiosInstance = axios.create({
+        baseURL: `${RUTA_BACK_PRODUCCION}`,
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
 
     const handleSidebar = () => {
         if (stateSidebar.state == false) {
@@ -20,6 +29,7 @@ export default function Navbar() {
     }
 
     const handleLogout = () => {
+        axiosInstance.post(`${RUTA_BACK_PRODUCCION}auth/logout?token=${token}`);
         dispatch(cerrarSesionAction());
         window.location.href = "/";
     }
