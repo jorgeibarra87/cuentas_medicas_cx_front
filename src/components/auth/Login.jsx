@@ -5,26 +5,20 @@ import { useDispatch } from "react-redux";
 import { iniciarSesionAction } from "../../actions/loginActions";
 import Swal from "sweetalert2";
 import spinnerLoginText from "../Loading";
-// import { useNavigate } from "react-router-dom";
 
-const initailForm = {
-    username: "",
-    password: "",
-};
+const initailForm = {username: "",password: "",};
 
 const Login = () => {
+
+    
     const dispatch = useDispatch();
-    // const navigate = useNavigate(); // Obtiene la función navigate
     const [datos, setDatos] = useState(initailForm);
     const [mostrarContrasena, setMostrarContrasena] = useState(false);
     const [error, setError] = useState(null);
     const [message, setMessage] = useState("");
 
     const handleChange = (e) => {
-        setDatos({
-            ...datos,
-            [e.target.name]: e.target.value,
-        });
+        setDatos({...datos, [e.target.name]: e.target.value,});
     };
 
     const handleSubmit = async (e) => {
@@ -35,24 +29,13 @@ const Login = () => {
             return;
         }
         spinnerLoginText("Por favor espere...");
-
         try{
             const response = await axios.post(`${RUTA_BACK_PRODUCCION}auth/login`, datos);
-            // const decodeToken = jwtDecode(response.data.jwt);
-            // const userResponse = await axios.get(`${RUTA_BACK_PRODUCCION}usuario/${decodeToken.sub}`, {
-            //     headers: {
-            //         'Authorization': `Bearer ${response.data.jwt}`,
-            //     }
-            // });
-
-            const data = {
-                jwt: response.data.jwt,
-                // username: userResponse.data.nombrecompleto,
-            }
-            dispatch(iniciarSesionAction(data));
+            dispatch(iniciarSesionAction(response.data));
             Swal.close();
             //navigate('/'); // Redirige al usuario a '/'
         }catch(error){
+            console.error(error);
             if (error && error.code === 'ERR_NETWORK') {
                 Swal.fire({
                     title: "¡Error!",

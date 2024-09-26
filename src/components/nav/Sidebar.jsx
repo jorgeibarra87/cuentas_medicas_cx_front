@@ -13,23 +13,31 @@ export default function Sidebar({ componente: Componente }) {
     const opcionesMenu = [
         {
             nombre: 'InnoProduc',
-            roles: ['ROLE_USER', 'ROLE_ADMIN'], // Define los roles para esta opción
+            roles: ['ROLE_ADMIN'], // Define los roles para esta opción
             submenu: [
                 { nombre: 'Actualizar', ruta: '/innProduc/update', roles: ['ROLE_ADMIN', 'ROLE_INNPRODUC'] }, // Roles permitidos para esta subopción
             ]
         },
+        // {
+        //     nombre: 'Humanización',
+        //     roles: ['ROLE_ADMIN'],
+        //     submenu: [
+        //         {
+        //             nombre: 'Identificación de necesidades', ruta: '/a', roles: ['ROLE_ADMIN'],
+        //             submenuAdicional: [
+        //                 { nombre: 'solicitudes', ruta: '/humanizacion/solicitudes', roles: ['ROLE_ADMIN'] },
+        //                 { nombre: 'solicitudes almacen', ruta: 'almacen', roles: ['ROLE_ADMIN'] }
+        //             ]
+        //         },
+        //         // { nombre: 'Opcion B', ruta: '/b', roles: ['ROLE_ADMIN'] }
+        //     ]
+        // },
         {
-            nombre: 'Humanización',
-            roles: ['ROLE_ADMIN'],
+            nombre: 'MesadeProcesos',
+            roles: ['ROLE_ADMIN','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER'],
             submenu: [
-                {
-                    nombre: 'Identificación de necesidades', ruta: '/a', roles: ['ROLE_ADMIN'],
-                    submenuAdicional: [
-                        { nombre: 'solicitudes', ruta: '/humanizacion/solicitudes', roles: ['ROLE_ADMIN'] },
-                        { nombre: 'solicitudes almacen', ruta: 'almacen', roles: ['ROLE_ADMIN'] }
-                    ]
-                },
-                // { nombre: 'Opcion B', ruta: '/b', roles: ['ROLE_ADMIN'] }
+                {nombre: 'Procesos y subprocesos', ruta: '/mesaprocesos/procesosysubprocesos', roles: ['ROLE_ADMIN','ROLE_MESADEPROCESOS_COORD']},
+                {nombre: 'Usuarios procesos', ruta: '/mesaprocesos/usuarioprocesos', roles: ['ROLE_ADMIN','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER']}
             ]
         },
         {

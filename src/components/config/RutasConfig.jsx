@@ -5,22 +5,23 @@ import { useEffect, useState } from 'react';
 import RequireAuth from './RequireAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import Sidebar from '../nav/Sidebar';
-import { obtenerDecodeToken, obtenerToken } from '../../actions/loginActions';
 import UpdateInnProduc from '../innProduc/UpdateInnProduc';
 import FormSolDocumento from '../forgetpass/FormSolDocumento';
 import HumanizacionSolicitudes from '../humanizacion/HumanizacionSolicitudes';
 import OpcionesUsuario from '../ajustes/OpcionesUsuario';
+import UsuariosProceso from '../mesaDeProcesos/UsuariosProceso';
+import ProcesosSubprocesos from '../mesaDeProcesos/ProcesosSubprocesos';
+import { obtenerToken } from '../../actions/loginActions';
 
 export default function RutasConfig() {
     
     const state = useSelector(state => state.login);
-    const dispatch = useDispatch();
     const [isLogged, setIsLogged] = useState(false);
-    
+    const dispatch = useDispatch();
+
     useEffect(() => {
-      dispatch(obtenerToken());
-      dispatch(obtenerDecodeToken());
-    }, [dispatch])
+        dispatch(obtenerToken());
+    },[dispatch]);
     
     useEffect(() => {
         if(state.token !== null){
@@ -40,6 +41,10 @@ export default function RutasConfig() {
                     <Route path='' element={<RequireAuth isLogged={isLogged}> <Sidebar /></RequireAuth>} />
                     <Route path='update' element={<RequireAuth isLogged={isLogged}> <Sidebar componente={UpdateInnProduc}/></RequireAuth>} />
                     <Route path='*' element={<Error404 />} />
+                </Route>
+                <Route path='/mesaprocesos'>
+                    <Route path='usuarioprocesos' element={<RequireAuth isLogged={isLogged}><Sidebar componente={UsuariosProceso}/></RequireAuth>} />
+                    <Route path='procesosysubprocesos' element={<RequireAuth isLogged={isLogged}><Sidebar componente={ProcesosSubprocesos}/></RequireAuth>}/>
                 </Route>
                 <Route path='/password'>
                     <Route path='documento' element={<FormSolDocumento />}/>

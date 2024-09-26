@@ -3,12 +3,16 @@ import { loginReducer } from "./loginReducer";
 import { sidebarReducer } from "./sidebarReducer";
 import { innproducReducer } from "./innproducReducer";
 import { regchangepassReducer } from "./regchangepassReducer";
+import { mesadeprocesosReducer} from "./mesadeprocesosReducer";
+import { areaservicioReducer } from "./areaservicioReducer";
 
 const reducer = combineReducers({
     login: loginReducer,
     sidebar: sidebarReducer,
     innproduc: innproducReducer,
     regchangepass: regchangepassReducer,
+    areaservicio: areaservicioReducer,
+    mesadeprocesos: mesadeprocesosReducer,
 })
 
 export default reducer;

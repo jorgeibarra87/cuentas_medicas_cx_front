@@ -1,42 +1,23 @@
 import { jwtDecode } from "jwt-decode";
-import { CERRAR_SESION, INICIAR_SESION, OBTENER_DECODE_TOKEN, OBTENER_TOKEN, OBTENER_USERNAME } from "../types";
+import { CERRAR_SESION, INICIAR_SESION, OBTENER_TOKEN } from "../types";
 
 export const loginInitialState = {
     token: null,
+    decodeToken: null,
 }
 
 export function loginReducer(state= loginInitialState, action){
     switch (action.type) {
         case INICIAR_SESION:{
             localStorage.setItem('tokenhusjp', action.payload.jwt);
-            
-            return {
-                token: action.payload.jwt,
-                decodeToken: jwtDecode(action.payload.jwt),
-            }
+            return {...state, token: action.payload.jwt, decodeToken: jwtDecode(action.payload.jwt)};
         }   
 
         case OBTENER_TOKEN:{
-            return {
-                ...state, token: localStorage.getItem('tokenhusjp'),
+            if(state.token === null && localStorage.getItem('tokenhusjp')){
+                return {...state, token: localStorage.getItem('tokenhusjp'), decodeToken: jwtDecode(localStorage.getItem('tokenhusjp'))};
             }
-        }
-
-        case OBTENER_DECODE_TOKEN:{
-            if(localStorage.getItem('tokenhusjp')){
-                return {
-                    ...state, decodeToken: jwtDecode(localStorage.getItem('tokenhusjp')),
-                }
-            }else{
-                return state;
-            }
-            
-        }
-
-        case OBTENER_USERNAME:{
-            return {
-                username: localStorage.getItem('usernamehusjp'),
-            }
+            return state;
         }
 
         case CERRAR_SESION:{
