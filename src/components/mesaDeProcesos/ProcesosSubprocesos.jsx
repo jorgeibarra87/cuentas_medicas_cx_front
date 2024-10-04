@@ -33,7 +33,7 @@ function ProcesosSubprocesos() {
     useEffect(() => {//carga las areas que tiene asignadas el usuario por medio de su documento
         if (areas == null && statelogin.decodeToken.authorities.split(',').includes('ROLE_MESADEPROCESOS_COORD', 'ROLE_ADMIN')) {//
             const token = localStorage.getItem('tokenhusjp');
-            axios.get(`${RUTA_BACK_PRODUCCION}AreaServicio/usuario/${statelogin.decodeToken.sub}`, {
+            axios.get(`${RUTA_BACK_PRODUCCION}servicio/usuario/${statelogin.decodeToken.sub}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             })
                 .then((response) => {

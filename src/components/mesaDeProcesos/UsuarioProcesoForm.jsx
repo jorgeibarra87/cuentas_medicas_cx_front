@@ -47,13 +47,14 @@ export default function UsuarioProcesoForm({ show, handleClose, areas }) {
         setUsuarios(null);
         if (e.target.value != "0") {
             //cargamos usuarios 
-            axiosInstance.get(`AreaServicio/usuarios/${e.target.value}`)
+            console.log('VALOR VALUE ',e.target.value);
+            axiosInstance.get(`servicio/usuarios/${e.target.value}`)
                 .then((response) => {
                     setUsuarios(response.data);
                 })
                 .catch((error) => {
                     setError(error);
-                    console.error(error);
+                    console.error('eRROR AL TRAER LOS USUARIOS',error);
                 });
             //cargamos procesos
             axiosInstance.get(`procesos/${e.target.value}`)

@@ -22,7 +22,7 @@ function ProcesosTransferirForm({ show, handleClose, usuarioTransferir }) {
     useEffect(() => {
         setForm({ ...form, idUsuarioProceso: parseInt(usuarioTransferir && usuarioTransferir.usuarios.id) });
         if(usuarioTransferir){
-            axiosInstance.get(`AreaServicio/usuarios/${usuarioTransferir.id}`)
+            axiosInstance.get(`servicio/usuarios/${usuarioTransferir.id}`)
             .then((response) => {
                 setUsuarios(response.data);
             })

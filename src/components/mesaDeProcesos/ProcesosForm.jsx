@@ -8,7 +8,7 @@ import { mesadeprocesos_actualizar_proceso_de_area, mesadeprocesos_agregar_proce
 const initialFormState = {
     id: '',
     descripcion: '',
-    idarea: '',
+    id_servicio: '',
     nombre: '',
 }
 
@@ -83,7 +83,7 @@ export default function ProcesosForm({ show, handleClose, areas, editProceso }) 
             </Modal.Header>
             <Modal.Body>
                 <form onSubmit={handleSubmit} id='formulario'>
-                    <select className='form-select' aria-label='Default select example' name='idarea' value={formu.idarea} onChange={handleChange} >
+                    <select className='form-select' aria-label='Default select example' name='id_servicio' value={formu.id_servicio} onChange={handleChange} >
                         <option value='0'>Selecciona el área</option>
                         {
                             areas && areas.map((area, index) => (

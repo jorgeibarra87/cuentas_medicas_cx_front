@@ -30,6 +30,7 @@ const UsuariosProceso = () => {
     const [editFechaFin, setEditFechaFin] = useState('');
     const [areaSeleccionada, setAreaSeleccionada] = useState(0);
     const [usuarioTransferir, setUsuarioTransferir] = useState(null);
+    const [btnExcelState, setBtnExcelState] = useState(false);
 
     const statelogin = useSelector(state => state.login);
     const roles = statelogin.decodeToken.authorities.split(',');
@@ -40,7 +41,7 @@ const UsuariosProceso = () => {
 
     useEffect(() => {//useeffect para obtener los usuarios por area del usuario logueado con role mesaprocesos_user
         const fetchUserData = async () => {
-            if (statelogin.decodeToken.authorities.split(',').includes('ROLE_MESADEPROCESOS_USER')) {
+            if (statelogin.decodeToken.authorities.split(',').includes('ROLE_MESADEPROCESOS_USER','ROLE_ADMIN')) {
                 setUsuariosPorArea(null);
                 setError(null);
                 // Capturar el valor del input documento
@@ -64,7 +65,7 @@ const UsuariosProceso = () => {
         const fetchAreas = async () => {
             if (areas == null && statelogin.decodeToken.authorities.split(',').includes('ROLE_MESADEPROCESOS_COORD','ROLE_ADMIN')) {
                 const token = localStorage.getItem('tokenhusjp');
-                axios.get(`${RUTA_BACK_PRODUCCION}AreaServicio/usuario/${statelogin.decodeToken.sub}`, {
+                axios.get(`${RUTA_BACK_PRODUCCION}servicio/usuario/${statelogin.decodeToken.sub}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                     .then((response) => {
@@ -89,6 +90,7 @@ const UsuariosProceso = () => {
         setAreaSeleccionada(areaSeleccionadaId);
         try {
             if (areaSeleccionadaId !== 0) {
+                setBtnExcelState(true);
                 const areaSeleccionada = areas.find(area => area.id === areaSeleccionadaId);
                 if (usuariosPorArea != null) {
                     const usuarioArea = usuariosPorArea.find(area => area.id === areaSeleccionadaId);
@@ -255,6 +257,34 @@ const UsuariosProceso = () => {
         }
         );
     }
+
+    const generarReporte = async () => {
+        setBtnExcelState(false);
+        await axiosInstance.get(`usuarioprocesos/excel/${areaSeleccionada}`, {
+            responseType: 'blob',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            }
+        })
+            .then((response) => {
+                //exportar el archivo y que se pueda descargar
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `ReporteUsuariosProcesos${new Date().toLocaleDateString()}.xlsx`);
+
+                document.body.appendChild(link);
+                link.click();
+
+                document.body.removeChild(link);
+                setBtnExcelState(true);
+            }).catch((error) => {
+                setBtnExcelState(true);
+                setError(error);
+            });
+    }
+
 
     return (
         <>
@@ -444,6 +474,23 @@ const UsuariosProceso = () => {
                         )}
                     </Pagination> */}
                 </div>
+
+                { btnExcelState && areaSeleccionada != 0 ?
+                    (<div className='text-end' >
+                        <div className='badge text-bg-warning'>
+                            <span className=''>Excel</span>
+                            <a className='text-success fs-1' onClick={generarReporte}><i className='bi bi-file-earmark-excel-fill'></i></a>
+                        </div>
+                    </div> )
+                    : (
+                        btnExcelState == false && 
+                        <div className='text-end' >
+                            <div className='badge text-bg-warning'>
+                                <span className=''>Descargando...</span>
+                            </div>
+                        </div>
+                    )
+                }
             </div>
             <UsuarioProcesoForm show={showModalFormUsuarioProceso} handleClose={() => setShowModalFormUsuarioProceso(false)} areas={areas} />
             <ProcesosTransferirForm show={showModalFormTransferir} handleClose={() => setShowModalFormTransferir(false)} usuarioTransferir={usuarioTransferir} />
