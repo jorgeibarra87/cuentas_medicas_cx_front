@@ -33,6 +33,13 @@ export default function Sidebar({ componente: Componente }) {
         //     ]
         // },
         {
+            nombre: 'Asignación_de_camas',
+            roles: ['ROLE_ADMIN'],
+            submenu: [
+                {nombre: 'Solicitar cama', ruta: '/camas/solicitud', roles: ['ROLE_ADMIN']}
+            ]
+        },
+        {
             nombre: 'MesadeProcesos',
             roles: ['ROLE_ADMIN','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER'],
             submenu: [
