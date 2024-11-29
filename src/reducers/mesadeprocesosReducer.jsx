@@ -25,7 +25,7 @@ export function mesadeprocesosReducer(state = {areas: []}, action) {
                     return {
                         ...area,
                         usuarios: area.usuarios.map(usuario => {
-                            //console.log('Comparando:', usuario.id, 'con', action.payload.id);
+                            
                             return usuario.id === action.payload.id ? { ...usuario, ...action.payload } : usuario;
                         })
                     };

@@ -134,7 +134,7 @@ export default function FormSolicitudCama({ showFormSolicitud, handleCloseFormSo
     const handleBloqueServicioChange = (selectedOption) => {
         
         const bloqueSeleccionado = {id: parseInt(selectedOption.value)};
-        console.log('camabio bloque', selectedOption);
+        
         setForm((prevState) => ({
             ...prevState,
             bloqueServicio: bloqueSeleccionado

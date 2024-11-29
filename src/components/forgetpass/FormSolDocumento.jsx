@@ -57,10 +57,9 @@ export default function FormSolDocumento() {
         setError(null);
         setCodigo(null);
         e.preventDefault();
-        console.log(datosContacto);
         if(form.contactMethod === 'phone'){
             //enviar sms
-            console.log('enviar sms');
+            
         }else if(form.contactMethod === 'email'){
             spinnerLoginText('Enviando...');
             await axios.post(`${RUTA_BACK_PRODUCCION}regitrocambiopassoword/solicitarCodigo`, {oid: datosContacto.oid, documento: datosContacto.usunombre,email: datosContacto.usuemail})
@@ -70,7 +69,6 @@ export default function FormSolDocumento() {
                     Swal.close();
                 }).catch((error) => {
                     if(error && error.response && error.response.data && error.response.data.mensaje){
-                        console.log(error.response.data.mensaje);
                         setError(error.response.data.mensaje.split(',')[1]);
                         setCodigo({...codigo, documento: datosContacto.usunombre})
                     }else{

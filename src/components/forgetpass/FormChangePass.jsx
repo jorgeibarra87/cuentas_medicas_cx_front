@@ -42,7 +42,6 @@ export default function FormChangePass({datosContacto}) {
     };
 
     useEffect(() => {
-        console.log('FormChangePass');
         // Configurar eventos para detectar actividad
         const events = ['mousemove', 'keydown', 'click', 'scroll'];
         events.forEach(event => window.addEventListener(event, resetInactivityTimer));

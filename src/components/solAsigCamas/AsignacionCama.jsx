@@ -14,7 +14,7 @@ const client = new Client(
             console.log('Connected'); 
             client.subscribe('/topic/notifications', (message) => { 
                     if (message.body) { 
-                        console.log(message.body); 
+                        
                         showNotification(message.body);
                     } 
                 }); 

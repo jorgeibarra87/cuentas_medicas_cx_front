@@ -45,8 +45,8 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
     const opcionesServicios = servicios.map(servicio => ({ value: servicio.id, label: servicio.nombre }));
 
     const handleSelect = (itemSelect, e) => {
-        // console.log('select ', itemSelect);
-        // console.log('e ', e.name);
+        
+        
         if (e.name === 'servicios') {
             const servicio = { id: itemSelect.value, nombre: itemSelect.label };
             setForm({
@@ -80,7 +80,7 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
         e.preventDefault();
         axiosInstance.post('/asignacionVersionSolicitudCama', form)
             .then(response => {
-                console.log(response.data);
+                
                 setForm(initialFormState);
                 handleCloseModalFormAsignacion();
             }).catch(error => {
