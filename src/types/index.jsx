@@ -1,6 +1,6 @@
 //rutas
 export const RUTA_BACK_LOCAL = 'http://192.168.16.160:8000/';
-export const RUTA_BACK_PRODUCCION = 'http://optimus:8000/';
+export const RUTA_BACK_PRODUCCION = 'http://192.168.16.160:8000/';
 //login
 export const INICIAR_SESION = "INICIAR_SESION";
 export const OBTENER_TOKEN = "OBTENER_TOKEN";

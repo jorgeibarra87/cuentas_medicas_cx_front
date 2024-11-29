@@ -5,6 +5,4 @@ const store = configureStore({
     reducer: reducer
 });
 
-//store.subscribe(() => console.log());
-
 export default store;

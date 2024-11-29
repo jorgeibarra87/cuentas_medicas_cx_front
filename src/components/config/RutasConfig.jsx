@@ -13,6 +13,7 @@ import UsuariosProceso from '../mesaDeProcesos/UsuariosProceso';
 import ProcesosSubprocesos from '../mesaDeProcesos/ProcesosSubprocesos';
 import { obtenerToken } from '../../actions/loginActions';
 import SolicitudCama from '../solAsigCamas/SolicitudCama';
+import AsignacionCama from '../solAsigCamas/AsignacionCama';
 
 export default function RutasConfig() {
     
@@ -43,8 +44,9 @@ export default function RutasConfig() {
                     <Route path='update' element={<RequireAuth isLogged={isLogged}> <Sidebar componente={UpdateInnProduc}/></RequireAuth>} />
                     <Route path='*' element={<Error404 />} />
                 </Route>
-                <Route path='/camas'>
+                <Route path='/asginacioncamas'>
                     <Route path='solicitud' element={<RequireAuth isLogged={isLogged}> <Sidebar componente={SolicitudCama}/></RequireAuth>}/>
+                    <Route path='' element={<RequireAuth isLogged={isLogged}> <Sidebar componente={AsignacionCama} /></RequireAuth>} />
                 </Route>
                 <Route path='/mesaprocesos'>
                     <Route path='usuarioprocesos' element={<RequireAuth isLogged={isLogged}><Sidebar componente={UsuariosProceso}/></RequireAuth>} />

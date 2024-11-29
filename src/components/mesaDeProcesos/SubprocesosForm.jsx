@@ -60,7 +60,7 @@ function SubprocesosForm({ show, handleClose, proceso , editSubProceso}) {
                 })
             }
         }catch(error){
-            console.log(error);
+            console.error(error);
         }
     }
 

@@ -12,7 +12,6 @@ export default function HumanizacionSolicitudes() {
             confirmButtonText: 'Buscar',
             showLoaderOnConfirm: true,
             preConfirm: () => {
-                //console.log("presiono buscar", searchTerm)
                 // return axios.get(`https://api.example.com/search?query=`)
                 //     .then(response => {
                 //         if (response.data.error) {
