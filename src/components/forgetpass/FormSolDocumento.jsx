@@ -39,19 +39,40 @@ export default function FormSolDocumento() {
     }
 
     useEffect(() => {
-        if(datosContacto){
-            if(datosContacto.usuemail){
+        if (datosContacto) {
+            if (datosContacto.usuemail && datosContacto.usuemail.includes('@')) {
                 const partes = datosContacto.usuemail.split('@');
                 const usuarioProtegido = partes[0].charAt(0) + '*'.repeat(partes[0].length - 2) + partes[0].charAt(partes[0].length - 1);
                 const correoProtegido = partes[1].charAt(0) + '*'.repeat(partes[1].length - 2) + partes[1].charAt(partes[1].length - 1);
-                setDatosProtegidos({usuemail: usuarioProtegido + '@' + correoProtegido});
+                
+                // Usa la función de actualización para evitar sobrescribir
+                setDatosProtegidos(prevState => ({
+                    ...prevState,
+                    usuemail: usuarioProtegido + '@' + correoProtegido
+                }));
+            }else{
+                setDatosProtegidos(prevState => ({
+                    ...prevState,
+                    usuemail: null
+                }));
             }
-            if(datosContacto.gmemovil){
-                const movilProtegido = datosContacto.gmemovil.charAt(0) + '*'.repeat(datosContacto.gmemovil.length - 2) + datosContacto.gmemovil.charAt(datosContacto.gmemovil.length - 1);
-                setDatosProtegidos({gmemovil: movilProtegido});
+    
+            if (datosContacto.gmemovil && datosContacto.gmemovil.length > 9 && datosContacto.gmemovil.charAt(0) == '3') {
+                //mostar solo los ultimos 4 digitos
+                const movilProtegido = '*'.repeat(datosContacto.gmemovil.length - 4) + datosContacto.gmemovil.slice(-4);
+                // Usa la función de actualización para evitar sobrescribir
+                setDatosProtegidos(prevState => ({
+                    ...prevState,
+                    gmemovil: movilProtegido
+                }));
+            }else{
+                setDatosProtegidos(prevState => ({
+                    ...prevState,
+                    gmemovil: null
+                }));
             }
         }
-    },[datosContacto]);
+    }, [datosContacto]);
 
     const handleSubmitDatosContacto = async (e) => {
         setError(null);
@@ -85,7 +106,7 @@ export default function FormSolDocumento() {
             {!codigo && <div className="card border-light mb-3" style={{ width: '33rem' }}>
                 <img src={imgLogoDinamica} className="card-img-top" alt="..." />
                 <div className="card-body text-bg-light text-center">
-                    { !datosContacto && 
+                    { !datosProtegidos && 
                     <>
                         <form onSubmit={handleSubmitDocumento} id='formulario'>
                             <h5 className="card-title mt-5">Restablecer la contraseña</h5>
@@ -99,22 +120,25 @@ export default function FormSolDocumento() {
                             <div className='col-4'>
                                 <button className='btn btn-primary' type='submit' form='formulario' > soliciar cambio </button> {/** onClick={solCambio} disabled={loading}  {loading ? 'Cargando...' : 'Solicitar cambio'}*/    }
                             </div>
-                            <div className='col-4'>
-                                <button className='btn btn-success'  >tengo un código</button> {/* onClick={solCambio} */}
-                            </div>
                         </div>
                     </>
                     }
-                    { datosContacto &&
+                    { datosProtegidos &&
                         <>
-                            {!datosContacto.usuemail && !datosContacto.gmemovil ? 
+                            {!datosProtegidos.gmemovil && !datosProtegidos.usuemail ? 
+                                <>
                                 <h5 className='card-title mt-5'>Tu usuario no cuenta con email ni número de telefono. No puedes restablecer tu contraseña</h5>
+                                <button className='btn btn-primary mt-4' onClick={() => setDatosProtegidos(null)}>
+                                    {/** agregar boton con icono de atras */}
+                                    <i className="bi bi-arrow-left"></i> 
+                                </button>
+                                </>
                                 : 
                                 <> 
                                     <form onSubmit={handleSubmitDatosContacto} id='formulario'>
                                         <h5 className="card-title mt-5">Selecciona el metodo de contacto </h5>                                        
                                         <div className='col-md-6 offset-md-3 mt-3'>
-                                            {datosContacto.gmemovil && 
+                                            {datosProtegidos && datosProtegidos.gmemovil && 
                                             <div className="form-check">
                                                 <input className="form-check-input" type="radio" name="contactMethod" id="phone" value="phone" onChange={handleChange} />
                                                 <label className="form-check-label" htmlFor="phone">
@@ -122,7 +146,7 @@ export default function FormSolDocumento() {
                                                 </label>
                                             </div>
                                             }
-                                            {datosContacto.usuemail &&
+                                            {datosProtegidos && datosProtegidos.usuemail &&
                                                 <div className="form-check">
                                                     <input className="form-check-input" type="radio" name="contactMethod" id="email" value="email" onChange={handleChange}/>
                                                     <label className="form-check-label" htmlFor="email">
@@ -137,6 +161,12 @@ export default function FormSolDocumento() {
                                         <div className='col-4'>
                                             <button className='btn btn-primary' type='submit' form='formulario'>Enviar código</button> {/** onClick={solCambio} disabled={loading}  {loading ? 'Cargando...' : 'Solicitar cambio'}*/    }
                                         </div>
+                                        <div >
+                                            <button className='btn btn-primary mt-4' onClick={() => setDatosProtegidos(null)}>            
+                                                <i className="bi bi-arrow-left"></i> 
+                                            </button>
+                                        </div>
+                                        
                                     </div>
                             </>}
                         </>
