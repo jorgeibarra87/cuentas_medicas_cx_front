@@ -1,38 +1,75 @@
 import { useEffect, useState } from 'react';
 import imgLogoDinamica from '../../img/logo-dg.png';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import { RUTA_BACK_PRODUCCION } from '../../types';
-import { useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
 
-const form = {
+
+const formInitial = {
+    oid: '',
     codigo: '',
+    username: '',
     password: '',
-    passwordConfirm: '',
+    newPassword: ''
 }
 
-export default function FormChangePass() {
+export default function FormChangePass({datosContacto}) {
 
-    const { infoUsuario } = useSelector(state => state.regchangepass);
-
-    const [correo, setCorreo] = useState("");
-    const [error, setError] = useState(null);
-    const [objetoEnviar, setObjetoEnviar] = useState(form);
+    const [form, setForm] = useState(formInitial);
     const [coincidencia, setCoincidencia] = useState(null);
     const [tamano, setTamano] = useState(null);
+    const [error, setError] = useState(null);
     const [disable, setDisable] = useState(false);
+    const INACTIVITY_TIME = 5 * 60 * 1000; // 5 minutos
+
+    let inactivityTimer;
+
+    const handleInactivity = () => {
+        Swal.fire({
+            title: 'Inactividad detectada',
+            text: 'Serás redirigido debido a la inactividad.',
+            icon: 'warning',
+            timer: 3000,
+            showConfirmButton: false,
+        }).then(() => {
+            window.location.href = 'http://optimus/vulcano/'; // Cambiar por la URL de redirección
+        });
+    };
+
+    const resetInactivityTimer = () => {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(handleInactivity, INACTIVITY_TIME);
+    };
+
+    useEffect(() => {
+        console.log('FormChangePass');
+        // Configurar eventos para detectar actividad
+        const events = ['mousemove', 'keydown', 'click', 'scroll'];
+        events.forEach(event => window.addEventListener(event, resetInactivityTimer));
+        // Iniciar el temporizador de inactividad
+        resetInactivityTimer();
+        return () => {
+            // Limpiar eventos y temporizador al desmontar el componente
+            events.forEach(event => window.removeEventListener(event, resetInactivityTimer));
+            clearTimeout(inactivityTimer);
+        };
+    }, []);
+
+    useEffect(() => {
+       document.title = 'Restablecer contraseña';
+    }, [])
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         //capturamos la pre para que si valide lo actual.
-        const updateFormData = { ...objetoEnviar, [name]: value };
+        const updateFormData = { ...form, [name]: value };
 
-        setObjetoEnviar(updateFormData);
-        if (name === 'password' || name === 'passwordConfirm') {
-            if (updateFormData.password !== updateFormData.passwordConfirm) {
+        setForm(updateFormData);
+        if (name === 'password' || name === 'newPassword') {
+            if (updateFormData.password !== updateFormData.newPassword) {
                 setCoincidencia({ message: 'Las contraseñas no coinciden' });
                 setDisable(true);
-            } else if (updateFormData.password === updateFormData.passwordConfirm) {
+            } else if (updateFormData.password === updateFormData.newPassword) {
                 setCoincidencia(null);
                 setDisable(false);
             }
@@ -45,59 +82,39 @@ export default function FormChangePass() {
         }
     }
 
-    useEffect(() => {
-        const partes = infoUsuario.email.split('@');
-        const usuarioProtegido = partes[0].charAt(0) + '*'.repeat(partes[0].length - 2) + partes[0].charAt(partes[0].length - 1);
-        const correoProtegido = partes[1].charAt(0) + '*'.repeat(partes[1].length - 2) + partes[1].charAt(partes[1].length - 1);
-        setCorreo(usuarioProtegido + '@' + correoProtegido);
-    }, [infoUsuario])
-
-
     const handleSubmit = async (e) => {
-        if (disable) {//esto es una validación por si logran pasar una contraseña mas corta
-            Swal.fire({
-                title: "Ops",
-                html: "Se presentó un error en el servidor, intenta más tarde o comunícate con el área encargada.<br><br>Código de error: " + error.code,
-                icon: 'error',
-            });
-            return;
-        }
-        if (objetoEnviar.password !== objetoEnviar.passwordConfirm) {
-            Swal.fire({
-                title: "Ops",
-                html: "Se presentó un error en el servidor, intenta más tarde o comunícate con el área encargada.<br><br>Código de error: " + error.code,
-                icon: 'error',
-            });
-            return;
-        }
-        setDisable(true);
-        setError(null);
         e.preventDefault();
-        const urlBase = `${RUTA_BACK_PRODUCCION}genUsuario/${objetoEnviar.codigo}`;
-        const genUsuario = ({
-            oid: infoUsuario.oid,
-            usuclave: objetoEnviar.password,
-            usuemail: infoUsuario.email,
-        });
-        axios.put(urlBase, genUsuario)
-            .then(() => {
+        setError(null);
+        const formData = {
+            ...form,
+            oid: datosContacto.oid,
+            username: datosContacto.usunombre,
+        };
+        if(formData.oid == '' || formData.username == ''){
+            return;
+        }
+        axios.post(`${RUTA_BACK_PRODUCCION}regitrocambiopassoword/cambiarPassword`, formData)
+            .then((response) => {
+                // al recibir respuesta redirigir a una pagina externa  http://optimus/vulcano/
                 Swal.fire({
-                    title: "información",
-                    text: "Se ha realizado el cambio, seras redirigido a DGH",
-                    icon: 'info',
-                }).then(() => {
-                    window.location.href = 'http://webdgh/';
+                    title: 'Contraseña cambiada',
+                    text: 'La contraseña se cambio correctamente',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'http://optimus/vulcano/';
+                    }
                 });
-            }).catch(error => {
-                setDisable(false);
-                setError(error);
-                console.error('error ', error);
-                if (error != null && error.code === 'ERR_NETWORK') {
-                    Swal.fire({
-                        title: "Ops",
-                        html: "Se presentó un error en el servidor, intenta más tarde o comunícate con el área encargada.<br><br>Código de error: " + error.code,
-                        icon: 'error',
-                    });
+
+                if(response.data.message){
+                    setError(response.data.message);
+                }
+            }).catch((error) => {
+                if(error && error.response && error.response.data && error.response.data.mensaje){
+                    setError(error.response.data.mensaje.split(',')[1]);
+                }else{
+                    console.error(error);
                 }
             });
     }
@@ -110,34 +127,25 @@ export default function FormChangePass() {
                     <form onSubmit={handleSubmit}>
                         <h5 className="card-title mt-5">Restablecer la contraseña</h5>
                         <div className='col-md-12'>
-                            <span> Se envio el codigo al correo: {correo}</span>
+                            <span> Se envio el codigo al correo: </span>
                         </div>
                         {tamano && tamano.message && <span className='link-danger'>{tamano.message}</span>}
                         <div className='col-md-6 offset-md-3'>
                             <input className='form-control mt-3 ' type="text" placeholder='Ingrese código de verificación' id='codigo' name='codigo' required={true} onChange={handleChange} />
-                            {error && error.response && error.response.data.codigo && (
-                                <span className='link-danger'> {error.response.data.codigo}</span>
-                            )}
-                            {error && error.response && error.response.data.mensaje && (
-                                <span className='link-danger'> codigo incorrecto</span>
-                            )}
+                            
                         </div>
                         <div className='col-md-6 offset-md-3'>
                             <input className='form-control mt-2 ' type='password' placeholder='Ingrese nueva contraseña' id='password' name='password' required={true} onChange={handleChange} />
-                            {error && error.response && error.response.data.password && (
-                                <span className='link-danger'> {error.response.data.password}</span>
-                            )}
                         </div>
                         <div className='col-md-6 offset-md-3'>
-                            <input className='form-control mt-2 ' type='password' placeholder='confirme la contraseña' id='passwordConfirm' name='passwordConfirm' required={true} onChange={handleChange} />
-                            {error && error.response && error.response.data.passwordConfirm && (
-                                <span className='link-danger'> {error.response.data.passwordConfirm}</span>
-                            )}
+                            <input className='form-control mt-2 ' type='password' placeholder='confirme la contraseña' id='newPassword' name='newPassword' required={true} onChange={handleChange} />
+                            
                             {coincidencia && coincidencia.message && <span className='link-danger'>{coincidencia.message}</span>}
                         </div>
+                        {error && <span className='link-danger'>{error}</span>}
                         <div className="row justify-content-around mt-4 mb-4">
                             <div className='col-6'>
-                                <button type="submit" className='btn btn-primary' disabled={disable}>{disable ? 'Cargando...' : 'confirmar cambio'}</button>
+                                <button type="submit" className='btn btn-primary' disabled={disable} >cambio</button>
                             </div>
                         </div>
                     </form>

@@ -3,6 +3,7 @@ import UseAxiosInstance from '../../utilities/UseAxiosInstance';
 import { FormatearFecha } from '../../utilities/FormatearFecha';
 import { Client } from '@stomp/stompjs'; 
 import SockJS from 'sockjs-client';
+import icono from '../../img/camillero.ico';
 
 const SOCKET_URL = 'http://localhost:8004/ws-notifications'; 
 const client = new Client(
@@ -11,10 +12,10 @@ const client = new Client(
         webSocketFactory: () => new SockJS(SOCKET_URL), 
         onConnect: () => { 
             console.log('Connected'); 
-            client.subscribe('/topic/notifications', 
-                (message) => { 
+            client.subscribe('/topic/notifications', (message) => { 
                     if (message.body) { 
                         console.log(message.body); 
+                        showNotification(message.body);
                     } 
                 }); 
             }, 
@@ -23,6 +24,22 @@ const client = new Client(
                 console.error(`Additional details: ${frame.body}`); 
             } 
         });
+
+const showNotification = (message) => { 
+    if (Notification.permission === 'granted') { 
+        console.log('Notificación-------', message);
+        const notification = new Notification('SOLICITUD CAMILLERO', 
+            { body: message, 
+                icon: icono,
+            }); 
+
+        // notification.onclick = (e) => { 
+        //     e.preventDefault(); 
+        //     window.open('http://localhost:3000/asginacioncamas/', '_blank'); 
+        // };
+        
+    } 
+};
 
 export const connect = () => {
     try {
@@ -40,12 +57,19 @@ export default function AsignacionCama() {
     const axiosInstance = UseAxiosInstance();
 
     const [asignacionesCama, setAsignacionesCama] = useState([]);
+    const [permission, setPermission] = useState(Notification.permission);
 
     const [notifications, setNotifications] = useState([]);
 
     
     useEffect(() => {
+        if(permission !== 'granted' && permission !== 'denied'){
+            Notification.requestPermission().then((permission) => {
+                setPermission(permission);
+            });
+        }
         connect(); return () => disconnect();
+
     }, []);
 
     useEffect(() =>{

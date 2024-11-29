@@ -36,7 +36,8 @@ export default function Sidebar({ componente: Componente }) {
             nombre: 'Asignación_de_camas',
             roles: ['ROLE_ADMIN'],
             submenu: [
-                {nombre: 'Solicitar cama', ruta: '/camas/solicitud', roles: ['ROLE_ADMIN']}
+                {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMIN']},
+                {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMIN']}
             ]
         },
         {

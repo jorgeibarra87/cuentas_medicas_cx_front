@@ -47,7 +47,6 @@ export default function UsuarioProcesoForm({ show, handleClose, areas }) {
         setUsuarios(null);
         if (e.target.value != "0") {
             //cargamos usuarios 
-            console.log('VALOR VALUE ',e.target.value);
             axiosInstance.get(`servicio/usuarios/${e.target.value}`)
                 .then((response) => {
                     setUsuarios(response.data);
