@@ -6,7 +6,7 @@ const spinnerLoginText = (text) => {
         }, 1000);
     });
     Swal.fire({
-        title: `${text}`,
+        title: `${text == null ? 'Loading...' : text}`,
         input: "radio",
         focusConfirm: false,
         allowOutsideClick: false,
