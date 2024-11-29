@@ -24,10 +24,10 @@ function OpcionesUsuario(){
     const handleSubmit = async (e) =>{
         e.preventDefault();
         axiosInstance.get(`${RUTA_BACK_PRODUCCION}usuario/sincronizarConDGH/${identificacion}`)
-            .then((response) => {
-                console.log("respuesta ",response.data);
+            .then(() => {
+                
             }).catch((error) =>{
-                console.log("error: ",error)
+                console.error("error: ",error)
             })
     };
 
