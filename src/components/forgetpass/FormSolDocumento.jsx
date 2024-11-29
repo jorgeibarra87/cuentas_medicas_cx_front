@@ -79,7 +79,21 @@ export default function FormSolDocumento() {
         setCodigo(null);
         e.preventDefault();
         if(form.contactMethod === 'phone'){
-            //enviar sms
+            spinnerLoginText('Enviando...');
+            await axios.post(`${RUTA_BACK_PRODUCCION}regitrocambiopassoword/solicitarCodigo`, {oid: datosContacto.oid, documento: datosContacto.usunombre, numeroMovil: datosContacto.gmemovil})
+                .then((response) => {
+                    setCodigo(response.data);
+                    Swal.close();
+                }).catch((error) => {
+                    if(error && error.response && error.response.data && error.response.data.mensaje){
+                        setError(error.response.data.mensaje.split(',')[1]);
+                        setCodigo({...codigo, documento: datosContacto.usunombre})
+                    }else{
+                        setCodigo(null);
+                        console.error(error);
+                    }
+                    Swal.close();
+                });
             
         }else if(form.contactMethod === 'email'){
             spinnerLoginText('Enviando...');
