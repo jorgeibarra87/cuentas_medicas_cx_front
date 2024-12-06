@@ -245,8 +245,6 @@ export default function FormSolicitudCama({ showFormSolicitud, handleCloseFormSo
                                 <input type="text" id="CodigoCama" className="form-control" value={form.cama.codigo} disabled={true} />
                             </div>
                             <div className="col-md-3">
-                                {/* <label htmlFor="bloqueDestino" className="form-label">Bloque Destino</label>
-                                <input type="text" id="BloqueDestino" className="form-control" disabled={true} /> */}
                                 <label className="form-label">Requiere Aislamiento</label>
                                 <div>
                                     <div className="form-check form-check-inline">
