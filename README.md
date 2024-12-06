@@ -18,11 +18,11 @@ http://localhost:5173/
 - evitar hacer commit del arcivo application.properties
 - usar el siguiente comando para eviar que se tomen los cambios del archivo application.properties
 ```bash  
-git update-index --assume-unchanged src/main/resources/application.properties
+git update-index --assume-unchanged .env
 ```
 - desactivar el comando anterior para tomar los cambios del archivo application.properties
 ```bash
-git update-index --no-assume-unchanged src/main/resources/application.properties
+git update-index --no-assume-unchanged .env
 ```
 
 # Atener en cuenta
