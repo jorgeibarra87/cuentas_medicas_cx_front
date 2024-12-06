@@ -9,6 +9,9 @@ import Swal from 'sweetalert2';
 import { FormatearFecha } from '../../utilities/FormatearFecha';
 import FormAsignCama from './FormAsignCama';
 import * as bootstrap from 'bootstrap';
+import icono from '../../../public/camaicono.ico'
+import FormSolicitudCama from './FormSolicitudCama';
+import FormEditSolicitudCama from './FormEditSolicitudCama';
 
 function SolicitudCama() {
 
@@ -18,11 +21,33 @@ function SolicitudCama() {
     const [showModalSolicitud, setShowModalSolitud] = useState(false);
     const [showModalFormAsignacion, setShowModalFormAsignacion] = useState(false);
     const [solicitudCama, setSolicitudCama] = useState(null);
+    const [showFormEditSolicitudCama, setShowFormEditSolicitudCama] = useState(false);
+    const [versionSolicitudCama, setVersionSolicitudCama] = useState(null); // dato para editar
+    const [bloquesServicio, setBloquesServicio] = useState([]);
+    const [bloqueServicioSeleccionado, setBloqueServicioSeleccionado] = useState(null);
 
     useEffect(() => {
-        spinnerLoginText("Cargando...");
+        //cambiar icono 
+        const link = document.querySelector("link[rel='icon']") || document.createElement('link');
+        link.rel = 'icon';
+        link.href = icono; // Usa el path del icono importado
+        document.head.appendChild(link);
+        //cambia el titulo
+        document.title = "Solicitudes de Cama";
+        if(bloquesServicio.length === 0){
+            axiosInstance.get(`bloque-servicio`)
+                .then(response => {
+                    setBloquesServicio(response.data);
+                }).catch(error => {
+                    console.error(error);
+                });
+        }
+        
+    }, []);
+
+    useEffect(() => {
         const getVersionesSolicitudCama = async () => {
-            await axiosInstance.get(`versionSolicitudCama/active`)
+            await axiosInstance.get(`versionSolicitudCama/active/${bloqueServicioSeleccionado}`)
                 .then(response => {
                     setVersionSolicitudesActivas(response.data);
                     Swal.close();
@@ -30,10 +55,11 @@ function SolicitudCama() {
                     console.error(error);
                 });
         }
-        if(versionSolicitudesActivas.length === 0){
+        if(bloqueServicioSeleccionado != null && bloqueServicioSeleccionado !== ""){
+            spinnerLoginText("Cargando...");
             getVersionesSolicitudCama();
         }
-    }, []);
+    }, [bloqueServicioSeleccionado]);
 
     useEffect(() => {
         if (versionSolicitudesActivas.length > 0) {
@@ -50,7 +76,6 @@ function SolicitudCama() {
                 tooltipInstance.dispose();
             }
         });
-
         // Inicializar nuevos tooltips
         const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.forEach(tooltipTriggerEl => {
@@ -103,9 +128,39 @@ function SolicitudCama() {
         }
     }
 
+    const handleChangeFacturacion = async (item) => {
+        //console.log(item);
+        try {
+            const response = await axiosInstance.put(`/versionSolicitudCama/${item.id}/estadoAutorizacionFacturacion`);
+            Swal.fire({
+                title: 'Estado de Facturación Cambiado',
+                text: 'El estado de facturación ha sido cambiado exitosamente.',
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+            });
+            //ir al pagina usando el react router
+            //history.push('/solicitudCama');
+            
+            
+            //return response.data;
+        }catch(error){
+            console.error(error);
+        }
+    }
+
+
+    const handleBloqueServicio = (e) => {
+        const {value} = e.target;
+        setBloqueServicioSeleccionado(value);
+    };
+
+    const handleEditar = (item) => {
+        setVersionSolicitudCama(item);
+        setShowFormEditSolicitudCama(true);
+    }
+
     return (
         <>
-            <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Hola, Tooltip!" > Prueba Tooltip </button>
             <div>
                 <div className="row align-items-start">
                     <div className="col-auto mx-5 py-2">
@@ -118,6 +173,15 @@ function SolicitudCama() {
                     </div>
                 </div>
                 <div className="row align-items-start">
+                    <div className="col-2 mx-2 py-2">
+                        {/* recorrer bloquesServicio en un select  */}
+                        <select className="form-select form-select-sm" name='bloqueServicio' onChange={handleBloqueServicio}>
+                            <option value="">Selecciona el bloque</option>
+                            {bloquesServicio.map((item) => (
+                                <option key={item.id} value={item.id}>{item.nombre}</option>
+                            ))}
+                        </select>
+                    </div>
                     <div className="col-2 mx-2 py-2">
                         <select className="form-select form-select-sm">
                             <option value="">Filtrar Por Servicio</option>
@@ -151,6 +215,7 @@ function SolicitudCama() {
                                     <th>Servicio</th>
                                     <th>Bloque</th>
                                     <th>Requiere Aislamiento</th>
+                                    <th>Motivo</th>
                                     <th>Medidas de Aislamiento</th>
                                     <th>Diagnóstico</th>
                                     <th>Especialidad</th>
@@ -173,6 +238,7 @@ function SolicitudCama() {
                                         <td>{item.servicio.nombre}</td>
                                         <td>{item.bloqueServicio.nombre}</td>
                                         <td>{item.requiereAislamiento ? 'SI' : 'NO'}</td>
+                                        <td>{item.motivo}</td>
                                         <td>{
                                             item.medidasAislamiento.map((medida) => (
                                                 <ul key={medida.id}>
@@ -203,13 +269,14 @@ function SolicitudCama() {
                                         <td>{item.autorizacionFacturacion}</td>
                                         <td>
                                             <div className="btn-group">
-                                                <button type="button" className="btn btn-light " data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación"  > {/**onClick={() => toggleIcon(item.id)} */}
-                                                    <i className="bi bi-hourglass-split"></i>
+                                                <button type="button" className="btn btn-light " data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación"  onClick={() => handleChangeFacturacion(item)}> {/**onClick={() => toggleIcon(item.id)} */}
+                                                    {/* <i className={iconStates[item.id] || "bi bi-hourglass-split"}></i> */}
+                                                {item.autorizacionFacturacion === 'SI' ? ( <i className="bi bi-toggle-on"></i> ) : item.autorizacionFacturacion === 'NO' ? ( <i className="bi bi-toggle-off"></i> ) : ( <i className="bi bi-hourglass-split"></i> )}
                                                 </button>
                                                 <button type="button" className="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCanel(item)} > {/**onClick={() => handleDelete(item)} */}
                                                     <i className="bi bi-x-circle"></i>
                                                 </button>
-                                                <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"  >{/**onClick={() => handleSubmitEditar(item)} */}
+                                                <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)} >{/** */}
                                                     <i className="bi bi-pencil"></i>
                                                 </button>
                                                 <button type="button" className="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Asignar Cama" onClick={() => handleFormAsignacion(item)}>{/**onClick={() => handleSubmitCamas(item)} */}
@@ -226,6 +293,7 @@ function SolicitudCama() {
             </div>
             <AsignarSolicitud showModalSolicitud={showModalSolicitud} handleCloseModalSolicitud={() => setShowModalSolitud(false)} />
             <FormAsignCama showModalFormAsignacion={showModalFormAsignacion} handleCloseModalFormAsignacion={() => setShowModalFormAsignacion(false)} solicitudCama={solicitudCama}/>
+            <FormEditSolicitudCama versionSolicitudCama={versionSolicitudCama} showFormEditSolicitudCama={showFormEditSolicitudCama} handleCloseFormEditSolicitudCama={() => setShowFormEditSolicitudCama(false)} />
         </>
     )
 }
