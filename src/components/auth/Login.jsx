@@ -10,6 +10,7 @@ const initailForm = {username: "",password: "",};
 
 const Login = () => {
 
+    console.log('ruta ',`${RUTA_BACK_PRODUCCION}auth/login`);
     
     const dispatch = useDispatch();
     const [datos, setDatos] = useState(initailForm);
