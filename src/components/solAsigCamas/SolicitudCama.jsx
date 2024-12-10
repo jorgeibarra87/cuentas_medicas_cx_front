@@ -10,7 +10,6 @@ import { FormatearFecha } from '../../utilities/FormatearFecha';
 import FormAsignCama from './FormAsignCama';
 import * as bootstrap from 'bootstrap';
 import icono from '../../../public/camaicono.ico'
-import FormSolicitudCama from './FormSolicitudCama';
 import FormEditSolicitudCama from './FormEditSolicitudCama';
 
 function SolicitudCama() {
