@@ -6,6 +6,9 @@ import SockJS from 'sockjs-client';
 import icono from '../../img/camillero.ico';
 import Swal from 'sweetalert2';
 import spinnerLoginText from '../Loading';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
+import InfoModal from './InfoModal';
 
 // const SOCKET_URL = 'http://localhost:8004/ws-notifications'; 
 // const client = new Client(
@@ -61,7 +64,9 @@ export default function AsignacionCama() {
     const [asignacionesCama, setAsignacionesCama] = useState([]);
     const [bloquesServicio, setBloquesServicio] = useState([]);
     const [bloqueServicioSeleccionado, setBloqueServicioSeleccionado] = useState(null);
-    const [permission, setPermission] = useState(Notification.permission);
+    // const [permission, setPermission] = useState(Notification.permission);
+    const [showInfoModal, setShowInfoModal] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     // const [notifications, setNotifications] = useState([]);
 
@@ -117,6 +122,11 @@ export default function AsignacionCama() {
         const {value} = e.target;
         setBloqueServicioSeleccionado(value);
     };
+
+    const handleInfo = (item) => {
+        setSelectedItem(item); // Almacena el ítem seleccionado
+        setShowInfoModal(true); // Muestra el modal 
+    }
 
     // useEffect(() =>{
     //     if(asignacionesCama.length === 0){
@@ -195,7 +205,11 @@ export default function AsignacionCama() {
                                 {
                                     asignacionesCama.map((item) => (
                                         <tr key={item.id}>
-                                            <td></td>
+                                            <td>
+                                                <button className="btn" onClick={() => handleInfo(item)}>
+                                                    <FontAwesomeIcon icon={faEye} />
+                                                </button>
+                                            </td>
                                             <td>{item.asignacionCama.id}</td>
                                             <td>{item.id}</td>
                                             <td>{item.asignacionCama.solicitudCama.versionSolicitud[0].servicio.nombre}</td>
@@ -245,6 +259,7 @@ export default function AsignacionCama() {
                     </table>
                 </div>
             </div>
+            <InfoModal show={showInfoModal} handleClose={() => setShowInfoModal(false) } data={selectedItem}/>
         </>
     )
 }
