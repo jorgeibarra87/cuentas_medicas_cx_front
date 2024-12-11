@@ -60,11 +60,11 @@ function SolicitudCama() {
         }
     }, [bloqueServicioSeleccionado]);
 
-    useEffect(() => {
-        if (versionSolicitudesActivas.length > 0) {
-            Swal.close();
-        }
-    }, [versionSolicitudesActivas]);
+    // useEffect(() => {
+    //     if (versionSolicitudesActivas.length > 0) {
+    //         Swal.close();
+    //     }
+    // }, [versionSolicitudesActivas]);
 
     //useEffect oara inicializar los tooltips
     useEffect(() => {
@@ -128,23 +128,30 @@ function SolicitudCama() {
     }
 
     const handleChangeFacturacion = async (item) => {
-        //console.log(item);
-        try {
-            const response = await axiosInstance.put(`/versionSolicitudCama/${item.id}/estadoAutorizacionFacturacion`);
-            Swal.fire({
-                title: 'Estado de Facturación Cambiado',
-                text: 'El estado de facturación ha sido cambiado exitosamente.',
-                icon: 'success',
-                confirmButtonText: 'Aceptar'
+        await axiosInstance.put(`/versionSolicitudCama/${item.id}/estadoAutorizacionFacturacion`)
+            .then(response => {
+                Swal.fire({
+                    title: 'Estado de Facturación Cambiado',
+                    text: 'El estado de facturación ha sido cambiado exitosamente.',
+                    icon: 'success',
+                    timer: 2000,
+                });
+                setVersionSolicitudesActivas(versionSolicitudesActivas.map((version) => {
+                    if(version.id === item.id){
+                        return {...version, autorizacionFacturacion: response.data.autorizacionFacturacion};
+                    }
+                    return version;
+                }));
+
+                setTimeout(() => {
+                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                    tooltipTriggerList.forEach(tooltipTriggerEl => {
+                        new bootstrap.Tooltip(tooltipTriggerEl);
+                    });
+                }, 0);
+            }).catch(error => {
+                console.error(error);
             });
-            //ir al pagina usando el react router
-            //history.push('/solicitudCama');
-            
-            
-            //return response.data;
-        }catch(error){
-            console.error(error);
-        }
     }
 
 
