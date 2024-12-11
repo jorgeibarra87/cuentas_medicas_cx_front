@@ -128,6 +128,17 @@ export default function AsignacionCama() {
         setShowInfoModal(true); // Muestra el modal 
     }
 
+    const handleFinalizar  = async (item) => {
+        await axiosInstance.put(`asignacionSolicitudCama/${item.asignacionCama.id}`,{
+            motivo: ''
+        }).then(response => {
+            console.log(response);
+        }
+        ).catch(error => {
+            console.error(error);
+        });
+    };
+
     // useEffect(() =>{
     //     if(asignacionesCama.length === 0){
     //         axiosInstance.get(`/asignacionVersionSolicitudCama/active`)
@@ -203,8 +214,8 @@ export default function AsignacionCama() {
                         </thead>
                         <tbody>
                                 {
-                                    asignacionesCama.map((item) => (
-                                        <tr key={item.id}>
+                                    asignacionesCama.map((item, index) => (
+                                        <tr key={index}>
                                             <td>
                                                 <button className="btn" onClick={() => handleInfo(item)}>
                                                     <FontAwesomeIcon icon={faEye} />
@@ -240,14 +251,13 @@ export default function AsignacionCama() {
                                             <td>{item.usuario.nombreCompleto}</td>
                                             <td>
                                             <div className="btn-group">
-                                                <button type="button" className="btn btn-light " data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación"  > {/**onClick={() => toggleIcon(item.id)} */}
-                                                    {/* <i className={iconStates[item.id] || "bi bi-hourglass-split"}></i> */}
-                                                {item.autorizacionFacturacion === 'SI' ? ( <i className="bi bi-toggle-on"></i> ) : item.autorizacionFacturacion === 'NO' ? ( <i className="bi bi-toggle-off"></i> ) : ( <i className="bi bi-hourglass-split"></i> )}
+                                                <button type="button" className="btn btn-success " data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Finalizar Traslado" onClick={() => handleFinalizar(item)}> 
+                                                    <i className="bi bi-check-circle"></i>
                                                 </button>
-                                                <button type="button" className="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar"  > {/**onClick={() => handleDelete(item)} */}
+                                                <button type="button" className="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar"> 
                                                     <i className="bi bi-x-circle"></i>
                                                 </button>
-                                                <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar"  >{/** */}
+                                                <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar">
                                                     <i className="bi bi-pencil"></i>
                                                 </button>
                                             </div>
