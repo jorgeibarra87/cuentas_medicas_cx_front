@@ -246,39 +246,35 @@ function SolicitudCama() {
                                             ))
                                         }
                                         </td>
-                                        <td>{
-                                            item.diagnosticos.map((diagnostico) => (
-                                                <ul key={diagnostico.id}>
-                                                    <li>{diagnostico.nombre}</li>
-                                                </ul>
-                                            ))
-                                        }
-                                        </td>
                                         <td>
+                                            <ul>{
+                                                item.diagnosticos.map((diagnostico) => 
+                                                    (<li key={diagnostico.id}>{diagnostico.nombre}</li>))
+                                                }
+                                            </ul>
+                                        </td>
+                                        <td><ul>
                                             {
-                                                item.titulosFormacionAcademica.map((especialidad) => (
-                                                    <ul key={especialidad.id}>
-                                                        <li>{especialidad.titulo}</li>
-                                                    </ul>
-                                                ))
+                                                item.titulosFormacionAcademica.map((especialidad) => 
+                                                    (<li key={especialidad.id}>{especialidad.titulo}</li>))
                                             }
+                                            </ul>
                                         </td>
                                         <td>{item.requerimientosEspeciales}</td>
                                         <td>{item.solicitudCama.estado.nombre}</td>
                                         <td>{item.autorizacionFacturacion}</td>
                                         <td>
                                             <div className="btn-group">
-                                                <button type="button" className="btn btn-light " data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación"  onClick={() => handleChangeFacturacion(item)}> {/**onClick={() => toggleIcon(item.id)} */}
-                                                    {/* <i className={iconStates[item.id] || "bi bi-hourglass-split"}></i> */}
+                                                <button type="button" className="btn btn-light " data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación"  onClick={() => handleChangeFacturacion(item)}> 
                                                 {item.autorizacionFacturacion === 'SI' ? ( <i className="bi bi-toggle-on"></i> ) : item.autorizacionFacturacion === 'NO' ? ( <i className="bi bi-toggle-off"></i> ) : ( <i className="bi bi-hourglass-split"></i> )}
                                                 </button>
-                                                <button type="button" className="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCanel(item)} > {/**onClick={() => handleDelete(item)} */}
+                                                <button type="button" className="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCanel(item)} >
                                                     <i className="bi bi-x-circle"></i>
                                                 </button>
-                                                <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)} >{/** */}
+                                                <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)} >
                                                     <i className="bi bi-pencil"></i>
                                                 </button>
-                                                <button type="button" className="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Asignar Cama" onClick={() => handleFormAsignacion(item)}>{/**onClick={() => handleSubmitCamas(item)} */}
+                                                <button type="button" className="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Asignar Cama" onClick={() => handleFormAsignacion(item)}>
                                                     <FontAwesomeIcon icon={faBed} />
                                                 </button>
                                             </div>
