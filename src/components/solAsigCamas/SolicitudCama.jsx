@@ -283,9 +283,13 @@ function SolicitudCama() {
                                                 <button type="button" className="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)} >
                                                     <i className="bi bi-pencil"></i>
                                                 </button>
-                                                <button type="button" className="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Asignar Cama" onClick={() => handleFormAsignacion(item)}>
-                                                    <FontAwesomeIcon icon={faBed} />
-                                                </button>
+                                                {
+                                                    item.autorizacionFacturacion === 'SI' ? (
+                                                        <button type="button" className="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Asignar Cama" onClick={() => handleFormAsignacion(item)}>
+                                                        <FontAwesomeIcon icon={faBed} />
+                                                    </button>
+                                                    ): ''
+                                                }
                                             </div>
                                         </td>
                                     </tr>
