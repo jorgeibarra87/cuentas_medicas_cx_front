@@ -157,3 +157,7 @@ ul ul a {
     position: relative;
     padding-bottom: 30px; /* Ajusta el espacio para el footer */
   }
+
+.table-small-text td, .table-small-text th {
+    font-size: 0.8rem; /* Ajusta el tamaño según prefieras */
+}
