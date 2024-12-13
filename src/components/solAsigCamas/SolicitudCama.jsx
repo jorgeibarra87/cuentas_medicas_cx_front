@@ -11,7 +11,6 @@ import FormAsignCama from './FormAsignCama';
 import * as bootstrap from 'bootstrap';
 import icono from '../../../public/camaicono.ico'
 import FormEditSolicitudCama from './FormEditSolicitudCama';
-import { focusModal } from '../../utilities/FocusModal';
 
 function SolicitudCama() {
 
@@ -26,6 +25,7 @@ function SolicitudCama() {
     const [bloquesServicio, setBloquesServicio] = useState([]);
     const [bloqueServicioSeleccionado, setBloqueServicioSeleccionado] = useState(null);
     const [responseEditar, setResponseEditar] = useState(null);
+    const [stateAsignacion, setStateAsignacion] = useState(null);
 
     useEffect(() => {
         //cambiar icono 
@@ -61,12 +61,6 @@ function SolicitudCama() {
             getVersionesSolicitudCama();
         }
     }, [bloqueServicioSeleccionado]);
-
-    // useEffect(() => {
-    //     if (versionSolicitudesActivas.length > 0) {
-    //         Swal.close();
-    //     }
-    // }, [versionSolicitudesActivas]);
 
     //useEffect oara inicializar los tooltips
     useEffect(() => {
@@ -105,16 +99,11 @@ function SolicitudCama() {
                     }
                 }
             });
-
-            if (!motivo) {
-                return; // Salimos si el usuario cancela o no escribe un motivo
-            }
-
+            if (!motivo) return;
             // Realizar la solicitud PUT con Axios
             const response = await axiosInstance.put(`/solicitudCama/cancelar/${item.solicitudCama.id}`, null, {
                 params: { motivo }
             });
-
             // Mostrar mensaje de éxito si la solicitud fue completada
             Swal.fire({
                 title: 'Solicitud Cancelada',
@@ -122,10 +111,8 @@ function SolicitudCama() {
                 icon: 'success',
                 confirmButtonText: 'Aceptar'
             });
-
             const versionesActualizadas = versionSolicitudesActivas.filter((version) => version.id !== item.id);
             setVersionSolicitudesActivas(versionesActualizadas);
-
             return response.data;
         } catch (error) {
             console.error(error);
@@ -152,7 +139,6 @@ function SolicitudCama() {
             });
     }
 
-
     const handleBloqueServicio = (e) => {
         const {value} = e.target;
         setBloqueServicioSeleccionado(value);
@@ -163,7 +149,13 @@ function SolicitudCama() {
         setShowFormEditSolicitudCama(true);
     }
 
-    
+    useEffect(() => {  
+        if(stateAsignacion != null){
+            const versionesA = versionSolicitudesActivas.filter((version) => version.solicitudCama.id !== stateAsignacion.asignacionCama.solicitudCama.id );
+            setVersionSolicitudesActivas(versionesA);
+        }
+    }, [stateAsignacion]);
+
     useEffect(() => {
         if(responseEditar != null){
             setVersionSolicitudesActivas(versionSolicitudesActivas.map((version) => {
@@ -304,7 +296,7 @@ function SolicitudCama() {
                 </div>
             </div>
             <AsignarSolicitud showModalSolicitud={showModalSolicitud} handleCloseModalSolicitud={() => setShowModalSolitud(false)} />
-            <FormAsignCama showModalFormAsignacion={showModalFormAsignacion} handleCloseModalFormAsignacion={() => setShowModalFormAsignacion(false)} solicitudCama={solicitudCama}/>
+            <FormAsignCama showModalFormAsignacion={showModalFormAsignacion} handleCloseModalFormAsignacion={() => setShowModalFormAsignacion(false)} solicitudCama={solicitudCama} setStateAsignacion={setStateAsignacion} />
             <FormEditSolicitudCama versionSolicitudCama={versionSolicitudCama} showFormEditSolicitudCama={showFormEditSolicitudCama} handleCloseFormEditSolicitudCama={() => setShowFormEditSolicitudCama(false)} setResponseEditar={setResponseEditar}/>
         </>
     )

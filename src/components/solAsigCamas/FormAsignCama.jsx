@@ -20,7 +20,7 @@ const initialFormState = {
     }
 }
 
-export default function FormAsignCama({ showModalFormAsignacion, handleCloseModalFormAsignacion, solicitudCama }) {
+export default function FormAsignCama({ showModalFormAsignacion, handleCloseModalFormAsignacion, solicitudCama, setStateAsignacion }) {
 
     const axiosInstance = UseAxiosInstance();
     const [form, setForm] = useState(initialFormState);
@@ -83,6 +83,7 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
                 
                 setForm(initialFormState);
                 handleCloseModalFormAsignacion();
+                setStateAsignacion(response.data);
             }).catch(error => {
                 console.error(error);
             });
