@@ -248,6 +248,7 @@ function SolicitudCama() {
                                         <td>{item.requiereAislamiento ? 'SI' : 'NO'}</td>
                                         <td>{item.motivo}</td>
                                         <td>{
+                                            item.medidasAislamiento == null ? 'Ninguna' :
                                             item.medidasAislamiento.map((medida) => (
                                                 <ul key={medida.id}>
                                                     <li>{medida.nombre}</li>
