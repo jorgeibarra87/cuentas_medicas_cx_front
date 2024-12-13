@@ -82,7 +82,7 @@ export default function Sidebar({ componente: Componente }) {
     return (
         <div >
             <div className="wrapper">
-                <nav id="sidebar" className={`${stateSidebar.state ? 'active' : ''}`} >
+                <nav id="sidebar" className={`${stateSidebar.state ? 'active' : ''} small`} >
                     <div className="sidebar-header d-inline-flex align-items-center">
                         <img src={imgLogo} alt='logo' style={{ width: '40px', height: '40px' }} className="mr-2" />
                         <Link to='/' className="mb-0 mx-1 sin-estilo "> Soluciones HUSJP</Link>

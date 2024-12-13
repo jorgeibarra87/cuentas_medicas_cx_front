@@ -11,6 +11,7 @@ import FormAsignCama from './FormAsignCama';
 import * as bootstrap from 'bootstrap';
 import icono from '../../../public/camaicono.ico'
 import FormEditSolicitudCama from './FormEditSolicitudCama';
+import { focusModal } from '../../utilities/FocusModal';
 
 function SolicitudCama() {
 
@@ -24,6 +25,7 @@ function SolicitudCama() {
     const [versionSolicitudCama, setVersionSolicitudCama] = useState(null); // dato para editar
     const [bloquesServicio, setBloquesServicio] = useState([]);
     const [bloqueServicioSeleccionado, setBloqueServicioSeleccionado] = useState(null);
+    const [responseEditar, setResponseEditar] = useState(null);
 
     useEffect(() => {
         //cambiar icono 
@@ -121,6 +123,9 @@ function SolicitudCama() {
                 confirmButtonText: 'Aceptar'
             });
 
+            const versionesActualizadas = versionSolicitudesActivas.filter((version) => version.id !== item.id);
+            setVersionSolicitudesActivas(versionesActualizadas);
+
             return response.data;
         } catch (error) {
             console.error(error);
@@ -130,25 +135,18 @@ function SolicitudCama() {
     const handleChangeFacturacion = async (item) => {
         await axiosInstance.put(`/versionSolicitudCama/${item.id}/estadoAutorizacionFacturacion`)
             .then(response => {
-                Swal.fire({
-                    title: 'Estado de Facturación Cambiado',
-                    text: 'El estado de facturación ha sido cambiado exitosamente.',
-                    icon: 'success',
-                    timer: 2000,
-                });
                 setVersionSolicitudesActivas(versionSolicitudesActivas.map((version) => {
                     if(version.id === item.id){
                         return {...version, autorizacionFacturacion: response.data.autorizacionFacturacion};
                     }
                     return version;
                 }));
-
-                setTimeout(() => {
-                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                    tooltipTriggerList.forEach(tooltipTriggerEl => {
-                        new bootstrap.Tooltip(tooltipTriggerEl);
-                    });
-                }, 0);
+                // setTimeout(() => {
+                //     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                //     tooltipTriggerList.forEach(tooltipTriggerEl => {
+                //         new bootstrap.Tooltip(tooltipTriggerEl);
+                //     });
+                // }, 0);
             }).catch(error => {
                 console.error(error);
             });
@@ -164,6 +162,18 @@ function SolicitudCama() {
         setVersionSolicitudCama(item);
         setShowFormEditSolicitudCama(true);
     }
+
+    
+    useEffect(() => {
+        if(responseEditar != null){
+            setVersionSolicitudesActivas(versionSolicitudesActivas.map((version) => {
+                if(version.solicitudCama.id === responseEditar.solicitudCama.id){
+                    return {...responseEditar};
+                }
+                return version;
+            }));
+        }
+    }, [responseEditar]);
 
     return (
         <>
@@ -208,7 +218,7 @@ function SolicitudCama() {
                 </div>
                 <div className="container-fluid">
                     <div className="table-container">
-                        <table className="table table-hover table-bordered table-sm">
+                        <table className="table table-hover table-bordered table-sm table-small-text">
                             <thead className="table-primary">
                                 <tr>
                                     <th>ID</th>
@@ -272,16 +282,16 @@ function SolicitudCama() {
                                         <td>{item.autorizacionFacturacion}</td>
                                         <td>
                                             <div className="btn-group">
-                                                <button type="button" className="btn btn-light " data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación"  onClick={() => handleChangeFacturacion(item)}> 
+                                                <button type="button" className="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación"  onClick={() => handleChangeFacturacion(item)}> 
                                                 {item.autorizacionFacturacion === 'SI' ? ( <i className="bi bi-toggle-on"></i> ) : item.autorizacionFacturacion === 'NO' ? ( <i className="bi bi-toggle-off"></i> ) : ( <i className="bi bi-hourglass-split"></i> )}
                                                 </button>
-                                                <button type="button" className="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCanel(item)} >
+                                                <button type="button" className="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCanel(item)} >
                                                     <i className="bi bi-x-circle"></i>
                                                 </button>
-                                                <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)} >
+                                                <button type="button" className="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)} >
                                                     <i className="bi bi-pencil"></i>
                                                 </button>
-                                                <button type="button" className="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Asignar Cama" onClick={() => handleFormAsignacion(item)}>
+                                                <button type="button" className="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Asignar Cama" onClick={() => handleFormAsignacion(item)}>
                                                     <FontAwesomeIcon icon={faBed} />
                                                 </button>
                                             </div>
@@ -295,7 +305,7 @@ function SolicitudCama() {
             </div>
             <AsignarSolicitud showModalSolicitud={showModalSolicitud} handleCloseModalSolicitud={() => setShowModalSolitud(false)} />
             <FormAsignCama showModalFormAsignacion={showModalFormAsignacion} handleCloseModalFormAsignacion={() => setShowModalFormAsignacion(false)} solicitudCama={solicitudCama}/>
-            <FormEditSolicitudCama versionSolicitudCama={versionSolicitudCama} showFormEditSolicitudCama={showFormEditSolicitudCama} handleCloseFormEditSolicitudCama={() => setShowFormEditSolicitudCama(false)} />
+            <FormEditSolicitudCama versionSolicitudCama={versionSolicitudCama} showFormEditSolicitudCama={showFormEditSolicitudCama} handleCloseFormEditSolicitudCama={() => setShowFormEditSolicitudCama(false)} setResponseEditar={setResponseEditar}/>
         </>
     )
 }

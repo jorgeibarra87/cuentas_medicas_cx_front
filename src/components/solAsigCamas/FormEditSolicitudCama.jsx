@@ -14,7 +14,7 @@ const initialFormState = {
     titulosFormacionAcademica: [],
     diagnosticos: []
   }
-export default function FormEditSolicitudCama({versionSolicitudCama, showFormEditSolicitudCama, handleCloseFormEditSolicitudCama}) {
+export default function FormEditSolicitudCama({versionSolicitudCama, showFormEditSolicitudCama, handleCloseFormEditSolicitudCama, setResponseEditar}) {
     const axiosInstance = UseAxiosInstance();
 
     const [form, setForm] = useState(initialFormState);
@@ -79,7 +79,7 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
                 requerimientosEspeciales: versionSolicitudCama.requerimientosEspeciales,
                 motivo: versionSolicitudCama.motivo,
                 medidasAislamiento: versionSolicitudCama.medidasAislamiento.map(medida => ({ id: medida.id })),
-                bloqueServicio: versionSolicitudCama.bloqueServicio.id,
+                bloqueServicio: { id: versionSolicitudCama.bloqueServicio.id },
                 titulosFormacionAcademica: versionSolicitudCama.titulosFormacionAcademica.map(titulo => ({ id: titulo.id })),
                 diagnosticos: versionSolicitudCama.diagnosticos.map(diagnostico => ({ id: diagnostico.id })),
                 
@@ -110,7 +110,7 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
         if(compareArrays(original.titulosFormacionAcademica, updated.titulosFormacionAcademica, 'id')) return true;
         if(compareArrays(original.diagnosticos, updated.diagnosticos, 'id')) return true;
 
-        if(original.bloqueServicio?.id !== updated.bloqueServicio) return true;
+        if(original.bloqueServicio?.id !== updated.bloqueServicio.id) return true;
 
         return false;
     }
@@ -182,13 +182,15 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
         await axiosInstance.put(`versionSolicitudCama/${versionSolicitudCama.id}`, form)
         .then(response => {
             handleCloseFormEditSolicitudCama();
-            focusModal();
             Swal.fire({
                 icon: 'success',
                 title: 'Solicitud de cama actualizada',
                 showConfirmButton: false,
                 timer: 1100
+            }).then(() => {
+                setResponseEditar(response.data);
             });
+            
         }).catch(error => {
             console.error(error);
         });      

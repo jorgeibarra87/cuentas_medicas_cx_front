@@ -9,6 +9,7 @@ import spinnerLoginText from '../Loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
 import InfoModal from './InfoModal';
+import FormEditAsignCama from './FormEditAsignCama';
 
 // const SOCKET_URL = 'http://localhost:8004/ws-notifications'; 
 // const client = new Client(
@@ -67,6 +68,8 @@ export default function AsignacionCama() {
     // const [permission, setPermission] = useState(Notification.permission);
     const [showInfoModal, setShowInfoModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [showModalFormEditAsignacion, setShowModalFormEditAsignacion] = useState(false);
+    const [versionAsignacionSolicitudCama, setVersionAsignacionSolicitudCama] = useState(null);
 
     // const [notifications, setNotifications] = useState([]);
 
@@ -100,8 +103,6 @@ export default function AsignacionCama() {
         
     }, []);
 
-    console.log('asignacionesCama', asignacionesCama);  
-
     useEffect(() => {
         const getVersionesSolicitudCama = async () => {
             await axiosInstance.get(`asignacionVersionSolicitudCama/active/${bloqueServicioSeleccionado}`)
@@ -129,14 +130,59 @@ export default function AsignacionCama() {
     }
 
     const handleFinalizar  = async (item) => {
-        await axiosInstance.put(`asignacionSolicitudCama/${item.asignacionCama.id}`,{
-            motivo: ''
-        }).then(response => {
-            console.log(response);
+        await axiosInstance.put(`asignacionSolicitudCama/${item.asignacionCama.id}/estadoFinalizado`)
+        .then(() => {
+            Swal.fire({
+                title: 'Estado de Facturación',
+                text: 'cambiado exitosamente.',
+                icon: 'success',
+                timer: 1500,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                confirmButtonText: 'Aceptar'
+            });
+            
+            const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
+            setAsignacionesCama(asignaciones);
         }
         ).catch(error => {
             console.error(error);
         });
+    };
+
+    const handleEditar = (item) => {
+        setVersionAsignacionSolicitudCama(item);
+        setShowModalFormEditAsignacion(true);
+
+    };
+
+    const handleCancelar = async (item) => {
+        try{
+            const { value: motivo} = await Swal.fire({
+                title: 'Motivo de Cancelación',
+                text: 'Por favor ingrese el motivo de la cancelación',
+                input: 'text',
+                showCancelButton: true,
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+                inputValidator: (value) => {
+                    if(!value){
+                        return 'Por favor ingrese un motivo';
+                    }
+                }
+            });
+            if(!motivo) return;
+
+            await axiosInstance.put(`/asignacionSolicitudCama/${item.asignacionCama.id}/cancelar/motivo/${item.id}`, null ,{
+                params: { motivo }
+            }).then(response => {
+                console.log(response);
+            }).catch(error => {
+                console.error(error);
+            });
+        }catch(error){
+            console.error(error);
+        }
     };
 
     // useEffect(() =>{
@@ -183,7 +229,7 @@ export default function AsignacionCama() {
             </div>
             <div className="container-fluid">
                 <div className="table-container">
-                    <table className="table table-hover table-bordered table-sm">
+                    <table className="table table-hover table-bordered table-sm table-small-text">
                         <thead className="table-primary">
                             <tr>
                                 {[
@@ -251,13 +297,13 @@ export default function AsignacionCama() {
                                             <td>{item.usuario.nombreCompleto}</td>
                                             <td>
                                             <div className="btn-group">
-                                                <button type="button" className="btn btn-success " data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Finalizar Traslado" onClick={() => handleFinalizar(item)}> 
+                                                <button type="button" className="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Finalizar Traslado" onClick={() => handleFinalizar(item)}> 
                                                     <i className="bi bi-check-circle"></i>
                                                 </button>
-                                                <button type="button" className="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar"> 
+                                                <button type="button" className="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCancelar(item)}> 
                                                     <i className="bi bi-x-circle"></i>
                                                 </button>
-                                                <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar">
+                                                <button type="button" className="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)}>
                                                     <i className="bi bi-pencil"></i>
                                                 </button>
                                             </div>
@@ -270,6 +316,7 @@ export default function AsignacionCama() {
                 </div>
             </div>
             <InfoModal show={showInfoModal} handleClose={() => setShowInfoModal(false) } data={selectedItem}/>
+            <FormEditAsignCama showModalFormEditAsignacion={showModalFormEditAsignacion} handleCloseModalFormEditAsignacion={() => setShowModalFormEditAsignacion(false)} idBloqueServicio={bloqueServicioSeleccionado} versionAsignacionSolicitudCama={versionAsignacionSolicitudCama}/>
         </>
     )
 }
