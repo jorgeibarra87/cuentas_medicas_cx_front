@@ -23,9 +23,11 @@ function SolicitudCama() {
     const [showFormEditSolicitudCama, setShowFormEditSolicitudCama] = useState(false);
     const [versionSolicitudCama, setVersionSolicitudCama] = useState(null); // dato para editar
     const [bloquesServicio, setBloquesServicio] = useState([]);
-    const [bloqueServicioSeleccionado, setBloqueServicioSeleccionado] = useState(null);
+    const [bloqueServicioSeleccionado, setBloqueServicioSeleccionado] = useState(0);
     const [responseEditar, setResponseEditar] = useState(null);
     const [stateAsignacion, setStateAsignacion] = useState(null);
+    const [servicios, setServicios] = useState([]);
+    const [especialiedades, setEspecialidades] = useState([]);
 
     useEffect(() => {
         //cambiar icono 
@@ -35,7 +37,7 @@ function SolicitudCama() {
         document.head.appendChild(link);
         //cambia el titulo
         document.title = "Solicitudes de Cama";
-        if(bloquesServicio.length === 0){
+        if (bloquesServicio.length === 0) {
             axiosInstance.get(`bloque-servicio`)
                 .then(response => {
                     setBloquesServicio(response.data);
@@ -43,10 +45,25 @@ function SolicitudCama() {
                     console.error(error);
                 });
         }
-        
+        if (especialiedades.length === 0) {
+            const getEspecialidades = async () => {
+                await axiosInstance.get(`titulosFormacionAcademica/especialidad`)
+                    .then(response => {
+                        setEspecialidades(response.data);
+                    }).catch(error => {
+                        console.error(error);
+                    });
+            }
+            getEspecialidades();
+        }
+
     }, []);
 
     useEffect(() => {
+        if (bloqueServicioSeleccionado == '0') {
+            setVersionSolicitudesActivas([]);
+            return;
+        }
         const getVersionesSolicitudCama = async () => {
             await axiosInstance.get(`versionSolicitudCama/active/${bloqueServicioSeleccionado}`)
                 .then(response => {
@@ -56,7 +73,7 @@ function SolicitudCama() {
                     console.error(error);
                 });
         }
-        if(bloqueServicioSeleccionado != null && bloqueServicioSeleccionado !== ""){
+        if (bloqueServicioSeleccionado != null && bloqueServicioSeleccionado !== "") {
             spinnerLoginText("Cargando...");
             getVersionesSolicitudCama();
         }
@@ -76,7 +93,23 @@ function SolicitudCama() {
         tooltipTriggerList.forEach(tooltipTriggerEl => {
             new bootstrap.Tooltip(tooltipTriggerEl);
         });
-      }, [versionSolicitudesActivas]);
+    }, [versionSolicitudesActivas]);
+
+    useEffect(() => {
+        if (bloqueServicioSeleccionado == '0') {
+            setServicios([]);
+            return;
+        }
+        const getServicios = async () => {
+            await axiosInstance.get(`servicio/${bloqueServicioSeleccionado}`)
+                .then(response => {
+                    setServicios(response.data);
+                }).catch(error => {
+                    console.error(error);
+                });
+        }
+        getServicios();
+    }, [versionSolicitudesActivas]);
 
     const handleFormAsignacion = (item) => {
         setSolicitudCama(item);
@@ -123,8 +156,8 @@ function SolicitudCama() {
         await axiosInstance.put(`/versionSolicitudCama/${item.id}/estadoAutorizacionFacturacion`)
             .then(response => {
                 setVersionSolicitudesActivas(versionSolicitudesActivas.map((version) => {
-                    if(version.id === item.id){
-                        return {...version, autorizacionFacturacion: response.data.autorizacionFacturacion};
+                    if (version.id === item.id) {
+                        return { ...version, autorizacionFacturacion: response.data.autorizacionFacturacion };
                     }
                     return version;
                 }));
@@ -140,7 +173,7 @@ function SolicitudCama() {
     }
 
     const handleBloqueServicio = (e) => {
-        const {value} = e.target;
+        const { value } = e.target;
         setBloqueServicioSeleccionado(value);
     };
 
@@ -149,18 +182,18 @@ function SolicitudCama() {
         setShowFormEditSolicitudCama(true);
     }
 
-    useEffect(() => {  
-        if(stateAsignacion != null){
-            const versionesA = versionSolicitudesActivas.filter((version) => version.solicitudCama.id !== stateAsignacion.asignacionCama.solicitudCama.id );
+    useEffect(() => {
+        if (stateAsignacion != null) {
+            const versionesA = versionSolicitudesActivas.filter((version) => version.solicitudCama.id !== stateAsignacion.asignacionCama.solicitudCama.id);
             setVersionSolicitudesActivas(versionesA);
         }
     }, [stateAsignacion]);
 
     useEffect(() => {
-        if(responseEditar != null){
+        if (responseEditar != null) {
             setVersionSolicitudesActivas(versionSolicitudesActivas.map((version) => {
-                if(version.solicitudCama.id === responseEditar.solicitudCama.id){
-                    return {...responseEditar};
+                if (version.solicitudCama.id === responseEditar.solicitudCama.id) {
+                    return { ...responseEditar };
                 }
                 return version;
             }));
@@ -182,31 +215,38 @@ function SolicitudCama() {
                 </div>
                 <div className="row align-items-start">
                     <div className="col-2 mx-2 py-2">
-                        {/* recorrer bloquesServicio en un select  */}
                         <select className="form-select form-select-sm" name='bloqueServicio' onChange={handleBloqueServicio}>
-                            <option value="">Selecciona el bloque</option>
+                            <option value="0">Selecciona el bloque</option>
                             {bloquesServicio.map((item) => (
                                 <option key={item.id} value={item.id}>{item.nombre}</option>
                             ))}
                         </select>
                     </div>
-                    <div className="col-2 mx-2 py-2">
-                        <select className="form-select form-select-sm">
-                            <option value="">Filtrar Por Servicio</option>
-                            <option value="opcion1">Urgencias</option>
-                            <option value="opcion2">Quirúrgicas</option>
-                        </select>
-                    </div>
-                    <div className="col-2 py-2">
-                        <select className="form-select form-select-sm">
-                            <option value="">Filtrar por Especialidad</option>
-                            <option value="opcion1">Opción 1</option>
-                            <option value="opcion2">Opción 2</option>
-                        </select>
-                    </div>
-                    <div className="col-2 py-2">
-                        <input type="text" className="form-control form-control-sm" placeholder="Buscar..." />
-                    </div>
+                    {bloqueServicioSeleccionado != 0 &&
+                        <>
+                            <div className="col-2 mx-2 py-2">
+                                <select className="form-select form-select-sm">
+                                    <option value="0">Filtrar Por Servicio</option>
+                                    {servicios.map((item) => (
+                                        <option key={item.id} value={item.id}>{item.nombre}</option>
+                                    ))}
+                                </select>
+
+                            </div>
+                            <div className="col-2 py-2">
+                                <select className="form-select form-select-sm">
+                                    <option value="0">Filtrar por Especialidad</option>
+                                    {especialiedades.map((item) => (
+                                        <option key={item.id} value={item.id}>{item.titulo}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="col-2 py-2">
+                                <input type="text" className="form-control form-control-sm" placeholder="Buscar..." />
+                            </div>
+                        </>
+                    }
                 </div>
                 <div className="container-fluid">
                     <div className="table-container">
@@ -249,34 +289,38 @@ function SolicitudCama() {
                                         <td>{item.motivo}</td>
                                         <td>{
                                             item.medidasAislamiento == null ? 'Ninguna' :
-                                            item.medidasAislamiento.map((medida) => (
-                                                <ul key={medida.id}>
-                                                    <li>{medida.nombre}</li>
-                                                </ul>
-                                            ))
+                                                item.medidasAislamiento.map((medida) => (
+                                                    <ul key={medida.id}>
+                                                        <li>{medida.nombre}</li>
+                                                    </ul>
+                                                ))
                                         }
                                         </td>
                                         <td>
                                             <ul>{
-                                                item.diagnosticos.map((diagnostico) => 
+                                                item.diagnosticos.map((diagnostico) =>
                                                     (<li key={diagnostico.id}>{diagnostico.nombre}</li>))
-                                                }
+                                            }
                                             </ul>
                                         </td>
                                         <td><ul>
                                             {
-                                                item.titulosFormacionAcademica.map((especialidad) => 
+                                                item.titulosFormacionAcademica.map((especialidad) =>
                                                     (<li key={especialidad.id}>{especialidad.titulo}</li>))
                                             }
-                                            </ul>
+                                        </ul>
                                         </td>
                                         <td>{item.requerimientosEspeciales}</td>
-                                        <td>{item.solicitudCama.estado.nombre}</td>
+                                        <td>{item.asignacionCama == null ? 
+                                            <>{item.solicitudCama.estado.nombre}</>:
+                                            <>{item.asignacionCama.estado.nombre}<br></br><p className="fw-bold">motivo:</p> {item.asignacionCama.versionSolicitudAsignacion.motivo_cancelacion}</>
+                                            }
+                                        </td>
                                         <td>{item.autorizacionFacturacion}</td>
                                         <td>
                                             <div className="btn-group">
-                                                <button type="button" className="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación"  onClick={() => handleChangeFacturacion(item)}> 
-                                                {item.autorizacionFacturacion === 'SI' ? ( <i className="bi bi-toggle-on"></i> ) : item.autorizacionFacturacion === 'NO' ? ( <i className="bi bi-toggle-off"></i> ) : ( <i className="bi bi-hourglass-split"></i> )}
+                                                <button type="button" className="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación" onClick={() => handleChangeFacturacion(item)}>
+                                                    {item.autorizacionFacturacion === 'SI' ? (<i className="bi bi-toggle-on"></i>) : item.autorizacionFacturacion === 'NO' ? (<i className="bi bi-toggle-off"></i>) : (<i className="bi bi-hourglass-split"></i>)}
                                                 </button>
                                                 <button type="button" className="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCanel(item)} >
                                                     <i className="bi bi-x-circle"></i>
@@ -287,9 +331,9 @@ function SolicitudCama() {
                                                 {
                                                     item.autorizacionFacturacion === 'SI' ? (
                                                         <button type="button" className="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Asignar Cama" onClick={() => handleFormAsignacion(item)}>
-                                                        <FontAwesomeIcon icon={faBed} />
-                                                    </button>
-                                                    ): ''
+                                                            <FontAwesomeIcon icon={faBed} />
+                                                        </button>
+                                                    ) : ''
                                                 }
                                             </div>
                                         </td>
@@ -302,7 +346,7 @@ function SolicitudCama() {
             </div>
             <AsignarSolicitud showModalSolicitud={showModalSolicitud} handleCloseModalSolicitud={() => setShowModalSolitud(false)} />
             <FormAsignCama showModalFormAsignacion={showModalFormAsignacion} handleCloseModalFormAsignacion={() => setShowModalFormAsignacion(false)} solicitudCama={solicitudCama} setStateAsignacion={setStateAsignacion} />
-            <FormEditSolicitudCama versionSolicitudCama={versionSolicitudCama} showFormEditSolicitudCama={showFormEditSolicitudCama} handleCloseFormEditSolicitudCama={() => setShowFormEditSolicitudCama(false)} setResponseEditar={setResponseEditar}/>
+            <FormEditSolicitudCama versionSolicitudCama={versionSolicitudCama} showFormEditSolicitudCama={showFormEditSolicitudCama} handleCloseFormEditSolicitudCama={() => setShowFormEditSolicitudCama(false)} setResponseEditar={setResponseEditar} />
         </>
     )
 }
