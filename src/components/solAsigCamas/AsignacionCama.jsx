@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
 import InfoModal from './InfoModal';
 import FormEditAsignCama from './FormEditAsignCama';
+import * as bootstrap from 'bootstrap';
 
 // const SOCKET_URL = 'http://localhost:8004/ws-notifications'; 
 // const client = new Client(
@@ -118,6 +119,21 @@ export default function AsignacionCama() {
             getVersionesSolicitudCama();
         }
     }, [bloqueServicioSeleccionado]);
+
+    useEffect(() => {
+        const existingTooltips = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        existingTooltips.forEach(toolTipEl => {
+            const tooltipInstance = bootstrap.Tooltip.getInstance(toolTipEl);
+            if(tooltipInstance){
+                tooltipInstance.dispose();
+            }
+        });
+        // inicializar nuevos tooltips
+        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(tooltipTriggerEl => {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    } ,[asignacionesCama]);
 
     const handleBloqueServicio = (e) => {
         const {value} = e.target;
