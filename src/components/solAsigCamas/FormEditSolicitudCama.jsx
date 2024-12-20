@@ -252,26 +252,26 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
                                     <>
                                         <div >
                                             <label className="form-label">Medidas de Aislamiento</label>
-                                            <Select isMulti options={opcionesMedidas} className="basic-multi-select"  value={medidasAislamientoSeleccionadas} classNamePrefix="select" placeholder="Elige opciones..." onChange={handleMedidasAislamientoChange}/>
+                                            <Select isMulti options={opcionesMedidas} className="basic-multi-select"  value={medidasAislamientoSeleccionadas} classNamePrefix="select" placeholder="Elige opciones..." onChange={handleMedidasAislamientoChange} required/>
                                         </div>
                                         <div >
                                             <label htmlFor="motivoAislamiento" className="form-label"> Motivo de Aislamiento </label>
-                                            <input type="text" id="motivo" name="motivo" className="form-control" placeholder="Escribe el motivo" value={form.motivo} onChange={handleInputChange} />
+                                            <input type="text" id="motivo" name="motivo" className="form-control" placeholder="Escribe el motivo" value={form.motivo} onChange={handleInputChange} required/>
                                         </div>
                                     </>
                                 )}
                                 <div>
                                     <label className='form-label'>Bloque que desea trasladar</label>
-                                    <Select options={opcionesBloqueServicio} className='basic-single' classNamePrefix='select' placeholder='Elige una opción...' value={bloqueServicioSeleccionado} onChange={handleBloqueServicioChange}/>
+                                    <Select options={opcionesBloqueServicio} className='basic-single' classNamePrefix='select' placeholder='Elige una opción...' value={bloqueServicioSeleccionado} onChange={handleBloqueServicioChange} required/>
                                 </div>
                             </div>
                             <div className="col-md-3">
                                 <label className="form-label">Especialidad Tratante</label>
-                                <Select isMulti options={opcionesEspecialidades} className="basic-multi-select" classNamePrefix="select" placeholder="Elige opciones..." value={especialidadesSeleccionadas} onChange={handleEspecialidadesChange} />
+                                <Select isMulti options={opcionesEspecialidades} className="basic-multi-select" classNamePrefix="select" placeholder="Elige opciones..." value={especialidadesSeleccionadas} onChange={handleEspecialidadesChange} required/>
                                 <label htmlFor="RequerimientosEspeciales" className="form-label" > Requerimientos Especiales </label>
-                                <input type="text" id="requerimientosEspeciales" name='requerimientosEspeciales' value={form.requerimientosEspeciales} className="form-control" placeholder="" onChange={handleInputChange} />
+                                <input type="text" id="requerimientosEspeciales" name='requerimientosEspeciales' value={form.requerimientosEspeciales} className="form-control" placeholder="" onChange={handleInputChange} required/>
                                 <label className="form-label">Diagnóstico</label>
-                                <AsyncSelect isMulti cacheOptions defaultOptions value={diagnosticosSeleccionados} placeholder="Escribe para buscar y seleccionar..." loadOptions={loadDiagnosticos} onChange={handleDiagnosticosChange} />
+                                <AsyncSelect isMulti cacheOptions defaultOptions value={diagnosticosSeleccionados} placeholder="Escribe para buscar y seleccionar..." loadOptions={loadDiagnosticos} onChange={handleDiagnosticosChange} required/>
                             </div>
                         </div>
                     </form>

@@ -71,6 +71,7 @@ export default function AsignacionCama() {
     const [selectedItem, setSelectedItem] = useState(null);
     const [showModalFormEditAsignacion, setShowModalFormEditAsignacion] = useState(false);
     const [versionAsignacionSolicitudCama, setVersionAsignacionSolicitudCama] = useState(null);
+    const [versionAsignacionSolicitudCamaEditar, setVersionAsignacionSolicitudCamaEditar] = useState(null);
 
     // const [notifications, setNotifications] = useState([]);
 
@@ -146,23 +147,35 @@ export default function AsignacionCama() {
     }
 
     const handleFinalizar  = async (item) => {
-        await axiosInstance.put(`asignacionSolicitudCama/${item.asignacionCama.id}/estadoFinalizado`)
-        .then(() => {
-            Swal.fire({
-                title: 'Estado de Facturación',
-                text: 'cambiado exitosamente.',
-                icon: 'success',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: true,
-                confirmButtonText: 'Aceptar'
-            });
-            
-            const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
-            setAsignacionesCama(asignaciones);
-        }
-        ).catch(error => {
-            console.error(error);
+        Swal.fire({
+            title: 'Finalizar Traslado',
+            text: '¿Está seguro que el paciente llego a la cama de destino?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if(result.isConfirmed){
+                cancelarAsignacion();
+            }
+            function cancelarAsignacion() {
+                axiosInstance.put(`asignacionSolicitudCama/${item.asignacionCama.id}/estadoFinalizado`)
+                    .then(() => {
+                        Swal.fire({
+                            title: 'Finalizado',
+                            text: 'se finalizo exitosamente.',
+                            icon: 'success',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
+                        const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
+                        setAsignacionesCama(asignaciones);
+                    }
+                    ).catch(error => {
+                        console.error(error);
+                    });
+            }
         });
     };
 
@@ -171,6 +184,18 @@ export default function AsignacionCama() {
         setShowModalFormEditAsignacion(true);
 
     };
+
+    useEffect(() => {  
+        if(versionAsignacionSolicitudCamaEditar != null){
+            const versionAsignaciones = asignacionesCama.map(asignacion => {
+                if(asignacion.asignacionCama.id === versionAsignacionSolicitudCamaEditar.asignacionCama.id){
+                    return versionAsignacionSolicitudCamaEditar;
+                }
+                return asignacion;
+            });
+            setAsignacionesCama(versionAsignaciones);
+        }
+    },[versionAsignacionSolicitudCamaEditar]);
 
     const handleCancelar = async (item) => {
         try{
@@ -285,24 +310,24 @@ export default function AsignacionCama() {
                                             </td>
                                             <td>{item.asignacionCama.id}</td>
                                             <td>{item.id}</td>
-                                            <td>{item.asignacionCama.solicitudCama.versionSolicitud[0].servicio.nombre}</td>
+                                            <td>{item.asignacionCama.solicitudCama.versionSolicitud.servicio.nombre}</td>
                                             <td>{FormatearFecha(item.fechaCreacion)}</td>
                                             <td>{item.asignacionCama.solicitudCama.ingreso.id}</td>
                                             <td>{item.asignacionCama.solicitudCama.ingreso.paciente.documento}</td>
                                             <td>{item.asignacionCama.solicitudCama.ingreso.paciente.nombreCompleto}</td>
                                             <td>
-                                                <ul>{item.asignacionCama.solicitudCama.versionSolicitud[0].diagnosticos.map((diagnostico) => (
+                                                <ul>{item.asignacionCama.solicitudCama.versionSolicitud.diagnosticos.map((diagnostico) => (
                                                     <li key={diagnostico.id}>{diagnostico.nombre}</li>                                                
                                                     ))}
                                                 </ul>
                                             </td>
                                             <td>
-                                                <ul>{item.asignacionCama.solicitudCama.versionSolicitud[0].titulosFormacionAcademica.map((especialidad) => (
+                                                <ul>{item.asignacionCama.solicitudCama.versionSolicitud.titulosFormacionAcademica.map((especialidad) => (
                                                     <li key={especialidad.id}>{especialidad.titulo}</li>                                                
                                                     ))}
                                                 </ul>
                                             </td>
-                                            <td>{item.asignacionCama.solicitudCama.versionSolicitud[0].requiereAislamiento ? 'SI' : 'NO'}</td>
+                                            <td>{item.asignacionCama.solicitudCama.versionSolicitud.requiereAislamiento ? 'SI' : 'NO'}</td>
                                             <td>{item.asignacionCama.estado.nombre}</td>
                                             <td>{item.servicio.nombre}</td>
                                             <td>{item.cama.codigo}</td>
@@ -312,18 +337,18 @@ export default function AsignacionCama() {
                                             <td>{item.observacion}</td>
                                             <td>{item.usuario.nombreCompleto}</td>
                                             <td>
-                                            <div className="btn-group">
-                                                <button type="button" className="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Finalizar Traslado" onClick={() => handleFinalizar(item)}> 
-                                                    <i className="bi bi-check-circle"></i>
-                                                </button>
-                                                <button type="button" className="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCancelar(item)}> 
-                                                    <i className="bi bi-x-circle"></i>
-                                                </button>
-                                                <button type="button" className="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)}>
-                                                    <i className="bi bi-pencil"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+                                                <div className="btn-group">
+                                                    <button type="button" className="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Finalizar Traslado" onClick={() => handleFinalizar(item)}> 
+                                                        <i className="bi bi-check-circle"></i>
+                                                    </button>
+                                                    <button type="button" className="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCancelar(item)}> 
+                                                        <i className="bi bi-x-circle"></i>
+                                                    </button>
+                                                    <button type="button" className="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)}>
+                                                        <i className="bi bi-pencil"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
                                         </tr>
                                     ))
                                 }
@@ -332,7 +357,7 @@ export default function AsignacionCama() {
                 </div>
             </div>
             <InfoModal show={showInfoModal} handleClose={() => setShowInfoModal(false) } data={selectedItem}/>
-            <FormEditAsignCama showModalFormEditAsignacion={showModalFormEditAsignacion} handleCloseModalFormEditAsignacion={() => setShowModalFormEditAsignacion(false)} idBloqueServicio={bloqueServicioSeleccionado} versionAsignacionSolicitudCama={versionAsignacionSolicitudCama}/>
+            <FormEditAsignCama showModalFormEditAsignacion={showModalFormEditAsignacion} handleCloseModalFormEditAsignacion={() => setShowModalFormEditAsignacion(false)} idBloqueServicio={bloqueServicioSeleccionado} versionAsignacionSolicitudCama={versionAsignacionSolicitudCama} setVersionAsignacionSolicitudCamaEditar={setVersionAsignacionSolicitudCamaEditar}/>
         </>
     )
 }

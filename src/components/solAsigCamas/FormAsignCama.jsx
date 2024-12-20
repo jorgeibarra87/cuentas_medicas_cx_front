@@ -100,29 +100,29 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
                         <div className='row'>
                             <div className='col-md-4'>
                                 <label className='form-label'>Observación</label>
-                                <input type='text' name='observacion' className='form-control' onChange={handleChange} />
+                                <input type='text' name='observacion' className='form-control' onChange={handleChange} required/>
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Extensión</label>
-                                <input type='text' name='extension' className='form-control' onChange={handleChange} />
+                                <input type='text' name='extension' className='form-control' onChange={handleChange} required/>
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Enfermero Servicio Origen</label>
-                                <input type='text' name='enfermero_origen' className='form-control' onChange={handleChange} />
+                                <input type='text' name='enfermero_origen' className='form-control' onChange={handleChange} required/>
                             </div>
                         </div>
                         <div className='row my-3'>
                             <div className='col-md-4'>
                                 <label className='form-label'>Enfermero Servicio Destino</label>
-                                <input type='text' name='enfermero_destino' className='form-control' onChange={handleChange} />
+                                <input type='text' name='enfermero_destino' className='form-control' onChange={handleChange} required/>
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Servicio Destino</label>
-                                <Select options={opcionesServicios} className='basic-single' classNamePrefix='select' placeholder='Elige un servicio...' name='servicios' onChange={handleSelect} />
+                                <Select options={opcionesServicios} className='basic-single' classNamePrefix='select' placeholder='Elige un servicio...' name='servicios' onChange={handleSelect} required/>
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Cama Destino</label>
-                                <Select options={opcionesCamas} className='basic-single' classNamePrefix='select' placeholder='Elija una cama...' name='camas' onChange={handleSelect} />
+                                <Select options={opcionesCamas} className='basic-single' classNamePrefix='select' placeholder='Elija una cama...' name='camas' onChange={handleSelect} required/>
                             </div>
                         </div>
                     </form>

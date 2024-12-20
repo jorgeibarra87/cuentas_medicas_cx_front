@@ -17,7 +17,7 @@ const initialFormState = {
     }
 }
 
-export default function FormEditAsignCama({ showModalFormEditAsignacion, handleCloseModalFormEditAsignacion, idBloqueServicio, versionAsignacionSolicitudCama }) {
+export default function FormEditAsignCama({ showModalFormEditAsignacion, handleCloseModalFormEditAsignacion, idBloqueServicio, versionAsignacionSolicitudCama, setVersionAsignacionSolicitudCamaEditar }) {
 
     const axiosInstance = UseAxiosInstance();
     const [form, setForm] = useState(initialFormState);
@@ -25,6 +25,7 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
     const [servicios, setServicios] = useState([]);
     const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
     const [camaSeleccionada, setCamaSeleccionada] = useState(null);
+    const [botonEditar, setBotonEditar] = useState(false);
 
     useEffect(() => {
         if (showModalFormEditAsignacion) {
@@ -54,6 +55,23 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
                 }))
         }
     }, [showModalFormEditAsignacion]);
+
+
+    useEffect(() => {
+        if(versionAsignacionSolicitudCama != null && form !== initialFormState){
+            setBotonEditar(!hasChanges(versionAsignacionSolicitudCama, form));
+        }
+    }, [form, versionAsignacionSolicitudCama]);
+
+    function hasChanges(original, updated){
+        if(String(original.observacion).toLocaleUpperCase() !== String(updated.observacion).toLocaleUpperCase()) return true;
+        if(String(original.enfermero_origen).toUpperCase() !== String(updated.enfermero_origen).toUpperCase()) return true;
+        if(String(original.enfermero_destino).toUpperCase() !== String(updated.enfermero_destino).toUpperCase()) return true;
+        if(String(original.extension).toUpperCase() !== String(updated.extension).toUpperCase()) return true;
+        if(original.servicio.id !== updated.servicio.id) return true;
+        if(original.cama.id !== updated.cama.id) return true;
+        return false;
+    }
 
     const opcionesServicios = servicios.map(servicio => ({ value: servicio.id, label: servicio.nombre }));
 
@@ -93,11 +111,12 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('form',form);
         axiosInstance.put(`asignacionVersionSolicitudCama/${versionAsignacionSolicitudCama.id}`, form)
-            .then(() => {
+            .then(response => {
                 setForm(initialFormState);
+                console.log(response.data);
                 handleCloseModalFormEditAsignacion();
+                setVersionAsignacionSolicitudCamaEditar(response.data);
             }).catch((error) => {
                 console.error(error);
             });
@@ -114,35 +133,35 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
                         <div className='row'>
                             <div className='col-md-4'>
                                 <label className='form-label'>Observación</label>
-                                <input type='text' name='observacion' value={form.observacion} className='form-control' onChange={handleChange} />
+                                <input type='text' name='observacion' value={form.observacion || ''} className='form-control' onChange={handleChange} required/>
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Extensión</label>
-                                <input type='text' name='extension' value={form.extension} className='form-control' onChange={handleChange} />
+                                <input type='text' name='extension' value={form.extension || ''} className='form-control' onChange={handleChange} required/>
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Enfermero Servicio Origen</label>
-                                <input type='text' name='enfermero_origen' value={form.enfermero_origen} className='form-control' onChange={handleChange} />
+                                <input type='text' name='enfermero_origen' value={form.enfermero_origen || ''} className='form-control' onChange={handleChange} required/>
                             </div>
                         </div>
                         <div className='row my-3'>
                             <div className='col-md-4'>
                                 <label className='form-label'>Enfermero Servicio Destino</label>
-                                <input type='text' name='enfermero_destino' value={form.enfermero_destino} className='form-control' onChange={handleChange} />
+                                <input type='text' name='enfermero_destino' value={form.enfermero_destino || ''} className='form-control' onChange={handleChange} required/>
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Servicio Destino</label>
-                                <Select options={opcionesServicios} className='basic-single' value={servicioSeleccionado} classNamePrefix='select' placeholder='Elige un servicio...' name='servicios' onChange={handleSelect} />
+                                <Select options={opcionesServicios} className='basic-single' value={servicioSeleccionado || ''} classNamePrefix='select' placeholder='Elige un servicio...' name='servicios' onChange={handleSelect} required/>
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Cama Destino</label>
-                                <Select options={opcionesCamas} className='basic-single' value={camaSeleccionada} classNamePrefix='select' placeholder='Elija una cama...' name='camas' onChange={handleSelect} />
+                                <Select options={opcionesCamas} className='basic-single' value={camaSeleccionada || ''} classNamePrefix='select' placeholder='Elija una cama...' name='camas' onChange={handleSelect} required/>
                             </div>
                         </div>
                     </form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant='primary' type='submit' form='formulario'>Guardar</Button>
+                    {!botonEditar && <Button variant='primary' type='submit' form='formulario'>Editar</Button>}
                 </Modal.Footer>
             </Modal>
         </>
