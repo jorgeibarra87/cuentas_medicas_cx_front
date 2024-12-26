@@ -70,8 +70,6 @@ function OpcionesUsuario(){
     const opcionesRoles = rolesDisponibles.map((rol) => ({value: rol.id, label: rol.rol}));
 
     const handleRolesChange = (selectedOptions, usuario) =>{
-        console.log("selectedOptions: ",selectedOptions);
-        console.log("usuario: ",usuario);
         const form = {
             documento: usuario.documento,
             roles: selectedOptions.map(option => ({id: option.value, rol: option.label})),

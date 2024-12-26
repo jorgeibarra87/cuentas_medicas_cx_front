@@ -116,7 +116,6 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
         axiosInstance.put(`asignacionVersionSolicitudCama/${versionAsignacionSolicitudCama.id}`, form)
             .then(response => {
                 setForm(initialFormState);
-                console.log(response.data);
                 handleCloseModalFormEditAsignacion();
                 setVersionAsignacionSolicitudCamaEditar(response.data);
             }).catch((error) => {
