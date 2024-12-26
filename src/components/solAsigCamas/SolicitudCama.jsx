@@ -18,10 +18,7 @@ function SolicitudCama() {
     const axiosInstance = UseAxiosInstance();
     const statelogin = useSelector(state => state.login);
 
-    const [authorities] = useState(statelogin.decodeToken.authorities);
-
-    console.log(authorities);
-    
+    const [authorities] = useState(statelogin.decodeToken.authorities);    
 
     const [versionSolicitudesActivas, setVersionSolicitudesActivas] = useState([]);
     const [showModalSolicitud, setShowModalSolitud] = useState(false);
@@ -75,7 +72,6 @@ function SolicitudCama() {
             await axiosInstance.get(`versionSolicitudCama/active/${bloqueServicioSeleccionado}`)
                 .then(response => {
                     setVersionSolicitudesActivas(response.data);
-                    console.log(response.data);
                     Swal.close();
                 }).catch(error => {
                     console.error(error);

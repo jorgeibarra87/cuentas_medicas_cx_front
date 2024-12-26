@@ -67,8 +67,6 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
         }
     }, [versionSolicitudCama]);
 
-    console.log('medidas de aislamiento ',medidasAislamientoSeleccionadas);
-
     useEffect(() => {
         if(versionSolicitudCama != null){
             setMedidasAislamientoSeleccionadas(versionSolicitudCama.medidasAislamiento.map(medida => ({ value: medida.id, label: medida.nombre })));

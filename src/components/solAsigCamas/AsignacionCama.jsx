@@ -114,7 +114,6 @@ export default function AsignacionCama() {
             await axiosInstance.get(`asignacionVersionSolicitudCama/active/${bloqueServicioSeleccionado}`)
                 .then(response => {
                     setAsignacionesCama(response.data);
-                    console.log(response.data);
                     Swal.close();
                 }).catch(error => {
                     console.error(error);
@@ -231,8 +230,6 @@ export default function AsignacionCama() {
             console.error(error);
         }
     };
-
-    console.log(asignacionesCama);
 
     // useEffect(() =>{
     //     if(asignacionesCama.length === 0){

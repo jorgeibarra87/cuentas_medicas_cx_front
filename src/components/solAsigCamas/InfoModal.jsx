@@ -4,7 +4,6 @@ import { FormatearFecha } from '../../utilities/FormatearFecha';
 
 function InfoModal({show, handleClose, data}) {
     if(!data) return null;
-    console.log(data);
   return (
     <Modal show={show} onHide={handleClose}>
         <Modal.Header>
