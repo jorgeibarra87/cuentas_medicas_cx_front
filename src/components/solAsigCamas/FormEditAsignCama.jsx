@@ -9,8 +9,8 @@ const initialFormState = {
         codigo: ''
     },
     observacion: '',
-    enfermero_origen: '',
-    enfermero_destino: '',
+    enfermeroOrigen: '',
+    enfermeroDestino: '',
     extension: '',
     servicio: {
         id: ''
@@ -46,8 +46,8 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
                         codigo: versionAsignacionSolicitudCama.cama.codigo
                     },
                     observacion: versionAsignacionSolicitudCama.observacion,
-                    enfermero_origen: versionAsignacionSolicitudCama.enfermero_origen,
-                    enfermero_destino: versionAsignacionSolicitudCama.enfermero_destino,
+                    enfermeroOrigen: versionAsignacionSolicitudCama.enfermeroOrigen,
+                    enfermeroDestino: versionAsignacionSolicitudCama.enfermeroDestino,
                     extension: versionAsignacionSolicitudCama.extension,
                     servicio: {
                         id: versionAsignacionSolicitudCama.servicio.id
@@ -65,11 +65,13 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
 
     function hasChanges(original, updated){
         if(String(original.observacion).toLocaleUpperCase() !== String(updated.observacion).toLocaleUpperCase()) return true;
-        if(String(original.enfermero_origen).toUpperCase() !== String(updated.enfermero_origen).toUpperCase()) return true;
-        if(String(original.enfermero_destino).toUpperCase() !== String(updated.enfermero_destino).toUpperCase()) return true;
+        if(String(original.enfermeroOrigen).toUpperCase() !== String(updated.enfermeroOrigen).toUpperCase()) return true;
+        if(String(original.enfermeroDestino).toUpperCase() !== String(updated.enfermeroDestino).toUpperCase()) return true;
         if(String(original.extension).toUpperCase() !== String(updated.extension).toUpperCase()) return true;
         if(original.servicio.id !== updated.servicio.id) return true;
-        if(original.cama.id !== updated.cama.id) return true;
+        if(original.cama != null && updated.cama != null) {
+            if(original.cama.id !== updated.cama.id) return true;
+        }
         return false;
     }
 
@@ -141,13 +143,13 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Enfermero Servicio Origen</label>
-                                <input type='text' name='enfermero_origen' value={form.enfermero_origen || ''} className='form-control' onChange={handleChange} required/>
+                                <input type='text' name='enfermeroOrigen' value={form.enfermeroOrigen || ''} className='form-control' onChange={handleChange} required/>
                             </div>
                         </div>
                         <div className='row my-3'>
                             <div className='col-md-4'>
                                 <label className='form-label'>Enfermero Servicio Destino</label>
-                                <input type='text' name='enfermero_destino' value={form.enfermero_destino || ''} className='form-control' onChange={handleChange} required/>
+                                <input type='text' name='enfermeroDestino' value={form.enfermeroDestino || ''} className='form-control' onChange={handleChange} required/>
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Servicio Destino</label>

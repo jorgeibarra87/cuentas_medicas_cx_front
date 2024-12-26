@@ -11,10 +11,17 @@ import FormAsignCama from './FormAsignCama';
 import * as bootstrap from 'bootstrap';
 import icono from '../../../public/camaicono.ico'
 import FormEditSolicitudCama from './FormEditSolicitudCama';
+import { useSelector } from 'react-redux';
 
 function SolicitudCama() {
 
     const axiosInstance = UseAxiosInstance();
+    const statelogin = useSelector(state => state.login);
+
+    const [authorities] = useState(statelogin.decodeToken.authorities);
+
+    console.log(authorities);
+    
 
     const [versionSolicitudesActivas, setVersionSolicitudesActivas] = useState([]);
     const [showModalSolicitud, setShowModalSolitud] = useState(false);
@@ -26,7 +33,7 @@ function SolicitudCama() {
     const [bloqueServicioSeleccionado, setBloqueServicioSeleccionado] = useState(0);
     const [responseEditar, setResponseEditar] = useState(null);
     const [stateAsignacion, setStateAsignacion] = useState(null);
-    const [servicios, setServicios] = useState([]);
+    // const [servicios, setServicios] = useState([]);
     const [especialiedades, setEspecialidades] = useState([]);
 
     useEffect(() => {
@@ -68,6 +75,7 @@ function SolicitudCama() {
             await axiosInstance.get(`versionSolicitudCama/active/${bloqueServicioSeleccionado}`)
                 .then(response => {
                     setVersionSolicitudesActivas(response.data);
+                    console.log(response.data);
                     Swal.close();
                 }).catch(error => {
                     console.error(error);
@@ -97,18 +105,8 @@ function SolicitudCama() {
 
     useEffect(() => {
         if (bloqueServicioSeleccionado == '0') {
-            setServicios([]);
             return;
         }
-        const getServicios = async () => {
-            await axiosInstance.get(`servicio/${bloqueServicioSeleccionado}`)
-                .then(response => {
-                    setServicios(response.data);
-                }).catch(error => {
-                    console.error(error);
-                });
-        }
-        getServicios();
     }, [versionSolicitudesActivas]);
 
     const handleFormAsignacion = (item) => {
@@ -203,16 +201,18 @@ function SolicitudCama() {
     return (
         <>
             <div>
-                <div className="row align-items-start">
-                    <div className="col-auto mx-5 py-2">
-                        <h4>Agregar Solicitud</h4>
+                {['ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA'].some(role => authorities.includes(role)) && (
+                    <div className="row align-items-start">
+                        <div className="col-auto mx-5 py-2">
+                            <h4>Agregar Solicitud</h4>
+                        </div>
+                        <div className="col-auto">
+                            <button className="btn btn-lg" onClick={() => setShowModalSolitud(true)} >
+                                <i className="bi bi-plus-circle-fill text-primary"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div className="col-auto">
-                        <button className="btn btn-lg" onClick={() => setShowModalSolitud(true)} >
-                            <i className="bi bi-plus-circle-fill text-primary"></i>
-                        </button>
-                    </div>
-                </div>
+                )}
                 <div className="row align-items-start">
                     <div className="col-2 mx-2 py-2">
                         <select className="form-select form-select-sm" name='bloqueServicio' onChange={handleBloqueServicio}>
@@ -222,31 +222,6 @@ function SolicitudCama() {
                             ))}
                         </select>
                     </div>
-                    {bloqueServicioSeleccionado != 0 &&
-                        <>
-                            <div className="col-2 mx-2 py-2">
-                                <select className="form-select form-select-sm">
-                                    <option value="0">Filtrar Por Servicio</option>
-                                    {servicios.map((item) => (
-                                        <option key={item.id} value={item.id}>{item.nombre}</option>
-                                    ))}
-                                </select>
-
-                            </div>
-                            <div className="col-2 py-2">
-                                <select className="form-select form-select-sm">
-                                    <option value="0">Filtrar por Especialidad</option>
-                                    {especialiedades.map((item) => (
-                                        <option key={item.id} value={item.id}>{item.titulo}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="col-2 py-2">
-                                <input type="text" className="form-control form-control-sm" placeholder="Buscar..." />
-                            </div>
-                        </>
-                    }
                 </div>
                 <div className="container-fluid">
                     <div className="table-container">
@@ -319,17 +294,22 @@ function SolicitudCama() {
                                         <td>{item.autorizacionFacturacion}</td>
                                         <td>
                                             <div className="btn-group">
-                                                <button type="button" className="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación" onClick={() => handleChangeFacturacion(item)}>
-                                                    {item.autorizacionFacturacion === 'SI' ? (<i className="bi bi-toggle-on"></i>) : item.autorizacionFacturacion === 'NO' ? (<i className="bi bi-toggle-off"></i>) : (<i className="bi bi-hourglass-split"></i>)}
-                                                </button>
-                                                <button type="button" className="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCanel(item)} >
-                                                    <i className="bi bi-x-circle"></i>
-                                                </button>
-                                                <button type="button" className="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)} >
-                                                    <i className="bi bi-pencil"></i>
-                                                </button>
-                                                {
-                                                    item.autorizacionFacturacion === 'SI' ? (
+                                                {['ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_FACTURACION'].some(role => authorities.includes(role)) && (
+                                                    <button type="button" className="btn btn-light btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cambiar Estado Facturación" onClick={() => handleChangeFacturacion(item)}>
+                                                        {item.autorizacionFacturacion === 'SI' ? (<i className="bi bi-toggle-on"></i>) : item.autorizacionFacturacion === 'NO' ? (<i className="bi bi-toggle-off"></i>) : (<i className="bi bi-hourglass-split"></i>)}
+                                                    </button>
+                                                )}
+                                                {['ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION'].some(role => authorities.includes(role)) &&(
+                                                    <button type="button" className="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCanel(item)} >
+                                                        <i className="bi bi-x-circle"></i>
+                                                    </button>
+                                                )}
+                                                {['ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION'].some(role => authorities.includes(role)) && (
+                                                    <button type="button" className="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)} >
+                                                        <i className="bi bi-pencil"></i>
+                                                    </button>
+                                                )}
+                                                {['ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_INTERNACION'].some(role => authorities.includes(role)) && item.autorizacionFacturacion === 'SI' ? (
                                                         <button type="button" className="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Asignar Cama" onClick={() => handleFormAsignacion(item)}>
                                                             <FontAwesomeIcon icon={faBed} />
                                                         </button>

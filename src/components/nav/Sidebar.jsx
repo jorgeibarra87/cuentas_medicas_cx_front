@@ -34,10 +34,10 @@ export default function Sidebar({ componente: Componente }) {
         // },
         {
             nombre: 'Asignación_de_camas',
-            roles: ['ROLE_ADMIN'],
+            roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS'],
             submenu: [
-                {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMIN']},
-                {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMIN']}
+                {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']},
+                {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']}
             ]
         },
         {
@@ -120,12 +120,6 @@ export default function Sidebar({ componente: Componente }) {
                 <div id="content">
                     <Navbar />
                     {Componente && <Componente />}
-                    
-
-                    {/* <footer className="footer small">
-                        <hr />
-                        <p className="text-muted text-center">Soluciones HUSJP © 2024 Hospital Universitario San Jose. Todos los derechos reservados. EXT. 134</p>
-                    </footer> */}
                 </div>
                 
 

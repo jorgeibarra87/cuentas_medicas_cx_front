@@ -12,8 +12,8 @@ const initialFormState = {
         codigo: ''
     },
     observacion: '',
-    enfermero_origen: '',
-    enfermero_destino: '',
+    enfermeroOrigen: '',
+    enfermeroDestino: '',
     extension: '',
     servicio: {
         id: ''
@@ -108,13 +108,13 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Enfermero Servicio Origen</label>
-                                <input type='text' name='enfermero_origen' className='form-control' onChange={handleChange} required/>
+                                <input type='text' name='enfermeroOrigen' className='form-control' onChange={handleChange} required/>
                             </div>
                         </div>
                         <div className='row my-3'>
                             <div className='col-md-4'>
                                 <label className='form-label'>Enfermero Servicio Destino</label>
-                                <input type='text' name='enfermero_destino' className='form-control' onChange={handleChange} required/>
+                                <input type='text' name='enfermeroDestino' className='form-control' onChange={handleChange} required/>
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Servicio Destino</label>
