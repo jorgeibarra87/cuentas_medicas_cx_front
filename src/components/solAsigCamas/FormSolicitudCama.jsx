@@ -291,14 +291,14 @@ export default function FormSolicitudCama({ showFormSolicitud, handleCloseFormSo
                                 <label className="form-label">Especialidad Tratante</label>
                                 <Select isMulti options={opcionesEspecialidades} className="basic-multi-select" classNamePrefix="select" placeholder="Elige opciones..." onChange={handleEspecialidadesChange} />
                                 <label htmlFor="RequerimientosEspeciales" className="form-label" > Requerimientos Especiales </label>
-                                <input type="text" id="requerimientosespeciales" name='requerimientosEspeciales' className="form-control" placeholder="" 
+                                <input type="text" id="requerimientosespeciales" name='requerimientosEspeciales' className="form-control" placeholder="" required
                                     onChange={() => setForm((prevState) => ({
                                         ...prevState,
                                         requerimientosEspeciales: document.getElementById('requerimientosespeciales').value
                                     }))}
                                 />
                                 <label className="form-label">Diagnóstico</label>
-                                <AsyncSelect isMulti cacheOptions defaultOptions loadOptions={loadDiagnosticos} onChange={handleDiagnosticosChange} value={diagnosticos} placeholder="Escribe para buscar y seleccionar..."/>
+                                <AsyncSelect isMulti cacheOptions defaultOptions loadOptions={loadDiagnosticos} onChange={handleDiagnosticosChange} value={diagnosticos} placeholder="Escribe para buscar y seleccionar..." required/>
                             </div>
                         </div>
                     </form>

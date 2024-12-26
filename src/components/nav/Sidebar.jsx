@@ -34,10 +34,10 @@ export default function Sidebar({ componente: Componente }) {
         // },
         {
             nombre: 'Asignación_de_camas',
-            roles: ['ROLE_ADMIN'],
+            roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS'],
             submenu: [
-                {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMIN']},
-                {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMIN']}
+                {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']},
+                {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']}
             ]
         },
         {
@@ -82,7 +82,7 @@ export default function Sidebar({ componente: Componente }) {
     return (
         <div >
             <div className="wrapper">
-                <nav id="sidebar" className={`${stateSidebar.state ? 'active' : ''}`} >
+                <nav id="sidebar" className={`${stateSidebar.state ? 'active' : ''} small`} >
                     <div className="sidebar-header d-inline-flex align-items-center">
                         <img src={imgLogo} alt='logo' style={{ width: '40px', height: '40px' }} className="mr-2" />
                         <Link to='/' className="mb-0 mx-1 sin-estilo "> Soluciones HUSJP</Link>
@@ -120,12 +120,6 @@ export default function Sidebar({ componente: Componente }) {
                 <div id="content">
                     <Navbar />
                     {Componente && <Componente />}
-                    
-
-                    {/* <footer className="footer small">
-                        <hr />
-                        <p className="text-muted text-center">Soluciones HUSJP © 2024 Hospital Universitario San Jose. Todos los derechos reservados. EXT. 134</p>
-                    </footer> */}
                 </div>
                 
 

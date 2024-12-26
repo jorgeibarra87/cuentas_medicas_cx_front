@@ -9,6 +9,9 @@ import spinnerLoginText from '../Loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
 import InfoModal from './InfoModal';
+import FormEditAsignCama from './FormEditAsignCama';
+import * as bootstrap from 'bootstrap';
+import { useSelector } from 'react-redux';
 
 // const SOCKET_URL = 'http://localhost:8004/ws-notifications'; 
 // const client = new Client(
@@ -60,6 +63,9 @@ import InfoModal from './InfoModal';
 export default function AsignacionCama() {
 
     const axiosInstance = UseAxiosInstance();
+    const statelogin = useSelector(state => state.login);
+
+    const [authorities] = useState(statelogin.decodeToken.authorities);
 
     const [asignacionesCama, setAsignacionesCama] = useState([]);
     const [bloquesServicio, setBloquesServicio] = useState([]);
@@ -67,6 +73,9 @@ export default function AsignacionCama() {
     // const [permission, setPermission] = useState(Notification.permission);
     const [showInfoModal, setShowInfoModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [showModalFormEditAsignacion, setShowModalFormEditAsignacion] = useState(false);
+    const [versionAsignacionSolicitudCama, setVersionAsignacionSolicitudCama] = useState(null);
+    const [versionAsignacionSolicitudCamaEditar, setVersionAsignacionSolicitudCamaEditar] = useState(null);
 
     // const [notifications, setNotifications] = useState([]);
 
@@ -100,13 +109,12 @@ export default function AsignacionCama() {
         
     }, []);
 
-    console.log('asignacionesCama', asignacionesCama);  
-
     useEffect(() => {
         const getVersionesSolicitudCama = async () => {
             await axiosInstance.get(`asignacionVersionSolicitudCama/active/${bloqueServicioSeleccionado}`)
                 .then(response => {
                     setAsignacionesCama(response.data);
+                    console.log(response.data);
                     Swal.close();
                 }).catch(error => {
                     console.error(error);
@@ -117,6 +125,21 @@ export default function AsignacionCama() {
             getVersionesSolicitudCama();
         }
     }, [bloqueServicioSeleccionado]);
+
+    useEffect(() => {
+        const existingTooltips = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        existingTooltips.forEach(toolTipEl => {
+            const tooltipInstance = bootstrap.Tooltip.getInstance(toolTipEl);
+            if(tooltipInstance){
+                tooltipInstance.dispose();
+            }
+        });
+        // inicializar nuevos tooltips
+        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(tooltipTriggerEl => {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    } ,[asignacionesCama]);
 
     const handleBloqueServicio = (e) => {
         const {value} = e.target;
@@ -129,15 +152,87 @@ export default function AsignacionCama() {
     }
 
     const handleFinalizar  = async (item) => {
-        await axiosInstance.put(`asignacionSolicitudCama/${item.asignacionCama.id}`,{
-            motivo: ''
-        }).then(response => {
-            console.log(response);
-        }
-        ).catch(error => {
-            console.error(error);
+        Swal.fire({
+            title: 'Finalizar Traslado',
+            text: '¿Está seguro que el paciente llego a la cama de destino?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if(result.isConfirmed){
+                cancelarAsignacion();
+            }
+            function cancelarAsignacion() {
+                axiosInstance.put(`asignacionSolicitudCama/${item.asignacionCama.id}/estadoFinalizado`)
+                    .then(() => {
+                        Swal.fire({
+                            title: 'Finalizado',
+                            text: 'se finalizo exitosamente.',
+                            icon: 'success',
+                            timer: 1500,
+                            timerProgressBar: true,
+                            showConfirmButton: false
+                        });
+                        const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
+                        setAsignacionesCama(asignaciones);
+                    }
+                    ).catch(error => {
+                        console.error(error);
+                    });
+            }
         });
     };
+
+    const handleEditar = (item) => {
+        setVersionAsignacionSolicitudCama(item);
+        setShowModalFormEditAsignacion(true);
+
+    };
+
+    useEffect(() => {  
+        if(versionAsignacionSolicitudCamaEditar != null){
+            const versionAsignaciones = asignacionesCama.map(asignacion => {
+                if(asignacion.asignacionCama.id === versionAsignacionSolicitudCamaEditar.asignacionCama.id){
+                    return versionAsignacionSolicitudCamaEditar;
+                }
+                return asignacion;
+            });
+            setAsignacionesCama(versionAsignaciones);
+        }
+    },[versionAsignacionSolicitudCamaEditar]);
+
+    const handleCancelar = async (item) => {
+        try{
+            const { value: motivo} = await Swal.fire({
+                title: 'Motivo de Cancelación',
+                text: 'Por favor ingrese el motivo de la cancelación',
+                input: 'text',
+                showCancelButton: true,
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+                inputValidator: (value) => {
+                    if(!value){
+                        return 'Por favor ingrese un motivo';
+                    }
+                }
+            });
+            if(!motivo) return;
+
+            await axiosInstance.put(`/asignacionSolicitudCama/${item.asignacionCama.id}/cancelar/motivo/${item.id}`, null ,{
+                params: { motivo }
+            }).then(() => {
+                const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
+                setAsignacionesCama(asignaciones);
+            }).catch(error => {
+                console.error(error);
+            });
+        }catch(error){
+            console.error(error);
+        }
+    };
+
+    console.log(asignacionesCama);
 
     // useEffect(() =>{
     //     if(asignacionesCama.length === 0){
@@ -155,7 +250,6 @@ export default function AsignacionCama() {
             <h4 className='text-center'>ESCOGE EL BLOQUE</h4>
             <div className='row align-items-start'>
                 <div className="col-2 mx-2 py-2">
-                        {/* recorrer bloquesServicio en un select  */}
                         <select className="form-select form-select-sm" name='bloqueServicio' onChange={handleBloqueServicio}>
                             <option value="">Selecciona el bloque</option>
                             {bloquesServicio.map((item) => (
@@ -163,7 +257,7 @@ export default function AsignacionCama() {
                             ))}
                         </select>
                     </div>
-                <div className="col-2 mx-2 py-2">
+                {/* <div className="col-2 mx-2 py-2">
                     <select className="form-select form-select-sm">
                         <option value="">Filtrar Por Servicio</option>
                         <option value="opcion1">Urgencias</option>
@@ -179,11 +273,11 @@ export default function AsignacionCama() {
                 </div>
                 <div className="col-2 py-2">
                     <input type="text" className="form-control form-control-sm" placeholder="Buscar..." />
-                </div>
+                </div> */}
             </div>
             <div className="container-fluid">
                 <div className="table-container">
-                    <table className="table table-hover table-bordered table-sm">
+                    <table className="table table-hover table-bordered table-sm table-small-text">
                         <thead className="table-primary">
                             <tr>
                                 {[
@@ -223,45 +317,51 @@ export default function AsignacionCama() {
                                             </td>
                                             <td>{item.asignacionCama.id}</td>
                                             <td>{item.id}</td>
-                                            <td>{item.asignacionCama.solicitudCama.versionSolicitud[0].servicio.nombre}</td>
+                                            <td>{item.asignacionCama.solicitudCama.versionSolicitud.servicio.nombre}</td>
                                             <td>{FormatearFecha(item.fechaCreacion)}</td>
                                             <td>{item.asignacionCama.solicitudCama.ingreso.id}</td>
                                             <td>{item.asignacionCama.solicitudCama.ingreso.paciente.documento}</td>
                                             <td>{item.asignacionCama.solicitudCama.ingreso.paciente.nombreCompleto}</td>
                                             <td>
-                                                <ul>{item.asignacionCama.solicitudCama.versionSolicitud[0].diagnosticos.map((diagnostico) => (
+                                                <ul>{item.asignacionCama.solicitudCama.versionSolicitud.diagnosticos.map((diagnostico) => (
                                                     <li key={diagnostico.id}>{diagnostico.nombre}</li>                                                
                                                     ))}
                                                 </ul>
                                             </td>
                                             <td>
-                                                <ul>{item.asignacionCama.solicitudCama.versionSolicitud[0].titulosFormacionAcademica.map((especialidad) => (
+                                                <ul>{item.asignacionCama.solicitudCama.versionSolicitud.titulosFormacionAcademica.map((especialidad) => (
                                                     <li key={especialidad.id}>{especialidad.titulo}</li>                                                
                                                     ))}
                                                 </ul>
                                             </td>
-                                            <td>{item.asignacionCama.solicitudCama.versionSolicitud[0].requiereAislamiento ? 'SI' : 'NO'}</td>
+                                            <td>{item.asignacionCama.solicitudCama.versionSolicitud.requiereAislamiento ? 'SI' : 'NO'}</td>
                                             <td>{item.asignacionCama.estado.nombre}</td>
                                             <td>{item.servicio.nombre}</td>
                                             <td>{item.cama.codigo}</td>
                                             <td>{item.extension}</td>
-                                            <td>{item.enfermero_origen}</td>
-                                            <td>{item.enfermero_destino}</td>
+                                            <td>{item.enfermeroOrigen}</td>
+                                            <td>{item.enfermeroDestino}</td>
                                             <td>{item.observacion}</td>
                                             <td>{item.usuario.nombreCompleto}</td>
                                             <td>
-                                            <div className="btn-group">
-                                                <button type="button" className="btn btn-success " data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Finalizar Traslado" onClick={() => handleFinalizar(item)}> 
-                                                    <i className="bi bi-check-circle"></i>
-                                                </button>
-                                                <button type="button" className="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar"> 
-                                                    <i className="bi bi-x-circle"></i>
-                                                </button>
-                                                <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar">
-                                                    <i className="bi bi-pencil"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+                                                <div className="btn-group">
+                                                    {['ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION'].some(role => authorities.includes(role)) && (
+                                                        <button type="button" className="btn btn-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Finalizar Traslado" onClick={() => handleFinalizar(item)}> 
+                                                            <i className="bi bi-check-circle"></i>
+                                                        </button>
+                                                    )}
+                                                    {['ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION'].some(role => authorities.includes(role)) && (
+                                                        <button type="button" className="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cancelar" onClick={() => handleCancelar(item)}> 
+                                                            <i className="bi bi-x-circle"></i>
+                                                        </button>
+                                                    )}
+                                                    {['ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_INTERNACION'].some(role => authorities.includes(role)) && (
+                                                        <button type="button" className="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Editar" onClick={() => handleEditar(item)}>
+                                                            <i className="bi bi-pencil"></i>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
                                         </tr>
                                     ))
                                 }
@@ -270,6 +370,7 @@ export default function AsignacionCama() {
                 </div>
             </div>
             <InfoModal show={showInfoModal} handleClose={() => setShowInfoModal(false) } data={selectedItem}/>
+            <FormEditAsignCama showModalFormEditAsignacion={showModalFormEditAsignacion} handleCloseModalFormEditAsignacion={() => setShowModalFormEditAsignacion(false)} idBloqueServicio={bloqueServicioSeleccionado} versionAsignacionSolicitudCama={versionAsignacionSolicitudCama} setVersionAsignacionSolicitudCamaEditar={setVersionAsignacionSolicitudCamaEditar}/>
         </>
     )
 }

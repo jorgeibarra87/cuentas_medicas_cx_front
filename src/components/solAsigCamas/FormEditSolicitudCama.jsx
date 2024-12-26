@@ -14,7 +14,7 @@ const initialFormState = {
     titulosFormacionAcademica: [],
     diagnosticos: []
   }
-export default function FormEditSolicitudCama({versionSolicitudCama, showFormEditSolicitudCama, handleCloseFormEditSolicitudCama}) {
+export default function FormEditSolicitudCama({versionSolicitudCama, showFormEditSolicitudCama, handleCloseFormEditSolicitudCama, setResponseEditar}) {
     const axiosInstance = UseAxiosInstance();
 
     const [form, setForm] = useState(initialFormState);
@@ -67,6 +67,8 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
         }
     }, [versionSolicitudCama]);
 
+    console.log('medidas de aislamiento ',medidasAislamientoSeleccionadas);
+
     useEffect(() => {
         if(versionSolicitudCama != null){
             setMedidasAislamientoSeleccionadas(versionSolicitudCama.medidasAislamiento.map(medida => ({ value: medida.id, label: medida.nombre })));
@@ -79,7 +81,7 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
                 requerimientosEspeciales: versionSolicitudCama.requerimientosEspeciales,
                 motivo: versionSolicitudCama.motivo,
                 medidasAislamiento: versionSolicitudCama.medidasAislamiento.map(medida => ({ id: medida.id })),
-                bloqueServicio: versionSolicitudCama.bloqueServicio.id,
+                bloqueServicio: { id: versionSolicitudCama.bloqueServicio.id },
                 titulosFormacionAcademica: versionSolicitudCama.titulosFormacionAcademica.map(titulo => ({ id: titulo.id })),
                 diagnosticos: versionSolicitudCama.diagnosticos.map(diagnostico => ({ id: diagnostico.id })),
                 
@@ -110,7 +112,7 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
         if(compareArrays(original.titulosFormacionAcademica, updated.titulosFormacionAcademica, 'id')) return true;
         if(compareArrays(original.diagnosticos, updated.diagnosticos, 'id')) return true;
 
-        if(original.bloqueServicio?.id !== updated.bloqueServicio) return true;
+        if(original.bloqueServicio?.id !== updated.bloqueServicio.id) return true;
 
         return false;
     }
@@ -182,13 +184,15 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
         await axiosInstance.put(`versionSolicitudCama/${versionSolicitudCama.id}`, form)
         .then(response => {
             handleCloseFormEditSolicitudCama();
-            focusModal();
             Swal.fire({
                 icon: 'success',
                 title: 'Solicitud de cama actualizada',
                 showConfirmButton: false,
                 timer: 1100
+            }).then(() => {
+                setResponseEditar(response.data);
             });
+            
         }).catch(error => {
             console.error(error);
         });      
@@ -250,26 +254,26 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
                                     <>
                                         <div >
                                             <label className="form-label">Medidas de Aislamiento</label>
-                                            <Select isMulti options={opcionesMedidas} className="basic-multi-select"  value={medidasAislamientoSeleccionadas} classNamePrefix="select" placeholder="Elige opciones..." onChange={handleMedidasAislamientoChange}/>
+                                            <Select isMulti options={opcionesMedidas} className="basic-multi-select"  value={medidasAislamientoSeleccionadas} classNamePrefix="select" placeholder="Elige opciones..." onChange={handleMedidasAislamientoChange} required/>
                                         </div>
                                         <div >
                                             <label htmlFor="motivoAislamiento" className="form-label"> Motivo de Aislamiento </label>
-                                            <input type="text" id="motivo" name="motivo" className="form-control" placeholder="Escribe el motivo" value={form.motivo} onChange={handleInputChange} />
+                                            <input type="text" id="motivo" name="motivo" className="form-control" placeholder="Escribe el motivo" value={form.motivo} onChange={handleInputChange} required/>
                                         </div>
                                     </>
                                 )}
                                 <div>
                                     <label className='form-label'>Bloque que desea trasladar</label>
-                                    <Select options={opcionesBloqueServicio} className='basic-single' classNamePrefix='select' placeholder='Elige una opción...' value={bloqueServicioSeleccionado} onChange={handleBloqueServicioChange}/>
+                                    <Select options={opcionesBloqueServicio} className='basic-single' classNamePrefix='select' placeholder='Elige una opción...' value={bloqueServicioSeleccionado} onChange={handleBloqueServicioChange} required/>
                                 </div>
                             </div>
                             <div className="col-md-3">
                                 <label className="form-label">Especialidad Tratante</label>
-                                <Select isMulti options={opcionesEspecialidades} className="basic-multi-select" classNamePrefix="select" placeholder="Elige opciones..." value={especialidadesSeleccionadas} onChange={handleEspecialidadesChange} />
+                                <Select isMulti options={opcionesEspecialidades} className="basic-multi-select" classNamePrefix="select" placeholder="Elige opciones..." value={especialidadesSeleccionadas} onChange={handleEspecialidadesChange} required/>
                                 <label htmlFor="RequerimientosEspeciales" className="form-label" > Requerimientos Especiales </label>
-                                <input type="text" id="requerimientosEspeciales" name='requerimientosEspeciales' value={form.requerimientosEspeciales} className="form-control" placeholder="" onChange={handleInputChange} />
+                                <input type="text" id="requerimientosEspeciales" name='requerimientosEspeciales' value={form.requerimientosEspeciales} className="form-control" placeholder="" onChange={handleInputChange} required/>
                                 <label className="form-label">Diagnóstico</label>
-                                <AsyncSelect isMulti cacheOptions defaultOptions value={diagnosticosSeleccionados} placeholder="Escribe para buscar y seleccionar..." loadOptions={loadDiagnosticos} onChange={handleDiagnosticosChange} />
+                                <AsyncSelect isMulti cacheOptions defaultOptions value={diagnosticosSeleccionados} placeholder="Escribe para buscar y seleccionar..." loadOptions={loadDiagnosticos} onChange={handleDiagnosticosChange} required/>
                             </div>
                         </div>
                     </form>

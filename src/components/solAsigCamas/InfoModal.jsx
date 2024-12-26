@@ -13,26 +13,26 @@ function InfoModal({show, handleClose, data}) {
         <Modal.Body>
         <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
           <li><strong>ID Solicitud:</strong>{data.asignacionCama.solicitudCama.id} </li>
-          <li><strong>ID Modificación:</strong>{data.asignacionCama.solicitudCama.versionSolicitud[0].id}</li>
-          <li><strong>Fecha:</strong>{FormatearFecha(data.asignacionCama.solicitudCama.versionSolicitud[0].fecha)} </li>
+          <li><strong>ID Modificación:</strong>{data.asignacionCama.solicitudCama.versionSolicitud.id}</li>
+          <li><strong>Fecha:</strong>{FormatearFecha(data.asignacionCama.solicitudCama.versionSolicitud.fecha)} </li>
           <li><strong>Género:</strong>{data.asignacionCama.solicitudCama.ingreso.paciente.genero} </li>
-          <li><strong>Proceso:</strong> {data.asignacionCama.solicitudCama.versionSolicitud[0].servicio.nombre}</li>
-          <li><strong>Requiere Aislamiento:</strong>{data.asignacionCama.solicitudCama.versionSolicitud[0].requiereAislamiento ? 'SI' : 'NO '} </li>
+          <li><strong>Proceso:</strong> {data.asignacionCama.solicitudCama.versionSolicitud.servicio.nombre}</li>
+          <li><strong>Requiere Aislamiento:</strong>{data.asignacionCama.solicitudCama.versionSolicitud.requiereAislamiento ? 'SI' : 'NO '} </li>
           <li><strong>Otra Especialidad:</strong>
-            <ul> {data.asignacionCama.solicitudCama.versionSolicitud[0].titulosFormacionAcademica.map((especialidad) => (
+            <ul> {data.asignacionCama.solicitudCama.versionSolicitud.titulosFormacionAcademica.map((especialidad) => (
                 <li key={especialidad.id}>{especialidad.titulo}</li>
                 ))}
             </ul>
           </li>
-          <li><strong>Requerimiento Especial:</strong> {data.asignacionCama.solicitudCama.versionSolicitud[0].requerimientosEspeciales}</li>
-          <li><strong>Motivo:</strong> {data.asignacionCama.solicitudCama.versionSolicitud[0].motivo}</li>
+          <li><strong>Requerimiento Especial:</strong> {data.asignacionCama.solicitudCama.versionSolicitud.requerimientosEspeciales}</li>
+          <li><strong>Motivo:</strong> {data.asignacionCama.solicitudCama.versionSolicitud.motivo}</li>
           <li><strong>Diagnóstico:</strong>
-            <ul> {data.asignacionCama.solicitudCama.versionSolicitud[0].diagnosticos.map((diagnostico) => (
+            <ul> {data.asignacionCama.solicitudCama.versionSolicitud.diagnosticos.map((diagnostico) => (
                 <li key={diagnostico.id}>{diagnostico.nombre}</li>
                 ))}
             </ul>
           </li>
-          <li><strong>Responsable Solicitud:</strong> {data.asignacionCama.solicitudCama.versionSolicitud[0].usuario.nombreCompleto}</li>
+          <li><strong>Responsable Solicitud:</strong> {data.asignacionCama.solicitudCama.versionSolicitud.usuario.nombreCompleto}</li>
         </ul>
         </Modal.Body>
     </Modal>
