@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Button, Modal } from 'react-bootstrap'
 import Select from 'react-select'
 import UseAxiosInstance from '../../utilities/UseAxiosInstance';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBed } from '@fortawesome/free-solid-svg-icons';
 
 const initialFormState = {
     asignacionCama: {
@@ -28,7 +30,6 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
     const [servicios, setServicios] = useState([]);
 
     useEffect(() => {
-        
         if (showModalFormAsignacion) {
             setForm({
                 ...form, asignacionCama: { idSolicitudCama: solicitudCama.solicitudCama.id }
@@ -45,8 +46,6 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
     const opcionesServicios = servicios.map(servicio => ({ value: servicio.id, label: servicio.nombre }));
 
     const handleSelect = (itemSelect, e) => {
-        
-        
         if (e.name === 'servicios') {
             const servicio = { id: itemSelect.value, nombre: itemSelect.label };
             setForm({
@@ -54,7 +53,8 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
             })
             axiosInstance.get(`/cama/${itemSelect.value}`)
                 .then((response) => {
-                    setCamas(response.data);
+                    // setCamas(response.data);
+                    obtenerEstadoCamaPorCodigos(response.data);
                 }).catch((error) => {
                     console.error(error);
                 });
@@ -67,7 +67,35 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
 
     }
 
-    const opcionesCamas = camas.map(cama => ({ value: cama.id, label: cama.codigo }));
+    const formatOptionLabel = ({ value, label, estadoDgh }) => {
+        return (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{ marginRight: '8px', color: '#000' }}>{label}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <label style={{fontSize: '12px'}}>DGH</label>
+                    <span style={{ marginTop: '4px', fontSize: '10px', color: '#666' }}>{estadoDgh}</span>
+                </div>
+            </div>
+        )
+    };
+
+
+    function obtenerEstadoCamaPorCodigos(camas){
+        const list = camas.map(cama => (cama.codigo));
+        const data = { hcaCodigo : list };
+        axiosInstance.post(`hpndefcam/obetenerEstadoCamaPorCodigos`, data)
+            .then((response) => {
+                const camasEstado = camas.map(cama => {
+                    return {... cama, estadoDgh: response.data.find(c => c.hcaCodigo === cama.codigo).hcaEstado};
+                })
+                setCamas(camasEstado);
+            }).catch((error) => {
+                setCamas(camas);
+                console.error(error);
+            });
+    }
+
+    const opcionesCamas = camas.map(cama => ({ value: cama.id, label: cama.codigo, estadoDgh: cama.estadoDgh }));
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -122,7 +150,7 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
                             </div>
                             <div className='col-md-4'>
                                 <label className='form-label'>Cama Destino</label>
-                                <Select options={opcionesCamas} className='basic-single' classNamePrefix='select' placeholder='Elija una cama...' name='camas' onChange={handleSelect} required/>
+                                <Select options={opcionesCamas} className='basic-single' classNamePrefix='select' placeholder='Elija una cama...' name='camas' onChange={handleSelect} required formatOptionLabel={(option) => {return formatOptionLabel(option)}}/>
                             </div>
                         </div>
                     </form>
