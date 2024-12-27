@@ -193,21 +193,21 @@ export default function FormSolicitudCama({ showFormSolicitud, handleCloseFormSo
                 text: `Solicitud guardada correctamente`
             });
         } catch (error) {
-            console.error('se presento un error: ', error);
-            if(error.response.data.codigoError == "ERROR_FEIGN_BAD_REQUEST"){
+            if (error.response && error.response.data && error.response.data.codigoError != undefined) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Opss...',
-                    text: `${error.response.data.mensaje}`
-                });
-            }else{
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Opss...',
-                    text: `Se presento un error al guardar la solicitud`
+                    text: `${error.response.data.mensaje.split(',')[1]}`
                 });
             }
-            
+            else {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Opss...',
+                    text: `Revisar la consola para más detalles`
+                });
+            }            
         }
     };
 
