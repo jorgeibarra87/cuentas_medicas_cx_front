@@ -13,6 +13,7 @@ import UsuariosProceso from '../mesaDeProcesos/UsuariosProceso';
 import ProcesosSubprocesos from '../mesaDeProcesos/ProcesosSubprocesos';
 import SolicitudCama from '../solAsigCamas/SolicitudCama';
 import AsignacionCama from '../solAsigCamas/AsignacionCama';
+import { cerrarSesionAction, obtenerToken } from '../../actions/loginActions';
 
 export default function RutasConfig() {
     
@@ -24,12 +25,17 @@ export default function RutasConfig() {
     useEffect(() => {
         // Maneja la carga del token y actualiza el estado de carga
         setLoading(true);
-        dispatch({ type: 'OBTENER_TOKEN' }); // Acción síncrona
+        //dispatch({ type: 'OBTENER_TOKEN' }); // Acción síncrona
+        dispatch(obtenerToken());
         setLoading(false);
     }, [dispatch]);
     
     useEffect(() => {
         if(state.token !== null){
+            const currentTime = Math.floor(Date.now() / 1000);
+            if (state.decodeToken.exp < currentTime){
+                dispatch(cerrarSesionAction());
+            }
             setIsLogged(true);
         }
         else{
