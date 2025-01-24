@@ -29,13 +29,34 @@ function OpcionesUsuario(){
     const handleSubmit = async (e) =>{
         e.preventDefault();
         axiosInstance.get(`${RUTA_BACK_PRODUCCION}usuario/sincronizarConDGH/${identificacion}`)
-            .then(() => {
+            .then((response) => {
+                const usuariosRegistrados = response.data.filter(usuario => usuario.nombreCompleto != null);
+                const usuariosNoRegistrados = response.data.filter(usuario => usuario.nombreCompleto == null);
+
+                const rolesUnicos = Array.from(
+                    new Set(usuariosNoRegistrados.flatMap(usuario => usuario.roles.map(role => role.rol)))
+                ).map(rol => ({ rol }));
+
+                // Construir el mensaje para mostrar en el Swal
+                const mensajeUsuariosRegistrados = usuariosRegistrados.length > 0
+                    ? `<strong>Usuarios Registrados:</strong><ul>${usuariosRegistrados.map(u => `<li>${u.documento} - ${u.nombreCompleto}</li>`).join('')}</ul>`
+                    : ``;
+
+                const mensajeUsuariosNoRegistrados = usuariosNoRegistrados.length > 0
+                    ? `<strong>Usuarios No Registrados:</strong><ul>${usuariosNoRegistrados.map(u => `<li>${u.documento}</li>`).join('')}</ul>`
+                    : ``;
+
+                const mensajeRolesNoRegistrados = rolesUnicos.length > 0
+                    ? `<strong>Estos roles no estan en la BD:</strong><ul>${rolesUnicos.map(r => `<li>${r.rol}</li>`).join('')}</ul>`
+                    : ``;
+
+                // Mostrar el Swal con el mensaje construido
                 Swal.fire({
                     icon: 'success',
                     title: 'Usuario sincronizado con éxito',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                    html: `${mensajeUsuariosRegistrados}<br>${mensajeUsuariosNoRegistrados}<br>${mensajeRolesNoRegistrados}`, // Usamos `html` para el formato
+                    showConfirmButton: true
+                });
             }).catch((error) =>{
                 console.error("error: ",error)
             })
