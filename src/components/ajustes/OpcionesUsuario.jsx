@@ -28,6 +28,7 @@ function OpcionesUsuario(){
     }
 
     const handleSubmit = async (e) =>{
+        setEstadoSincronizando(true);
         e.preventDefault();
         axiosInstance.get(`${RUTA_BACK_PRODUCCION}usuario/sincronizarConDGH/${identificacion}`)
             .then((response) => {
@@ -127,7 +128,7 @@ function OpcionesUsuario(){
                         <input name="identificacion" onChange={handleChange} type="text"/>
                     </div>
                 </div>
-                <button type="submit" className="btn btn-primary" disabled={estadoSincronizando} onClick={() => setEstadoSincronizando(true)}> {!estadoSincronizando ? `sincronizar` : `sincronizando`}</button>
+                <button type="submit" className="btn btn-primary" disabled={estadoSincronizando}> {!estadoSincronizando ? `sincronizar` : `sincronizando`}</button>
             </form>
             <input className="form-control" type="text" placeholder="Buscar..." value={inputFind} onChange={(e) => setInputFind(e.target.value)}/>
             <table className="table table-striped table-hover table-bordered">
