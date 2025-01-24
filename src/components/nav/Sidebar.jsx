@@ -2,7 +2,7 @@ import { useState } from 'react';
 import imgLogo from '../../img/favicon.ico'
 import Navbar from './Navbar'
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useInactivity from '../../hooks/useInactivity';
 import Swal from 'sweetalert2';
 import { cerrarSesionAction } from '../../actions/loginActions';
@@ -10,6 +10,7 @@ import { cerrarSesionAction } from '../../actions/loginActions';
 export default function Sidebar({ componente: Componente }) {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleInactivity = () => {
         Swal.fire({
@@ -19,12 +20,12 @@ export default function Sidebar({ componente: Componente }) {
             confirmButtonText: 'ENTIENDO'
         }).then(() =>{
             dispatch(cerrarSesionAction());
-            window.location.href = "/";
+            navigate("/login");
         });
     };
 
     // Configurar inactividad en 10 minutos 10 * 60 * 1000
-    useInactivity(10 * 60 * 1000, handleInactivity);
+    //useInactivity(10 * 60 * 1000, handleInactivity);
 
     const stateSidebar = useSelector(state => state.sidebar);
     const statelogin = useSelector(state => state.login);
