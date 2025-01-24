@@ -20,6 +20,7 @@ function OpcionesUsuario(){
     const [tableData, setTableData] = useState([]);
     const [rolesDisponibles, setRolesDisponibles] = useState([]);
     const [inputFind, setInputFind] = useState("");
+    const [estadoSincronizando, setEstadoSincronizando] = useState(false);
 
     const handleChange = (e) => {
         const {value} = e.target;
@@ -57,6 +58,7 @@ function OpcionesUsuario(){
                     html: `${mensajeUsuariosRegistrados}<br>${mensajeUsuariosNoRegistrados}<br>${mensajeRolesNoRegistrados}`, // Usamos `html` para el formato
                     showConfirmButton: true
                 });
+                setEstadoSincronizando(false);
             }).catch((error) =>{
                 console.error("error: ",error)
             })
@@ -125,7 +127,7 @@ function OpcionesUsuario(){
                         <input name="identificacion" onChange={handleChange} type="text"/>
                     </div>
                 </div>
-                <button type="submit" className="btn btn-primary">Sincronizar</button>
+                <button type="submit" className="btn btn-primary" disabled={estadoSincronizando} onClick={() => setEstadoSincronizando(true)}> {!estadoSincronizando ? `sincronizar` : `sincronizando`}</button>
             </form>
             <input className="form-control" type="text" placeholder="Buscar..." value={inputFind} onChange={(e) => setInputFind(e.target.value)}/>
             <table className="table table-striped table-hover table-bordered">
