@@ -54,7 +54,7 @@ function UpdateInnProduc() {
             alert("El codigo no puede ser vacio");
             return;
         }
-        axiosInstance.get(`${RUTA_BACK_PRODUCCION}innProduc/${form.iprcodigo}`)
+        axiosInstance.get(`${RUTA_BACK_PRODUCCION}dinamica/api/innProduc/${form.iprcodigo}`)
             .then((response) => {
                 dispatch(innoProducObtener(response.data));
             }).catch((error) => {
@@ -64,7 +64,7 @@ function UpdateInnProduc() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        axiosInstance.put(`${RUTA_BACK_PRODUCCION}innProduc`, form)
+        axiosInstance.put(`${RUTA_BACK_PRODUCCION}dinamica/api/innProduc`, form)
         .then(() =>{
             alert("se actualizo corectamente");
             dispatch(innoProducNoData());//limpia el fomulario

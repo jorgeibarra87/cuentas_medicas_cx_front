@@ -118,7 +118,7 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
     function obtenerEstadoCamaPorCodigos(camas){
         const list = camas.map(cama => (cama.codigo));
         const data = { hcaCodigo : list };
-        axiosInstance.post(`hpndefcam/obetenerEstadoCamaPorCodigos`, data)
+        axiosInstance.post(`dinamica/api/hpndefcam/obetenerEstadoCamaPorCodigos`, data)
             .then((response) => {
                 const camasEstado = camas.map(cama => {
                     return {... cama, estadoDgh: response.data.find(c => c.hcaCodigo === cama.codigo).hcaEstado};

@@ -23,7 +23,7 @@ export default function AsignarSolicitud({ showModalSolicitud, handleCloseModalS
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axiosInstance.get(`pacienteHospitalizado/infoIngresoServicioCama/${form.documento}`)
+            const response = await axiosInstance.get(`dinamica/api/pacienteHospitalizado/infoIngresoServicioCama/${form.documento}`)
             handleCloseModalSolicitud();
             setShowFormSolicitud(true);
             setForm({
