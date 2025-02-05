@@ -26,7 +26,7 @@ export default function FormSolDocumento() {
     const handleSubmitDocumento = (e) => {
         setError(null);
         e.preventDefault();
-        axios.get(`${RUTA_BACK_PRODUCCION}genUsuario/datosdecontacto/${form.documento}`)
+        axios.get(`${RUTA_BACK_PRODUCCION}dinamica/api/genUsuario/datosdecontacto/${form.documento}`)
         .then((response) => {
             setDatosContacto(response.data);
         }).catch((error) => {
