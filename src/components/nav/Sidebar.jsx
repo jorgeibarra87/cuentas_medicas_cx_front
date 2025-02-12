@@ -70,6 +70,13 @@ export default function Sidebar({ componente: Componente }) {
             ]
         },
         {
+            nombre: 'Nutricion',
+            roles: ['ROLE_ADMIN','ROLE_TAMIZAJE'],
+            submenu:[
+                {nombre: 'Tamizaje', ruta: '/nutricion/tamizaje', roles: ['ROLE_ADMIN','ROLE_TAMIZAJE']}
+            ]
+        },
+        {
             nombre: 'Ajustes',
             roles: ['ROLE_ADMIN'],
             submenu: [

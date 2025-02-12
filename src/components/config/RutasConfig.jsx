@@ -14,6 +14,7 @@ import ProcesosSubprocesos from '../mesaDeProcesos/ProcesosSubprocesos';
 import SolicitudCama from '../solAsigCamas/SolicitudCama';
 import AsignacionCama from '../solAsigCamas/AsignacionCama';
 import { cerrarSesionAction, obtenerToken } from '../../actions/loginActions';
+import Tamizaje from '../tamizaje/Tamizaje';
 
 export default function RutasConfig() {
     
@@ -60,6 +61,9 @@ export default function RutasConfig() {
                 <Route path='/mesaprocesos'>
                     <Route path='usuarioprocesos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={UsuariosProceso}/></RequireAuth>} />
                     <Route path='procesosysubprocesos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ProcesosSubprocesos}/></RequireAuth>}/>
+                </Route>
+                <Route path='/nutricion'>
+                    <Route path='tamizaje' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={Tamizaje}/></RequireAuth>} />
                 </Route>
                 <Route path='/password'>
                     <Route path='documento' element={<FormSolDocumento />}/>
