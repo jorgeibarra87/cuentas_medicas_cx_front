@@ -34,7 +34,7 @@ export default function FormAsignCama({ showModalFormAsignacion, handleCloseModa
             setForm({
                 ...form, asignacionCama: { idSolicitudCama: solicitudCama.solicitudCama.id }
             })
-            axiosInstance.get(`/servicio/${solicitudCama.bloqueServicio.id}`)
+            axiosInstance.get(`/api/solicitudCamas/servicio/${solicitudCama.bloqueServicio.id}`)
                 .then((response) => {
                     setServicios(response.data);
                 }).catch((error) => {
