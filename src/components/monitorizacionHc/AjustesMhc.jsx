@@ -56,7 +56,7 @@ function AjustesMhc() {
         e.preventDefault();
         saveUsuarioRelacionProcesoServicio(selectedOptions, documento);
     }
-    
+    agregar metodo para editar la relacion de usuario con procesos y servicios
   return (
     <div className="my-4 container">
         {(loadingUps || loadingPs || loadingRPS ) && <Loader />}
