@@ -80,7 +80,9 @@ export default function Sidebar({ componente: Componente }) {
             nombre: 'MonitorizacionHc',
             roles: ['ROLE_ADMIN'],
             submenu:[
-                {nombre: 'Monitorizacion', ruta: '/monitorizacionhc/preguntas', roles: ['ROLE_ADMIN']}
+                {nombre: 'Monitorizacion', ruta: '/monitorizacionhc/preguntas', roles: ['ROLE_ADMIN']},
+                {nombre: 'Reportes', ruta: '/monitorizacionhc/reportes', roles: ['ROLE_ADMIN']},
+                {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMIN']}
             ]
         },
         {

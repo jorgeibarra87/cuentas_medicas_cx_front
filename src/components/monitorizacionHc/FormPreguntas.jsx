@@ -40,7 +40,7 @@ function FormPreguntas() {
             servicio
         };
         fetchRespuestas(form); 
-        setAdnIngreso({});
+        //setAdnIngreso({});
     };
 
     return (
