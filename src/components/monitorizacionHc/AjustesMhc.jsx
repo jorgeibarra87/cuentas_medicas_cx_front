@@ -1,5 +1,5 @@
 import Select from 'react-select';
-import useFetchUsuarioProcServ from '../../hooks/monitorizacionHC/useFetchUsuarioProcServ';
+import useFetchUsuariosProcServ from '../../hooks/monitorizacionHC/useFetchUsuariosProcServ';
 import useFetchProcesoServicioConPreguntas from '../../hooks/monitorizacionHC/useFetchProcesoServicioConPreguntas';
 import useSaveUsuarioProcServ from '../../hooks/monitorizacionHC/useSaveUsuarioProcServ';
 import useEditUsuarioProcServ from '../../hooks/monitorizacionHC/useEditUsuarioProcServ';
@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 
 function AjustesMhc() {
 
-    const {usuariosProServ,setUsuariosProcServ, loadingUps} = useFetchUsuarioProcServ();
+    const {usuariosProServ,setUsuariosProcServ, loadingUps} = useFetchUsuariosProcServ();
     const {procesosServicios, loadingPs} = useFetchProcesoServicioConPreguntas();
     const {loadingRPS, saveUsuarioRelacionProcesoServicio,  response, error} = useSaveUsuarioProcServ();
     const {editarUsuarioProcServ} =  useEditUsuarioProcServ();

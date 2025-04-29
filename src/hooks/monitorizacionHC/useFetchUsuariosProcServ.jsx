@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { obtenerUsuariosQueTienenProcesosYServicios } from "../../api/monitorizacionHc/usuarioService";
 
-const useFetchUsuarioProcServ = () => {
+const useFetchUsuariosProcServ = () => {
     const [usuariosProServ, setUsuariosProcServ] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -44,4 +44,4 @@ const useFetchUsuarioProcServ = () => {
     return { usuariosProServ, setUsuariosProcServ, loadingUps: loading };
 }
 
-export default useFetchUsuarioProcServ;
+export default useFetchUsuariosProcServ;
