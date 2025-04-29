@@ -2,6 +2,7 @@ import Select from 'react-select';
 import useFetchUsuarioProcServ from '../../hooks/monitorizacionHC/useFetchUsuarioProcServ';
 import useFetchProcesoServicioConPreguntas from '../../hooks/monitorizacionHC/useFetchProcesoServicioConPreguntas';
 import useSaveUsuarioProcServ from '../../hooks/monitorizacionHC/useSaveUsuarioProcServ';
+import useEditUsuarioProcServ from '../../hooks/monitorizacionHC/useEditUsuarioProcServ';
 import { useEffect, useState } from 'react';
 import Loader from "../Loader";
 import Swal from 'sweetalert2';
@@ -11,6 +12,7 @@ function AjustesMhc() {
     const {usuariosProServ,setUsuariosProcServ, loadingUps} = useFetchUsuarioProcServ();
     const {procesosServicios, loadingPs} = useFetchProcesoServicioConPreguntas();
     const {loadingRPS, saveUsuarioRelacionProcesoServicio,  response, error} = useSaveUsuarioProcServ();
+    const {editarUsuarioProcServ} =  useEditUsuarioProcServ();
 
     const [documento, setDocumento] = useState("");
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -36,27 +38,39 @@ function AjustesMhc() {
                 text: `${response?.respuesta}`,
                 showConfirmButton: true
             });
-        }
+        }       
     }, [response]);
 
     // actualizamos el estado de los usuarios con procesos y servicios
     const handleSelectChange = (documento, tipo, selected) => {
-        // enviar la peticion al backend para actualizar la relacion de usuario con procesos y servicios
-        setUsuariosProcServ((prev) =>
-          prev.map((u) =>
-            u.usuario.documento === documento
-              ? { ...u, [tipo]: selected }
-              : u
-          )
-        );
-      };
-      
+        const items = [];
+        // Actualizar la relación de usuario con procesos y servicios
+        setUsuariosProcServ((prev) => {
+            const updatedState = prev.map((u) =>
+                u.usuario.documento === documento
+                    ? { ...u, [tipo]: selected }
+                    : u
+            );
+            // Generar los items actualizados para el documento especificado
+            const usuarioData = updatedState.find(
+                (u) => u.usuario.documento === documento
+            );
+    
+            if (usuarioData) {
+                const items = [...usuarioData.procesos, ...usuarioData.servicios];
+                editarUsuarioProcServ(documento, items);
+            }
+    
+            return updatedState;
+        });
+    };
+    
     
     const handleSubmit = (e) => {
         e.preventDefault();
         saveUsuarioRelacionProcesoServicio(selectedOptions, documento);
     }
-    agregar metodo para editar la relacion de usuario con procesos y servicios
+    
   return (
     <div className="my-4 container">
         {(loadingUps || loadingPs || loadingRPS ) && <Loader />}
