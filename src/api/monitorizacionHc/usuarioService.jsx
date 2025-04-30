@@ -11,3 +11,13 @@ export const obtenerUsuariosQueTienenProcesosYServicios = async () =>{
         throw error;
     }
 }
+
+export const obtenerUsuarioConProcesosYServiciosPorDocumento = async (documento) => {
+    try {
+        const response = await apiClienteMonitorizacionHc.get(`/api/monitorizacionhc/usuario/relacionProcesosServicios/${documento}`);
+        return new UsuarioProcesoServicio(response.data);
+    } catch (error) {
+        console.error('Error al obtener los usuarios que tienen procesos y servicios de monitorizacion microservice',error);
+        throw error;
+    }
+};

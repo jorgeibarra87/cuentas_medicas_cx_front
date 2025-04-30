@@ -1,9 +1,9 @@
 import Pregunta from "../../models/monitorizacionHc/Pregunta";
 import apiClienteMonitorizacionHc from "./apiClienteMonitorizacionHc";
 
-export const obtenerPreguntasServicio = async (idServicio) => {
+export const obtenerPreguntasServicio = async (id, tipo) => {
     try {
-        const response = await apiClienteMonitorizacionHc.get(`/api/monitorizacionhc/preguntas/${idServicio}`)
+        const response = await apiClienteMonitorizacionHc.get(`/api/monitorizacionhc/preguntas/${tipo}/${id}`);
         const preguntas = response.data.preguntas.map(pregunta => new Pregunta(pregunta));
         return preguntas;
     } catch (error) {

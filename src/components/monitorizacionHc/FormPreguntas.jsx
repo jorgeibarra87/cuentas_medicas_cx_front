@@ -40,14 +40,13 @@ function FormPreguntas() {
             servicio
         };
         fetchRespuestas(form); 
-        //setAdnIngreso({});
     };
 
     return (
         <div className="container">
             {(loadingRes || loadingAdnI || loadingP || loadingI ) && <Loader />}
           <div className="row">
-            <SearchIngreso onSearchAdnIngreso={fetchAdnIngreso} setAdnIngreso={setAdnIngreso} getPreguntas={fetchPreguntas} adnIngreso={adnIngreso} onSearchIngreso={fetchRespuestasByIngreso} setServicio={setServicio}/>
+            <SearchIngreso onSearchAdnIngreso={fetchAdnIngreso} setAdnIngreso={setAdnIngreso} fetchPreguntas={fetchPreguntas} adnIngreso={adnIngreso} onSearchIngreso={fetchRespuestasByIngreso} setServicio={setServicio}/>
             {preguntas.length == 0 ? (
               <></>
             ) : (
