@@ -155,19 +155,20 @@ export default function Sidebar({ componente: Componente }) {
                     </ul>
                 </nav>
                 <div id="content">
-                    <Navbar />
-                    {Componente && <Componente />}
-                </div>
-                
-
+                    <div className="navbar-fixed">
+                       <Navbar />
+                    </div>
+                    <div className="content-scroll">
+                        {Componente && <Componente />}
+                        <footer className="footer-dinamico">
+                            <p className="text-muted text-center">
+                                Soluciones HUSJP © 2024 Hospital Universitario San Jose. Ing. Juio Alvarez. Todos los derechos reservados. EXT. 134
+                            </p>
+                        </footer>
+                    </div>
+                </div> 
             </div>
-            <div className='position-relative'>
-                <div className='position-absolute bottom-0 start-50 translate-middle-x'>
-                    <footer>
-                        <p className="text-muted text-center">Soluciones HUSJP © 2024 Hospital Universitario San Jose. Todos los derechos reservados. EXT. 134</p>
-                    </footer>
-                </div>
-            </div>
+            
         </div>
     )
 }
