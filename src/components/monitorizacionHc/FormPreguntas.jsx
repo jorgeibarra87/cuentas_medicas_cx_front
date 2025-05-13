@@ -10,7 +10,7 @@ import useFetchRespuestasByIngreso from "../../hooks/monitorizacionHC/useFetchRe
 function FormPreguntas() {
     const { adnIngreso, setAdnIngreso, loadingAdnI, fetchAdnIngreso} = useAdnIngreso();
     const { preguntas, setPreguntas, loadingP, fetchPreguntas } = useFetchPreguntas();
-    const { loadingRes, fetchRespuestas } = useSaveRespuestas();
+    const { loadingRes, responseSr, saveRespuestas } = useSaveRespuestas();
     const { ingreso, loadingI, fetchRespuestasByIngreso } = useFetchRespuestasByIngreso();
     
     const [respuestas, setRespuestas] = useState([]);
@@ -37,16 +37,31 @@ function FormPreguntas() {
         const op = new Ingreso(ingreso);
         const form = {
             ingreso: op,
-            servicio
+            procesoServicio : servicio
         };
-        fetchRespuestas(form); 
+        saveRespuestas(form); 
     };
+
+    // al recibir respuestas limpiamos el ingreso.
+    useEffect(() => {
+        if(responseSr){
+            setAdnIngreso([]);
+        }
+    },[responseSr]);
+    
+    useEffect(() => {// si el ingreso es null muestra el select de preguntas.
+        if(ingreso.id != null){// si el ingreso no es null no muestra el select de preguntas.
+            setAdnIngreso([]);
+        }
+    },[ingreso]);
 
     return (
         <div className="container">
             {(loadingRes || loadingAdnI || loadingP || loadingI ) && <Loader />}
           <div className="row">
-            <SearchIngreso onSearchAdnIngreso={fetchAdnIngreso} setAdnIngreso={setAdnIngreso} fetchPreguntas={fetchPreguntas} adnIngreso={adnIngreso} onSearchIngreso={fetchRespuestasByIngreso} setServicio={setServicio}/>
+            {/* <SearchIngreso fetchAdnIngreso={fetchAdnIngreso} setAdnIngreso={setAdnIngreso} fetchPreguntas={fetchPreguntas} adnIngreso={adnIngreso} fetchRespuestasByIngreso={fetchRespuestasByIngreso} setServicio={setServicio}/> */}
+            <SearchIngreso {...{fetchAdnIngreso,setAdnIngreso,fetchPreguntas,adnIngreso,fetchRespuestasByIngreso,setServicio}}/>
+
             {preguntas.length == 0 ? (
               <></>
             ) : (

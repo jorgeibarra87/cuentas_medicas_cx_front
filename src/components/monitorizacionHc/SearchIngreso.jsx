@@ -3,10 +3,9 @@ import { useSelector } from "react-redux";
 import useFecthUsuarioProcServ from "../../hooks/monitorizacionHC/useFetchUsuarioProcServ";
 import Select from "react-select";
 
-const SearchIngreso = ({onSearchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreguntas, onSearchIngreso, setServicio}) => {
+const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreguntas, fetchRespuestasByIngreso, setServicio}) => {
 
     const [ingreso, setIngreso] = useState('');
-    const [selectedService, setSelectedService] = useState('0');
     const {procServ, loadingUPS , error, fetchUsuaroProcServByDocumento} = useFecthUsuarioProcServ();
 
     const statelogin = useSelector(state => state.login);
@@ -15,8 +14,8 @@ const SearchIngreso = ({onSearchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreg
 
     const handleSearch = () =>  {
         if(ingreso.trim()){
-            onSearchIngreso(ingreso); 
-            onSearchAdnIngreso(ingreso); 
+          fetchRespuestasByIngreso(ingreso); 
+          fetchAdnIngreso(ingreso); 
         }
     };
 
@@ -28,7 +27,6 @@ const SearchIngreso = ({onSearchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreg
 
     const handleChange = (e) => {
         setIngreso(e.target.value);
-        setSelectedService('0');
         setAdnIngreso([]);
     }
 

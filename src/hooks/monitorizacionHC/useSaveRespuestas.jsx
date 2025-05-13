@@ -32,7 +32,7 @@ const useSaveRespuestas = () => {
         }
     }, [response]);
 
-    const fetchRespuestas = async (objIngresoConRespuestas) => {
+    const saveRespuestas = async (objIngresoConRespuestas) => {
         setLoading(true);
         setError(null);
         try {
@@ -44,7 +44,7 @@ const useSaveRespuestas = () => {
             setLoading(false);
         }
     }
-    return { loadingRes: loading, fetchRespuestas };
+    return { loadingRes: loading, responseSr: response,  saveRespuestas };
 }
 
 export default useSaveRespuestas;
