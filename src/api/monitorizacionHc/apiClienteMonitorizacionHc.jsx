@@ -1,9 +1,7 @@
-/** 
-
-const url_base = "http://192.168.16.160:8050";
+import { RUTA_BACK_PRODUCCION } from "../../types";
 
 const apiClienteMonitorizacionHc = axios.create({
-    baseURL: `${url_base}`,
+    baseURL: `${RUTA_BACK_PRODUCCION}`,
 });
 
 apiClienteMonitorizacionHc.interceptors.request.use((config) =>{
@@ -15,25 +13,5 @@ apiClienteMonitorizacionHc.interceptors.request.use((config) =>{
 }, (error) => {
     return Promise.reject(error);
 });
-
-export default apiClienteMonitorizacionHc;
-*/
-
-import axios from "axios";
-
-const url_base = "http://192.168.16.160:8009";
-
-const username = "1061784598";
-const password = "x9yclFFw8Elj3SR4AsEWmA==";
-
-const basicAuth = `Basic ${btoa(`${username}:${password}`)}`;
-
-const apiClienteMonitorizacionHc = axios.create({
-    baseURL: url_base,
-    headers: {
-        Authorization: basicAuth,
-    },
-});
-
 
 export default apiClienteMonitorizacionHc;
