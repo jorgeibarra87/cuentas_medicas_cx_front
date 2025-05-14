@@ -21,7 +21,7 @@ export default apiClienteMonitorizacionHc;
 
 import axios from "axios";
 
-const url_base = "http://192.168.16.160:8009";
+const url_base = "http://optimus:8009";
 
 const username = "1061784598";
 const password = "x9yclFFw8Elj3SR4AsEWmA==";
