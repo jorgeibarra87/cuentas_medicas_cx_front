@@ -13,6 +13,7 @@ http://localhost:5173/
 - react-router-dom
 - react-bootstrap
 - jwt-decode
+- recharts
 
 # Para realizar cambios no se debe modificar el archivo propperties
 - evitar hacer commit del arcivo application.properties
@@ -36,3 +37,6 @@ git update-index --no-assume-unchanged .env
 - Mantener el codigo limpio y ordenado.
 - Mantener la estructura del proyecto.
 - Mantener actualizado el README.md con la información del proyecto.
+
+ # Recharts
+  Libreria para grficar.

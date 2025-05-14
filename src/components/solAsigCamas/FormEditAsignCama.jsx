@@ -29,7 +29,7 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
 
     useEffect(() => {
         if (showModalFormEditAsignacion) {
-            axiosInstance.get(`/servicio/${idBloqueServicio}`)
+            axiosInstance.get(`/api/solicitudCamas/servicio/${idBloqueServicio}`)
                 .then((response) => {
                     setServicios(response.data);
                 }).catch((error) => {

@@ -15,6 +15,9 @@ import SolicitudCama from '../solAsigCamas/SolicitudCama';
 import AsignacionCama from '../solAsigCamas/AsignacionCama';
 import { cerrarSesionAction, obtenerToken } from '../../actions/loginActions';
 import Tamizaje from '../tamizaje/Tamizaje';
+import FormPreguntas from '../monitorizacionHc/FormPreguntas';
+import ReportesPorcentajes from '../monitorizacionHc/ReportesPorcentajes';
+import AjustesMhc from '../monitorizacionHc/AjustesMhc';
 
 export default function RutasConfig() {
     
@@ -69,7 +72,12 @@ export default function RutasConfig() {
                     <Route path='documento' element={<FormSolDocumento />}/>
                 </Route>
                 <Route path='/humanizacion'>
-                    <Route path='solicitudes'element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HumanizacionSolicitudes}/></RequireAuth>}/>
+                    <Route path='solicitudes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HumanizacionSolicitudes}/></RequireAuth>}/>
+                </Route>
+                <Route path='/monitorizacionhc'>
+                    <Route path='preguntas' element={<RequireAuth isLogged={isLogged} loading={loading} ><Sidebar componente={FormPreguntas}/></RequireAuth>} />
+                    <Route path='reportes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReportesPorcentajes}/></RequireAuth>} />
+                    <Route path='ajustes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={AjustesMhc}/></RequireAuth>} />
                 </Route>
                 <Route path='/ajustes'>
                     <Route path='usuario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={OpcionesUsuario}/></RequireAuth>}></Route>

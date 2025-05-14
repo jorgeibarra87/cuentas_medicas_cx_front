@@ -19,6 +19,7 @@ function OpcionesUsuario(){
     const token = stateLogin.token;
     const [tableData, setTableData] = useState([]);
     const [rolesDisponibles, setRolesDisponibles] = useState([]);
+    const [serviciosDisponibles, setServiciosDisponibles] = useState([]);
     const [inputFind, setInputFind] = useState("");
     const [estadoSincronizando, setEstadoSincronizando] = useState(false);
 
@@ -88,10 +89,15 @@ function OpcionesUsuario(){
         axiosInstance.get(`${RUTA_BACK_PRODUCCION}roles`)
             .then((response) => setRolesDisponibles(response.data))
             .catch((error) => console.error(error));
+
+        axiosInstance.get(`${RUTA_BACK_PRODUCCION}api/gateway/servicios`)
+            .then((response) => setServiciosDisponibles(response.data))
+            .catch((error) => console.error(error));
         
     },[]);   
 
     const opcionesRoles = rolesDisponibles.map((rol) => ({value: rol.id, label: rol.rol}));
+    const opcionesServicios = serviciosDisponibles.map((servicio) => ({value: servicio.id, label: servicio.nombre}))
 
     const handleRolesChange = (selectedOptions, usuario) =>{
         const form = {
@@ -114,6 +120,28 @@ function OpcionesUsuario(){
         ).catch((error) => {
             console.error("error: ",error)
         })
+    }
+
+    const handleServiciosChange = (selectedOptions, usuario) =>{
+        const form = {
+            documento: usuario.documento,
+            servicios: selectedOptions.map(option => ({id: option.value, nombre: option.label})),
+        }
+        axiosInstance.put(`${RUTA_BACK_PRODUCCION}usuario/servicios/${usuario.documento}`, form)
+            .then(() => {
+                const newTableData = tableData.map((entry) => {
+                    if(entry.documento === usuario.documento){
+                        return {
+                            ...entry,
+                            servicios: selectedOptions
+                        }
+                    }
+                    return entry;
+                });
+                setTableData(newTableData);
+            }).catch((error) => {
+                console.error("error: ",error)
+            })
     }
 
     return (
@@ -153,7 +181,7 @@ function OpcionesUsuario(){
                                         {<Select isMulti options={opcionesRoles} className="basic-multi-select" value={usuario.roles} classNamePrefix="select" onChange={(selectedOptions) => handleRolesChange(selectedOptions, usuario)}/>}
                                     </td>
                                     <td>
-                                        {<Select isMulti options={opcionesRoles} className="basic-multi-select" value={usuario.servicios} classNamePrefix="select" onChange={handleRolesChange}/>}
+                                        {<Select isMulti options={opcionesServicios} className="basic-multi-select" value={usuario.servicios} classNamePrefix="select" onChange={(selectedOptions) => handleServiciosChange(selectedOptions, usuario)}/>}
                                     </td>
                                 </tr>
                             )
