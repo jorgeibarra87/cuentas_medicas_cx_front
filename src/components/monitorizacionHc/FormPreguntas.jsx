@@ -25,6 +25,10 @@ function FormPreguntas() {
     };
 
     useEffect(() => {
+        document.title = "Monitorición HC - Formulario de Preguntas";
+    }, []);
+
+    useEffect(() => {
         setPreguntas([]);
         setRespuestas([]);
     },[adnIngreso]);
@@ -50,7 +54,7 @@ function FormPreguntas() {
     },[responseSr]);
     
     useEffect(() => {// si el ingreso es null muestra el select de preguntas.
-        if(ingreso.id != null){// si el ingreso no es null no muestra el select de preguntas.
+        if(ingreso?.respuestas?.length > 0){// si el ingreso no es null no muestra el select de preguntas.
             setAdnIngreso([]);
         }
     },[ingreso]);

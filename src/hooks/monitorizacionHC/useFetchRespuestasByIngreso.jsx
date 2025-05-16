@@ -10,7 +10,7 @@ const useFetchRespuestasByIngreso = () => {
     const [error, setError] = useState(null);
 
     useEffect(() =>{
-        if(ingreso.id != null){
+        if(ingreso?.respuestas?.length > 0){
             Swal.fire({
                 title: 'Buscando respuestas...',
                 text: 'El ingreso ya tiene respuestas registradas',

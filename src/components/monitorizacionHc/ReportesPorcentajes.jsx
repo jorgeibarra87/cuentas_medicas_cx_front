@@ -1,7 +1,7 @@
 import useFetchPorcentajesByDates from "../../hooks/monitorizacionHC/useFetchPorcentajesByDates";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import Loader from "../Loader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function ReportesPorcentajes () {
 
@@ -9,6 +9,10 @@ function ReportesPorcentajes () {
 
     const [fechaDesde, setFechaDesde] = useState("");
     const [fechaHasta, setFechaHasta] = useState("");
+
+    useEffect(() => {
+            document.title = "Monitorición HC - Reportes de Porcentajes";
+    }, []);
 
     const getLastDayOfMonth = (year, month) => {
         return new Date(year, month, 0).getDate();

@@ -17,6 +17,10 @@ function AjustesMhc() {
     const [documento, setDocumento] = useState("");
     const [selectedOptions, setSelectedOptions] = useState([]);
 
+    useEffect(() => {
+        document.title = "Monitorición HC - Ajustes";
+    }, []);
+
     // maneja el error de la respuesta
     useEffect(() => {
         if(error && error.mensaje){
