@@ -3,7 +3,6 @@ import imgLogo from '../../img/favicon.ico'
 import Navbar from './Navbar'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import useInactivity from '../../hooks/useInactivity';
 import Swal from 'sweetalert2';
 import { cerrarSesionAction } from '../../actions/loginActions';
 // import PropTypes from 'prop-types';
@@ -120,7 +119,7 @@ export default function Sidebar({ componente: Componente }) {
         <div >
             <div className="wrapper">
                 <nav id="sidebar" className={`${stateSidebar.state ? 'active' : ''} small`} >
-                    <div className="sidebar-header d-inline-flex align-items-center">
+                    <div className="sidebar-header  align-items-center text-center">
                         <img src={imgLogo} alt='logo' style={{ width: '40px', height: '40px' }} className="mr-2" />
                         <Link to='/' className="mb-0 mx-1 sin-estilo "> Soluciones HUSJP</Link>
                     </div>
@@ -128,7 +127,7 @@ export default function Sidebar({ componente: Componente }) {
                         {opcionesFiltradas.map((opcion, index) => (
                             <li key={index}>
                                 <a href={`#${opcion.nombre}Submenu`} data-bs-toggle="collapse" data-toggle="collapse" aria-expanded="false" className="dropdown-toggle">{opcion.nombre}</a>
-                                <ul className="collapse list-unstyled" id={`${opcion.nombre}Submenu`}>
+                                <ul className="collapse list-unstyled" id={`${opcion.nombre}Submenu`} data-bs-parent="#sidebar ul.components">
                                     {filtrarSubopciones(opcion.submenu).map((subopcion, subindex) => (
                                         <li key={subindex} className=' nav-item dropdown'>
                                             <div className="dropend" >
@@ -162,7 +161,7 @@ export default function Sidebar({ componente: Componente }) {
                         {Componente && <Componente />}
                         <footer className="footer-dinamico">
                             <p className="text-muted text-center">
-                                Soluciones HUSJP © 2024 Hospital Universitario San Jose. Ing. Juio Alvarez. Todos los derechos reservados. EXT. 134
+                                <small>Soluciones HUSJP © 2024 Hospital Universitario San Jose. Ing. Juio Alvarez. Todos los derechos reservados. EXT. 134</small>
                             </p>
                         </footer>
                     </div>

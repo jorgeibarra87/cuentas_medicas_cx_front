@@ -30,6 +30,8 @@ const Login = () => {
         spinnerLoginText("Por favor espere...");
         try{
             const response = await axios.post(`${RUTA_BACK_PRODUCCION}auth/login`, datos);
+            const token2 = await axios.post(`http://optimus:8100/api-auth-service/auth/login`, datos);
+            localStorage.setItem('tokendos', token2.data.jwt);
             dispatch(iniciarSesionAction(response.data));
             Swal.close();
             //navigate('/'); // Redirige al usuario a '/'

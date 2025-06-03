@@ -64,7 +64,7 @@ function FormPreguntas() {
             {(loadingRes || loadingAdnI || loadingP || loadingI ) && <Loader />}
           <div className="row">
             {/* <SearchIngreso fetchAdnIngreso={fetchAdnIngreso} setAdnIngreso={setAdnIngreso} fetchPreguntas={fetchPreguntas} adnIngreso={adnIngreso} fetchRespuestasByIngreso={fetchRespuestasByIngreso} setServicio={setServicio}/> */}
-            <SearchIngreso {...{fetchAdnIngreso,setAdnIngreso,fetchPreguntas,adnIngreso,fetchRespuestasByIngreso,setServicio}}/>
+            <SearchIngreso {...{fetchAdnIngreso,setAdnIngreso,fetchPreguntas,adnIngreso,setServicio}}/>
 
             {preguntas.length == 0 ? (
               <></>

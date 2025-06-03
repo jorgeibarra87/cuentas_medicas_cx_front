@@ -35,22 +35,23 @@ export default function Navbar() {
     }
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-end">
-            <div className="container-fluid">
-                <button type="button" id="sidebarCollapse" onClick={handleSidebar} className="btn">
-                    <i className="bi bi-distribute-vertical"></i>
-                </button>
-                <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="/navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <i className="fas fa-align-justify"></i>
-                </button>
-                <ul className="nav navbar-nav ml-auto justify-content-end">
-                    <li className="nav-item">
-                        <a className="nav-link">Usuario: {usuario.name_user}</a>
-                    </li>
-                    <li className="nav-item">
-                        <a className="nav-link" onClick={handleLogout}>Salir</a>
-                    </li>
-                </ul>
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+            <div className="container-fluid d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center">
+                    <button type="button" onClick={handleSidebar} className="btn navbar-toggle-sidebar-btn">
+                        <i className="bi bi-distribute-vertical"></i>
+                    </button>
+                </div>
+                <div className="d-flex align-items-center">
+                    <ul className="nav navbar-nav">
+                        <li className="nav-item">
+                            <a className="nav-link">Usuario: {usuario.name_user}</a>
+                        </li>
+                        <li className="nav-item">
+                            <a className="nav-link" onClick={handleLogout}>Salir</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
     )

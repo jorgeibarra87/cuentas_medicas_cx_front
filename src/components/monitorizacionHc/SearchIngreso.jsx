@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import useFecthUsuarioProcServ from "../../hooks/monitorizacionHC/useFetchUsuarioProcServ";
 import Select from "react-select";
+import Swal from "sweetalert2";
 
-const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreguntas, fetchRespuestasByIngreso, setServicio}) => {
+const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreguntas, setServicio}) => {
 
     const [ingreso, setIngreso] = useState('');
     const {procServ, loadingUPS , error, fetchUsuaroProcServByDocumento} = useFecthUsuarioProcServ();
@@ -14,7 +15,6 @@ const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPregunt
 
     const handleSearch = () =>  {
         if(ingreso.trim()){
-          fetchRespuestasByIngreso(ingreso); 
           fetchAdnIngreso(ingreso); 
         }
     };
@@ -24,6 +24,16 @@ const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPregunt
             fetchUsuaroProcServByDocumento(usuario.sub);
         }
     },[procServ]);
+
+    useEffect(() => {
+      if(error){
+        Swal.fire({
+          title: error?.title || 'Error',
+          text: error?.mensaje || '',
+          icon: error?.icon || 'error',
+        })
+      }
+    },[error]);
 
     const handleChange = (e) => {
         setIngreso(e.target.value);

@@ -6,12 +6,17 @@ import useEditUsuarioProcServ from '../../hooks/monitorizacionHC/useEditUsuarioP
 import { useEffect, useState } from 'react';
 import Loader from "../Loader";
 import Swal from 'sweetalert2';
+import useSaveUsuarioAuthSer from '../../hooks/authService/useSaveUsuario';
+import { use } from 'react';
+import useSaveUsuarioMHC from '../../hooks/monitorizacionHC/useSaveUsuarioMHC';
 
 function AjustesMhc() {
 
     const {usuariosProServ,setUsuariosProcServ, loadingUps} = useFetchUsuariosProcServ();
     const {procesosServicios, loadingPs} = useFetchProcesoServicioConPreguntas();
-    const {loadingRPS, saveUsuarioRelacionProcesoServicio,  response, error} = useSaveUsuarioProcServ();
+    const {loadingRPS, saveUsuarioRelacionProcesoServicio,  response: responseUsuRelPro, error} = useSaveUsuarioProcServ();
+    const {saveUsuario: saveUsuarioAuht, response: responseUsuAuth} = useSaveUsuarioAuthSer();
+    const {saveUsuario: saveUsuarioMHC, response: responseMHC} = useSaveUsuarioMHC();
     const {editarUsuarioProcServ} =  useEditUsuarioProcServ();
 
     const [documento, setDocumento] = useState("");
@@ -21,6 +26,12 @@ function AjustesMhc() {
         document.title = "Monitorición HC - Ajustes";
     }, []);
 
+    useEffect(() => {
+      if(responseUsuAuth){
+        saveUsuarioMHC(responseUsuAuth);
+      }
+    }, [responseUsuAuth]);
+
     // maneja el error de la respuesta
     useEffect(() => {
         if(error && error.mensaje){
@@ -28,22 +39,50 @@ function AjustesMhc() {
                 icon: `${error.icon}`,
                 title: `${error.title}`,
                 text: `${error.mensaje}`,
-                showConfirmButton: true
+                showCancelButton: true,
+                showConfirmButton: true,
+                confirmButtonText: 'Sí, sincronizar',
+                cancelButtonText: 'No',
+            }).then((result) => {
+              if(result.isConfirmed){
+                Swal.fire({
+                  title: 'Sincronizar usuario',
+                  input: 'text',
+                  inputPlaceholder: 'Ingrese el número de documento',
+                  showCancelButton: true,
+                  confirmButtonText: 'Sincronizar',
+                  cancelButtonText: 'Cancelar',
+                  inputValidator: (value) => {
+                    if (!value) {
+                      return 'Debe ingresar un número de documento';
+                    }
+                  }
+                }).then((inputResult) => {
+                  if(inputResult.isConfirmed){
+                    Swal.fire('¡Sincronizado!', '', 'success');
+                    saveUsuarioAuht(inputResult.value);
+                  }else if (inputResult.dismiss === Swal.DismissReason.cancel) {
+                    Swal.fire('Sincronización cancelada', '', 'info');
+                  }
+                });
+              }else if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire('Operación cancelada', '', 'info');
+              }
             });
         }
     }, [error]);
     
     // maneja la respuesta al guardar la relacion de usuario con procesos y servicios
     useEffect(() => {
-        if(response && response.respuesta){
+        if(responseUsuRelPro && responseUsuRelPro.respuesta){
             Swal.fire({
                 icon: 'success',
                 title: 'Exito',
-                text: `${response?.respuesta}`,
+                text: `${responseUsuRelPro?.respuesta}`,
                 showConfirmButton: true
             });
         }       
-    }, [response]);
+    }, [responseUsuRelPro]);
 
     // actualizamos el estado de los usuarios con procesos y servicios
     const handleSelectChange = (documento, tipo, selected) => {

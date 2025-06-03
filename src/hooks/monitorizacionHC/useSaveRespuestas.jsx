@@ -9,12 +9,11 @@ const useSaveRespuestas = () => {
 
     // Manejo del estado de error
     useEffect(() => {
-        if (error?.response?.data.codigoError === "MHCP-0014") {
+        if (error?.response?.data.codigoError === "MHC-0014") {
             Swal.fire({
                 icon: 'warning',
                 title: 'Guradando respuestas...',
-                text: 'El ingreso ya tiene respuestas registradas',
-
+                text: error.response.data.mensaje.split('|')[1],
             });
             setError(null);
         }
