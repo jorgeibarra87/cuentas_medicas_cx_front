@@ -161,7 +161,7 @@ export default function Sidebar({ componente: Componente }) {
                         {Componente && <Componente />}
                         <footer className="footer-dinamico">
                             <p className="text-muted text-center">
-                                <small>Soluciones HUSJP © 2024 Hospital Universitario San Jose. Ing. Juio Alvarez. Todos los derechos reservados. EXT. 134</small>
+                                <small>Soluciones HUSJP © 2024 Hospital Universitario San Jose. Ing. Julio Alvarez. Todos los derechos reservados. EXT. 134</small>
                             </p>
                         </footer>
                     </div>
