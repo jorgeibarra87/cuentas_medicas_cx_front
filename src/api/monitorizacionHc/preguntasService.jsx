@@ -4,7 +4,7 @@ import apiClienteMonitorizacionHc from "./apiClienteMonitorizacionHc";
 export const obtenerPreguntasServicio = async (id, tipo) => {
     try {
         const response = await apiClienteMonitorizacionHc.get(`/preguntas/${tipo}/${id}`);
-        const preguntas = response.data.preguntas.map(pregunta => new Pregunta(pregunta));
+        const preguntas = response.data;
         return preguntas;
     } catch (error) {
         console.error('Error al obtener las preguntas de monitorizacion microservice',error);
