@@ -18,6 +18,7 @@ import Tamizaje from '../tamizaje/Tamizaje';
 import FormPreguntas from '../monitorizacionHc/FormPreguntas';
 import ReportesPorcentajes from '../monitorizacionHc/ReportesPorcentajes';
 import AjustesMhc from '../monitorizacionHc/AjustesMhc';
+import FormManteEquipos from '../sistemas/FormManteEquipos';
 
 export default function RutasConfig() {
     
@@ -78,6 +79,9 @@ export default function RutasConfig() {
                     <Route path='preguntas' element={<RequireAuth isLogged={isLogged} loading={loading} ><Sidebar componente={FormPreguntas}/></RequireAuth>} />
                     <Route path='reportes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReportesPorcentajes}/></RequireAuth>} />
                     <Route path='ajustes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={AjustesMhc}/></RequireAuth>} />
+                </Route>
+                <Route path="/sistemas">
+                    <Route path='mantenimientochequeo' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormManteEquipos}/></RequireAuth>} />
                 </Route>
                 <Route path='/ajustes'>
                     <Route path='usuario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={OpcionesUsuario}/></RequireAuth>}></Route>
