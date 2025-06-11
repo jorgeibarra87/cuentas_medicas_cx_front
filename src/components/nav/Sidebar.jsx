@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import imgLogo from '../../img/favicon.ico'
 import Navbar from './Navbar'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { cerrarSesionAction } from '../../actions/loginActions';
+import { jwtDecode } from 'jwt-decode';
 // import PropTypes from 'prop-types';
 export default function Sidebar({ componente: Componente }) {
 
@@ -28,7 +29,19 @@ export default function Sidebar({ componente: Componente }) {
 
     const stateSidebar = useSelector(state => state.sidebar);
     const statelogin = useSelector(state => state.login);
-    const [usuario] = useState(statelogin.decodeToken);
+    const [usuario, setUsuario] = useState(statelogin.decodeToken);
+
+    
+    useEffect(() => {
+        const token = localStorage.getItem('tokendos');
+        const usuario2 = jwtDecode(token);
+        const combinedAuthorities = [usuario.authorities, usuario2.authorities].flat();
+                
+        setUsuario({
+            ...usuario,
+            authorities: combinedAuthorities
+        })
+    }, [])
 
     const opcionesMenu = [
         {
@@ -38,20 +51,19 @@ export default function Sidebar({ componente: Componente }) {
                 { nombre: 'Actualizar', ruta: '/innProduc/update', roles: ['ROLE_ADMIN', 'ROLE_INNPRODUC'] }, // Roles permitidos para esta subopción
             ]
         },
-        // {
-        //     nombre: 'Humanización',
-        //     roles: ['ROLE_ADMIN'],
-        //     submenu: [
-        //         {
-        //             nombre: 'Identificación de necesidades', ruta: '/a', roles: ['ROLE_ADMIN'],
-        //             submenuAdicional: [
-        //                 { nombre: 'solicitudes', ruta: '/humanizacion/solicitudes', roles: ['ROLE_ADMIN'] },
-        //                 { nombre: 'solicitudes almacen', ruta: 'almacen', roles: ['ROLE_ADMIN'] }
-        //             ]
-        //         },
-        //         // { nombre: 'Opcion B', ruta: '/b', roles: ['ROLE_ADMIN'] }
-        //     ]
-        // },
+        {
+            nombre: 'Sistemas',
+            roles: ['ROLE_ADMIN'],
+            submenu: [
+                {
+                    nombre: 'Mantenimiento chequeo', ruta: '/sistemas/mantenimientochequeo', roles: ['ROLE_ADMIN'],
+                    // submenuAdicional: [
+                    //     { nombre: 'Mantenimiento preventivo chequeo', ruta: '/humanizacion/solicitudes', roles: ['ROLE_ADMIN'] },
+                    //     { nombre: 'solicitudes almacen', ruta: 'almacen', roles: ['ROLE_ADMIN'] }
+                    // ]
+                },
+            ]
+        },
         {
             nombre: 'Asignación_de_camas',
             roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS'],
@@ -77,11 +89,11 @@ export default function Sidebar({ componente: Componente }) {
         },
         {
             nombre: 'MonitorizacionHc',
-            roles: ['ROLE_ADMIN','MONITORIZACION_HC'],
+            roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION_ADMIN'],
             submenu:[
-                {nombre: 'Monitorizacion', ruta: '/monitorizacionhc/preguntas', roles: ['ROLE_ADMIN','MONITORIZACION_HC']},
-                {nombre: 'Reportes', ruta: '/monitorizacionhc/reportes', roles: ['ROLE_ADMIN','MONITORIZACION_HC']},
-                {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMIN']}
+                {nombre: 'Monitorizacion', ruta: '/monitorizacionhc/preguntas', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION_ADMIN']},
+                {nombre: 'Reportes', ruta: '/monitorizacionhc/reportes', roles: ['ROLE_ADMINISTRADOR']},
+                {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMINISTRADOR']}
             ]
         },
         {
