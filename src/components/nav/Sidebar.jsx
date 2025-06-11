@@ -35,7 +35,7 @@ export default function Sidebar({ componente: Componente }) {
     useEffect(() => {
         const token = localStorage.getItem('tokendos');
         const usuario2 = jwtDecode(token);
-        const combinedAuthorities = [usuario.authorities, usuario2.authorities].flat();
+        const combinedAuthorities = usuario.authorities.concat(usuario2.authorities); 
                 
         setUsuario({
             ...usuario,
