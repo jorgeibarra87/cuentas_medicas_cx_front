@@ -1,7 +1,10 @@
 import axios from "axios";
 
+ const ruta = import.meta.env.VITE_URL_API_GATEWAY
+ const rutamicroservicioSistemas = import.meta.env.VITE_URL_SISTEMAS
+
 const apiClienteSistemas = axios.create({
-    baseURL: `http://optimus:8100/microservice-sistemas/`,
+    baseURL: `${ruta}${rutamicroservicioSistemas}/`,
 });
 
 apiClienteSistemas.interceptors.request.use((config) => {

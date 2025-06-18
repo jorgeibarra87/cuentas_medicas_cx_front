@@ -1,8 +1,11 @@
 import axios from "axios";
-import { RUTA_BACK_PRODUCCION } from "../../types";
+
+ const ruta = import.meta.env.VITE_URL_API_GATEWAY
+ const rutamicroserviciomonitorizacionhc = import.meta.env.VITE_URL_MONITORIZACION
+
 
 const apiClienteMonitorizacionHc = axios.create({
-    baseURL: `http://optimus:8100/api-monitorizacionhc/`,
+    baseURL: `${ruta}${rutamicroserviciomonitorizacionhc}/`,
 });
 
 apiClienteMonitorizacionHc.interceptors.request.use((config) =>{

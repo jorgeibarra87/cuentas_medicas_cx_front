@@ -7,6 +7,8 @@ import Swal from "sweetalert2";
 import spinnerLoginText from "../Loading";
 
 const initailForm = {username: "",password: "",};
+const ruta = import.meta.env.VITE_URL_API_GATEWAY
+const rutamicroservicioauth = import.meta.env.VITE_URL_AUTH
 
 const Login = () => {
 
@@ -30,7 +32,7 @@ const Login = () => {
         spinnerLoginText("Por favor espere...");
         try{
             const response = await axios.post(`${RUTA_BACK_PRODUCCION}auth/login`, datos);
-            const token2 = await axios.post(`http://optimus:8100/api-auth-service/auth/login`, datos);
+            const token2 = await  axios.post(`${ruta}${rutamicroservicioauth}/auth/login`, datos);
             localStorage.setItem('tokendos', token2.data.jwt);
             dispatch(iniciarSesionAction(response.data));
             Swal.close();

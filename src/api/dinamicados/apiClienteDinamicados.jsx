@@ -1,7 +1,10 @@
 import axios from "axios";
 
+ const ruta = import.meta.env.VITE_URL_API_GATEWAY
+ const rutamicroservicioDinamica = import.meta.env.VITE_URL_DINAMICA
+
 const apiClienteDinamicados = axios.create({
-    baseURL: `http://optimus:8100/dinamica-microservice/`,
+    baseURL: `${ruta}${rutamicroservicioDinamica}/`,
 })
 
 apiClienteDinamicados.interceptors.request.use((config) => {
