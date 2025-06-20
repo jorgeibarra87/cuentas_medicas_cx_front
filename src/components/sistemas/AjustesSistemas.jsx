@@ -32,7 +32,7 @@ function AjustesSistemas() {
 
     // Cargar usuarios al montar el componente y al cambiar de página
     useEffect(() => {
-        fetchUsuarios("ADMINSTRACIONALMACENAMIENTOINFORMACIONSISTEMAS", page, 15);
+        fetchUsuarios("ADMINSTRACIONALMACENAMIENTOINFORMACIONSISTEMAS", page, 50);
     }, [page]);
 
     // Mostrar modal de sincronización si el usuario no esta en la db de authenticacion 
@@ -42,6 +42,7 @@ function AjustesSistemas() {
         }
     }, [errorUpdateU])
 
+    // Actualizar la lista de usuarios, el usuario al que se le actualizan los roles
     useEffect(() => {
         const newUsuarios = dataU?.content?.map((usuario) => {
             if (usuario?.username === dataUpdateU?.username) {
@@ -117,7 +118,8 @@ function AjustesSistemas() {
                     </tr>
                 </thead>
                 <tbody>
-                    {dataU?.content.filter((usuario) => usuario.username.includes(inputFind) || usuario.nombreCompleto.includes(inputFind.toLocaleUpperCase())).map((usuario) => {
+                    {dataU?.content && dataU.content.length > 0 ? (
+                        dataU?.content.filter((usuario) => usuario.username.includes(inputFind) || usuario.nombreCompleto.includes(inputFind.toLocaleUpperCase())).map((usuario) => {
                         return (
                             <tr key={usuario.id}>
                                 <td>{usuario.username}</td>
@@ -128,19 +130,6 @@ function AjustesSistemas() {
                             </tr>
                         )
                     })
-
-                    }
-                    {dataU?.content && dataU.content.length > 0 ? (
-                        dataU?.content?.map((usuario) => (
-                            <tr key={usuario.id}>
-                                <td>{usuario.username}</td>
-                                <td>{usuario.nombreCompleto}</td>
-                                <td>
-                                    {<Select isMulti options={opcionesRoles} value={usuario.roles.map(rol => ({ value: rol.id, label: rol.rol }))} onChange={(selectOpci) => handleRolesChange(selectOpci, usuario)} />}
-                                </td>
-                            </tr>
-                        )
-                        )
                     ) : (
                         <tr>
                             <td colSpan={3} className='text-center'>
