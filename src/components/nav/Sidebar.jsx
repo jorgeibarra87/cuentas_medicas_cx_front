@@ -56,12 +56,15 @@ export default function Sidebar({ componente: Componente }) {
             roles: ['ROLE_ADMIN'],
             submenu: [
                 {
-                    nombre: 'Mantenimiento chequeo', ruta: '/sistemas/mantenimientochequeo', roles: ['ROLE_ADMIN'],
+                    nombre: 'Mantenimiento chequeo', ruta: '/sistemas/mantenimientochequeo', roles: ['ROLE_ADMIN', 'ROLE_SISTEMAS_MANTENIMIENTO'],
                     // submenuAdicional: [
                     //     { nombre: 'Mantenimiento preventivo chequeo', ruta: '/humanizacion/solicitudes', roles: ['ROLE_ADMIN'] },
                     //     { nombre: 'solicitudes almacen', ruta: 'almacen', roles: ['ROLE_ADMIN'] }
                     // ]
                 },
+                {
+                    nombre: 'Ajustes', ruta: '/sistemas/ajustes', roles: ['ROLE_ADMIN', 'ROLE_SISTEMAS_MANTENIMIENTO'],
+                }
             ]
         },
         {

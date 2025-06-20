@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import Loader from "../Loader";
 import Swal from 'sweetalert2';
 import useSaveUsuarioAuthSer from '../../hooks/authService/useSaveUsuario';
-import { use } from 'react';
 import useSaveUsuarioMHC from '../../hooks/monitorizacionHC/useSaveUsuarioMHC';
 
 function AjustesMhc() {

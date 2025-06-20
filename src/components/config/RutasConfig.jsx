@@ -19,6 +19,7 @@ import FormPreguntas from '../monitorizacionHc/FormPreguntas';
 import ReportesPorcentajes from '../monitorizacionHc/ReportesPorcentajes';
 import AjustesMhc from '../monitorizacionHc/AjustesMhc';
 import FormManteEquipos from '../sistemas/FormManteEquipos';
+import AjustesSistemas from '../sistemas/AjustesSistemas';
 
 export default function RutasConfig() {
     
@@ -82,6 +83,7 @@ export default function RutasConfig() {
                 </Route>
                 <Route path="/sistemas">
                     <Route path='mantenimientochequeo' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormManteEquipos}/></RequireAuth>} />
+                    <Route path='ajustes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={AjustesSistemas} /></RequireAuth>} />
                 </Route>
                 <Route path='/ajustes'>
                     <Route path='usuario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={OpcionesUsuario}/></RequireAuth>}></Route>

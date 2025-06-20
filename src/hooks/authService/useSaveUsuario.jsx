@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { sincronizarUsuario } from "../../api/authservice/sincronizarUsuario";
+import { sincronizarUsuario } from "../../api/authservice/usuarioServiceApiAuth";
 import Swal from "sweetalert2";
 
 const useSaveUsuarioAuthSer = () => {
