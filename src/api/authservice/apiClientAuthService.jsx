@@ -1,7 +1,7 @@
 import axios from "axios";
 // IMPORTAR CLAVES ENV DE VITE 
- const ruta = import.meta.env.VITE_URL_API_GATEWAY
- const rutamicroservicioauth = import.meta.env.VITE_URL_AUTH
+ const ruta = window.env.VITE_URL_API_GATEWAY
+ const rutamicroservicioauth = window.env.VITE_URL_AUTH
 
 const apiClientAuthService = axios.create({
     baseURL: `${ruta}${rutamicroservicioauth}/`,

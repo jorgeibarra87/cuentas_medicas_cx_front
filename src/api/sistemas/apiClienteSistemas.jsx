@@ -1,7 +1,7 @@
 import axios from "axios";
 
- const ruta = import.meta.env.VITE_URL_API_GATEWAY
- const rutamicroservicioSistemas = import.meta.env.VITE_URL_SISTEMAS
+ const ruta = window.env.VITE_URL_API_GATEWAY
+ const rutamicroservicioSistemas = window.env.VITE_URL_SISTEMAS
 
 const apiClienteSistemas = axios.create({
     baseURL: `${ruta}${rutamicroservicioSistemas}/`,

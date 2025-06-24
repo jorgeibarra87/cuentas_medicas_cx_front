@@ -1,7 +1,7 @@
 import axios from "axios";
 
- const ruta = import.meta.env.VITE_URL_API_GATEWAY
- const rutamicroserviciomonitorizacionhc = import.meta.env.VITE_URL_MONITORIZACION
+ const ruta = window.env.VITE_URL_API_GATEWAY
+ const rutamicroserviciomonitorizacionhc = window.env.VITE_URL_MONITORIZACION
 
 
 const apiClienteMonitorizacionHc = axios.create({
