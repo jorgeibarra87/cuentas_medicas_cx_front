@@ -53,7 +53,7 @@ export default function Sidebar({ componente: Componente }) {
         },
         {
             nombre: 'Sistemas',
-            roles: ['ROLE_ADMIN'],
+            roles: ['ROLE_ADMIN','ROLE_SISTEMAS_MANTENIMIENTO'],
             submenu: [
                 {
                     nombre: 'Mantenimiento chequeo', ruta: '/sistemas/mantenimientochequeo', roles: ['ROLE_ADMIN', 'ROLE_SISTEMAS_MANTENIMIENTO'],
