@@ -92,9 +92,9 @@ export default function Sidebar({ componente: Componente }) {
         },
         {
             nombre: 'MonitorizacionHc',
-            roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION_ADMIN'],
+            roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION'],
             submenu:[
-                {nombre: 'Monitorizacion', ruta: '/monitorizacionhc/preguntas', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION_ADMIN']},
+                {nombre: 'Monitorizacion', ruta: '/monitorizacionhc/preguntas', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION']},
                 {nombre: 'Reportes', ruta: '/monitorizacionhc/reportes', roles: ['ROLE_ADMINISTRADOR']},
                 {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMINISTRADOR']}
             ]
