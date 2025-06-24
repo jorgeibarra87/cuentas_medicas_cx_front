@@ -63,7 +63,7 @@ export default function Sidebar({ componente: Componente }) {
                     // ]
                 },
                 {
-                    nombre: 'Ajustes', ruta: '/sistemas/ajustes', roles: ['ROLE_ADMIN', 'ROLE_SISTEMAS_MANTENIMIENTO'],
+                    nombre: 'Ajustes', ruta: '/sistemas/ajustes', roles: ['ROLE_ADMIN'],
                 }
             ]
         },
