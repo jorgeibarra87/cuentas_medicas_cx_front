@@ -1,3 +1,4 @@
+@import "tailwindcss";
 /* ---------------------------------------------------
     GLOBALES / RESET BÁSICO
     Es CRUCIAL que html y body tengan 100% de altura para que vh funcione correctamente.
