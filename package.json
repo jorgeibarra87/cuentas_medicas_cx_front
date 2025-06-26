@@ -15,6 +15,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@reduxjs/toolkit": "^2.2.3",
     "@stomp/stompjs": "^7.0.0",
+    "@tailwindcss/vite": "^4.1.10",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
@@ -35,7 +36,8 @@
     "redux": "^5.0.1",
     "sockjs-client": "^1.6.1",
     "soluciones-husjp": "file:",
-    "sweetalert2": "^11.10.8"
+    "sweetalert2": "^11.10.8",
+    "tailwindcss": "^4.1.10"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
