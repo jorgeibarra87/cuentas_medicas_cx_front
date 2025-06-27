@@ -7,17 +7,6 @@ const useSaveUsuarioAuthSer = () => {
     const [error, setError] = useState(null);
     const [response, setResponse] = useState(null);
 
-    useEffect(() => {
-        if (error?.response?.data?.codigoError != null) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error?.response.data.mensaje || 'Ocurrió un error al sincronizar el usuario.'
-            });
-            setError(null);
-        }
-    })
-
     const saveUsuario = async (documento) => {
         setLoading(true);
         setError(null);
