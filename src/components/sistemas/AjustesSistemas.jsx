@@ -5,45 +5,41 @@ import Pagination from '../Pagination';
 import useFetchRolesByMicroservice from '../../hooks/authService/useFetchRolesByMicroservice';
 import Select from 'react-select';
 import useUpdateUsuarioRoles from '../../hooks/authService/useUpdateUsuarioRoles';
-import SincronizarUsuario from '../SincronizarUsuario';
-import { ToastContainer } from 'react-toastify';
+import ModificarRolesUsuario from '../ModificarRolesUsuario';
+import { Spinner } from 'react-bootstrap';
 
 function AjustesSistemas() {
+
+    const MICROSERVICE_NAME = "ADMINSTRACIONALMACENAMIENTOINFORMACIONSISTEMAS";
 
     const { data: dataU, setData: setDataU, loading: loadingU, error: errorU, fetchUsuarios } = useFetchUsuarioPageable();
     const { data: dataR, loading: loadingR, error: errorR, fetchRolesByMycroservice } = useFetchRolesByMicroservice();
     const { data: dataUpdateU, loading: loadingUpdateU, error: errorUpdateU, updateUsuarioRoles } = useUpdateUsuarioRoles();
 
     const [page, setPage] = useState(0);
-    const [documento, setDocumento] = useState("");
-    const [roles, setRoles] = useState([]);
-    const [showSincronizar, setShowSincronizar] = useState(false);
+    
     const [inputFind, setInputFind] = useState("");
+    const [openForm, setOpenForm] = useState(false);
+    const [openTabla, setOpenTabla] = useState(true);
 
-    // Cambiar el título del documento al cargar el componente
+    // Cambiar el título al cargar el componente
     useEffect(() => {
         document.title = "Sistemas - Ajustes";
     }, []);
 
     // Cargar roles al montar el componente
     useEffect(() => {
-        fetchRolesByMycroservice("ADMINSTRACIONALMACENAMIENTOINFORMACIONSISTEMAS");
+        fetchRolesByMycroservice(MICROSERVICE_NAME);
     }, []);
 
     // Cargar usuarios al montar el componente y al cambiar de página
     useEffect(() => {
-        fetchUsuarios("ADMINSTRACIONALMACENAMIENTOINFORMACIONSISTEMAS", page, 50);
+        fetchUsuarios(MICROSERVICE_NAME, page, 50);
     }, [page]);
-
-    // Mostrar modal de sincronización si el usuario no esta en la db de authenticacion 
-    useEffect(() => {
-        if (errorUpdateU?.response?.data.codigoError == "AUS-US-01") {
-            setShowSincronizar(true);
-        }
-    }, [errorUpdateU])
 
     // Actualizar la lista de usuarios, el usuario al que se le actualizan los roles
     useEffect(() => {
+        if (!dataUpdateU || !dataU?.content) return;
         const newUsuarios = dataU?.content?.map((usuario) => {
             if (usuario?.username === dataUpdateU?.username) {
                 return {
@@ -70,79 +66,86 @@ function AjustesSistemas() {
         updateUsuarioRoles(usuario.username, roles);
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const doc = documento.trim();
-        const rolesSeleccionados = roles.map(role => ({ id: role.value }));
-        if (!doc || !rolesSeleccionados) {
-            alert("Por favor, complete todos los campos.");
-            return;
-        }
-        updateUsuarioRoles(doc, rolesSeleccionados);
-    }
-
     return (
         <>
             {loadingUpdateU && <Loader />}
-            <SincronizarUsuario show={showSincronizar} handleClose={() => setShowSincronizar(false)} documento={documento} />
-            <form onSubmit={handleSubmit} className="p-3">
-                <div className="form-group mb-3">
-                    <h3>Sincronizar usuario</h3>
-                    <p>Los usuarios que se muestran son los que pertenecen al microservicio
-                        <strong> ADMINSTRACIONALMACENAMIENTOINFORMACIONSISTEMAS</strong>
-                    </p>
-                    <p>Para sincronizar un usuario, simplemente actualice los roles que le corresponden.</p>
-                </div>
+            
+            {/* Título de la página */}
+            <p className="text-center bg-gray-100 text-gray-800 p-2 rounded-md text-lg font-medium">
+                Ajustes <strong className="text-blue-600">ADMINSTRACIONALMACENAMIENTOINFORMACIONSISTEMAS</strong>
+            </p>
+            {/* Acordeón - Formulario */}
+            <div className="mb-4 border rounded-xl overflow-visible shadow">
+                <button onClick={() => setOpenForm(!openForm)}
+                    className="w-full flex justify-between items-center px-6 py-2 bg-blue-100 hover:bg-blue-200 text-left" >
+                    <h6 className="text-lg font-semibold text-blue-800">Formulario de sincronización</h6>
+                    <span className="ml-2 text-gray-500">&#x25BC;</span> {/* ▼ */}
+                </button>
 
-                <div className="d-flex align-items-center gap-2">
-                    <div className="flex-grow-1">
-                        <label htmlFor="documento" className="form-label mb-1">Documento</label>
-                        <input type="text" className="form-control" id="documento" placeholder="Ingrese el documento" onChange={(e) => setDocumento(e.target.value)} required />
+                {openForm && (
+                    <ModificarRolesUsuario listRoles={dataR} />
+                )}
+            </div>
+
+            {/* Acordeón - Tabla */}
+            <div className="mb-4 border rounded-xl overflow-visible shadow">
+                <button onClick={() => setOpenTabla(!openTabla)}
+                    className="w-full flex justify-between items-center px-6 py-2 bg-blue-100 hover:bg-blue-200 text-left" >
+                    <h6 className="text-lg font-semibold text-blue-800">Usuarios sincronizados con el microservicio </h6>
+                    <span className="ml-2 text-gray-500">&#x25BC;</span> {/* ▼ */}
+                </button>
+
+                {openTabla && (
+                    <div className="p-6 bg-white space-y-6">
+                        <input className="w-full mb-4 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            type="text" placeholder="Buscar..." value={inputFind} onChange={(e) => setInputFind(e.target.value)}
+                        />
+                        <div className="flex flex-col lg:flex-row items-start lg:items-end gap-4">
+                            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
+                                <thead className="bg-gray-100">
+                                    <tr>
+                                        <th className="px-4 py-2 font-semibold text-gray-700">Documento</th>
+                                        <th className="px-4 py-2 font-semibold text-gray-700">Nombre Completo</th>
+                                        <th className="px-4 py-2 font-semibold text-gray-700">Roles</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {dataU?.content && dataU.content.length > 0 ? (
+                                        dataU.content
+                                            .filter((usuario) =>
+                                                usuario.username.toLowerCase().includes(inputFind.toLowerCase()) || usuario.nombreCompleto.toLowerCase().includes(inputFind.toLowerCase())
+                                            )
+                                            .map((usuario) => (
+                                                <tr key={usuario.id} className="hover:bg-gray-50">
+                                                    <td className="px-4 py-2">{usuario.username}</td>
+                                                    <td className="px-4 py-2">{usuario.nombreCompleto}</td>
+                                                    <td className="px-4 py-2">
+                                                        <Select isMulti options={opcionesRoles}
+                                                            value={usuario.roles.map((rol) => ({ value: rol.id, label: rol.rol }))}
+                                                            onChange={(selectOpci) => handleRolesChange(selectOpci, usuario)}
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={3} className="text-center px-4 py-6 text-gray-500 italic">
+                                                NO HAY USUARIOS ASOCIADOS
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="mt-6">
+                            {dataU?.totalPages > 1 && (<Pagination currentPage={page} totalPages={dataU?.totalPages || 1} onPageChange={setPage} />)}
+                        </div>
                     </div>
-                    <div className="flex-grow-1">
-                        <label className="form-label mb-1">Roles</label>
-                        <Select isMulti options={opcionesRoles} placeholder="Seleccione los roles" onChange={(selectedOptions) => setRoles(selectedOptions)} className="react-select-container" classNamePrefix="react-select" />
-                    </div>
-                    <div className="mt-4">
-                        <button type="submit" className="btn btn-primary"> Sincronizar </button>
-                    </div>
-                </div>
-            </form>
-            <input className="form-control" type="text" placeholder="Buscar..." value={inputFind} onChange={(e) => setInputFind(e.target.value)}/>
-            <table className='table table-striped table-bordered'>
-                <thead>
-                    <tr>
-                        <th>Documento</th>
-                        <th>Nombre Completo</th>
-                        <th>Roles</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {dataU?.content && dataU.content.length > 0 ? (
-                        dataU?.content.filter((usuario) => usuario.username.includes(inputFind) || usuario.nombreCompleto.includes(inputFind.toLocaleUpperCase())).map((usuario) => {
-                        return (
-                            <tr key={usuario.id}>
-                                <td>{usuario.username}</td>
-                                <td>{usuario.nombreCompleto}</td>
-                                <td>
-                                    {<Select isMulti options={opcionesRoles} value={usuario.roles.map(rol => ({ value: rol.id, label: rol.rol }))} onChange={(selectOpci) => handleRolesChange(selectOpci, usuario)} />}
-                                </td>
-                            </tr>
-                        )
-                    })
-                    ) : (
-                        <tr>
-                            <td colSpan={3} className='text-center'>
-                                NO HAY USUARIOS ASOCIADOS
-                            </td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-            <Pagination currentPage={page} totalPages={dataU.totalPages} onPageChange={setPage} />
-            <ToastContainer />
+                )}
+            </div>
         </>
-    )
+    );
 }
 
 export default AjustesSistemas
