@@ -1,153 +1,230 @@
 import Select from 'react-select';
-import useFetchUsuariosProcServ from '../../hooks/monitorizacionHC/useFetchUsuariosProcServ';
+import { useEffect, useState } from 'react';
 import useFetchProcesoServicioConPreguntas from '../../hooks/monitorizacionHC/useFetchProcesoServicioConPreguntas';
+import useFetchRolesByMicroservice from '../../hooks/authService/useFetchRolesByMicroservice';
+import useFetchUsuariosProcServ from '../../hooks/monitorizacionHC/useFetchUsuariosProcServ';
+import useFetchUsuarioPageable from '../../hooks/authService/useFetchUsuarioPageable';
 import useSaveUsuarioProcServ from '../../hooks/monitorizacionHC/useSaveUsuarioProcServ';
 import useEditUsuarioProcServ from '../../hooks/monitorizacionHC/useEditUsuarioProcServ';
-import { useEffect, useState } from 'react';
-import Loader from "../Loader";
-import Swal from 'sweetalert2';
-import useSaveUsuarioAuthSer from '../../hooks/authService/useSaveUsuario';
+import useUpdateUsuarioRoles from '../../hooks/authService/useUpdateUsuarioRoles';
+import ModificarRolesUsuario from '../ModificarRolesUsuario';
 import useSaveUsuarioMHC from '../../hooks/monitorizacionHC/useSaveUsuarioMHC';
+import Pagination from '../Pagination';
+import Loader from "../Loader";
+import { toast } from 'react-toastify';
 
 function AjustesMhc() {
 
-    const {usuariosProServ,setUsuariosProcServ, loadingUps} = useFetchUsuariosProcServ();
-    const {procesosServicios, loadingPs} = useFetchProcesoServicioConPreguntas();
-    const {loadingRPS, saveUsuarioRelacionProcesoServicio,  response: responseUsuRelPro, error} = useSaveUsuarioProcServ();
-    const {saveUsuario: saveUsuarioAuht, response: responseUsuAuth} = useSaveUsuarioAuthSer();
-    const {saveUsuario: saveUsuarioMHC, response: responseMHC} = useSaveUsuarioMHC();
-    const {editarUsuarioProcServ} =  useEditUsuarioProcServ();
+  const MONITORIZACION = "MONITORIZACIONHC";
 
-    const [documento, setDocumento] = useState("");
-    const [selectedOptions, setSelectedOptions] = useState([]);
+  //MONITORIZACIONHC
+  const { usuariosProServ, setUsuariosProcServ, loadingUps } = useFetchUsuariosProcServ();
+  const { procesosServicios, loadingPs } = useFetchProcesoServicioConPreguntas();
+  const { data: dataU, loading: loadingU, error: errorU, fetchUsuarios } = useFetchUsuarioPageable();
+  const { data: dataR, loading: loadingR, error: errorR, fetchRolesByMycroservice } = useFetchRolesByMicroservice();
+  const { loading: loadingSU, response: responseSU, error: errorSU, saveUsuario } = useSaveUsuarioMHC();
+  const { data: dataUpdateU, loading: loadingUpdateU, error: errorUpdateU, updateUsuarioRoles } = useUpdateUsuarioRoles();
+  const { loadingRPS, saveUsuarioRelacionProcesoServicio, response: responseUsuRelPro, error: errorRPS } = useSaveUsuarioProcServ();
+  const { editarUsuarioProcServ } = useEditUsuarioProcServ();
 
-    useEffect(() => {
-        document.title = "Monitorición HC - Ajustes";
-    }, []);
+  const [documento, setDocumento] = useState("");
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [openForm, setOpenForm] = useState(false);
+  const [openTabla, setOpenTabla] = useState(true);
+  const [usuarioSincronizado, setUsuarioSincronizado] = useState(null);
+  const [page, setPage] = useState(0);
 
-    useEffect(() => {
-      if(responseUsuAuth){
-        saveUsuarioMHC(responseUsuAuth);
-      }
-    }, [responseUsuAuth]);
+  // Cambiar el título de la página al montar el componente
+  useEffect(() => {
+    document.title = "Monitorición HC - Ajustes";
+  }, []);
 
-    // maneja el error de la respuesta
-    useEffect(() => {
-        if(error && error.mensaje){
-            Swal.fire({
-                icon: `${error.icon}`,
-                title: `${error.title}`,
-                text: `${error.mensaje}`,
-                showCancelButton: true,
-                showConfirmButton: true,
-                confirmButtonText: 'Sí, sincronizar',
-                cancelButtonText: 'No',
-            }).then((result) => {
-              if(result.isConfirmed){
-                Swal.fire({
-                  title: 'Sincronizar usuario',
-                  input: 'text',
-                  inputPlaceholder: 'Ingrese el número de documento',
-                  showCancelButton: true,
-                  confirmButtonText: 'Sincronizar',
-                  cancelButtonText: 'Cancelar',
-                  inputValidator: (value) => {
-                    if (!value) {
-                      return 'Debe ingresar un número de documento';
-                    }
-                  }
-                }).then((inputResult) => {
-                  if(inputResult.isConfirmed){
-                    Swal.fire('¡Sincronizado!', '', 'success');
-                    saveUsuarioAuht(inputResult.value);
-                  }else if (inputResult.dismiss === Swal.DismissReason.cancel) {
-                    Swal.fire('Sincronización cancelada', '', 'info');
-                  }
-                });
-              }else if (result.dismiss === Swal.DismissReason.cancel) {
-                Swal.fire('Operación cancelada', '', 'info');
-              }
-            });
+  // Cargar roles al montar el componente del microservicio
+  useEffect(() => {
+    fetchRolesByMycroservice(MONITORIZACION);
+  }, []);
+
+  // manejo de todos los errores de las peticiones
+  useEffect(() => {
+    if (errorU) { toast.error(`Error al cargar usuarios: ${errorU.message}`); }
+    if (errorR) { toast.error(`Error al cargar roles: ${errorR.message}`); }
+    if (errorSU) { toast.error(`Error al guardar usuario: ${errorSU.message}`); }
+    if (errorRPS) { toast.error(`Error al guardar relación usuario-proceso-servicio: ${errorRPS.message}`); }
+    if (errorUpdateU) { toast.error(`Error al actualizar roles del usuario: ${errorUpdateU.message}`); }
+  }, [errorU, errorR, errorSU, errorRPS, errorUpdateU]);
+
+  const opcionesRoles = dataR?.map((rol) => ({ value: rol.id, label: rol.rol }));
+
+  // Cargar usuarios al montar el componente y al cambiar de página
+  useEffect(() => {
+    fetchUsuarios(MONITORIZACION, page, 100);
+  }, [page]);
+
+  // fusionar los usuarios con procesos y servicios con los roles del usuario
+  useEffect(() => {
+    if (usuariosProServ && dataU) {
+      const usuariosConRoles = usuariosProServ.map((usuario) => {
+        const usuarioData = dataU.content.find(u => u.username == usuario.usuario.documento);
+        return {
+          ...usuario,
+          roles: usuarioData ? usuarioData.roles : []
         }
-    }, [error]);
-    
-    // maneja la respuesta al guardar la relacion de usuario con procesos y servicios
-    useEffect(() => {
-        if(responseUsuRelPro && responseUsuRelPro.respuesta){
-            Swal.fire({
-                icon: 'success',
-                title: 'Exito',
-                text: `${responseUsuRelPro?.respuesta}`,
-                showConfirmButton: true
-            });
-        }       
-    }, [responseUsuRelPro]);
-
-    // actualizamos el estado de los usuarios con procesos y servicios
-    const handleSelectChange = (documento, tipo, selected) => {
-        const items = [];
-        // Actualizar la relación de usuario con procesos y servicios
-        setUsuariosProcServ((prev) => {
-            const updatedState = prev.map((u) =>
-                u.usuario.documento === documento
-                    ? { ...u, [tipo]: selected }
-                    : u
-            );
-            // Generar los items actualizados para el documento especificado
-            const usuarioData = updatedState.find(
-                (u) => u.usuario.documento === documento
-            );
-    
-            if (usuarioData) {
-                const items = [...usuarioData.procesos, ...usuarioData.servicios];
-                editarUsuarioProcServ(documento, items);
-            }
-    
-            return updatedState;
-        });
-    };
-    
-    
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        saveUsuarioRelacionProcesoServicio(selectedOptions, documento);
+      })
+      setUsuariosProcServ(usuariosConRoles);
     }
-    
-  return (
-    <div className="my-4 container">
-        {(loadingUps || loadingPs || loadingRPS ) && <Loader />}
-      <label>Agregar usuario y relaciones con procesos y/o servicios</label>
-      <form onSubmit={handleSubmit} className="my-3 d-flex align-items-center gap-2">
-        <input type="text" onChange={(e) => setDocumento(e.target.value)} className="form-control" placeholder="Numero de documento" style={{ width: '30%' }} />
-        <Select isMulti options={procesosServicios} onChange={setSelectedOptions} className="basic-multi-select" classNamePrefix="select" placeholder="Selecciona una opción" style={{ width: '30%' }} />
-        <button type="submit" className="btn btn-primary" style={{ whiteSpace: 'nowrap' }}>
-          Guardar
-        </button>
-      </form>
-      <div className="">
-        <table className="table table-striped table-bordered table-hover">
-          <thead className="table-dark">
-            <tr>
-              <th scope="col">Documento</th>
-              <th scope="col">Proceso</th>
-              <th scope="col">Servicio</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuariosProServ.map((u, index) => {
-                return (
-                    <tr key={index}>
-                        <td>{u.usuario.documento}</td>
-                        <td>{<Select isMulti options={procesosServicios.filter(i => i.tipo == 'proceso')} className='basic-multi-select' value={u.procesos} classNamePrefix="select" onChange={(selected) => handleSelectChange(u.usuario.documento, "procesos", selected)}/>}</td>
-                        <td>{<Select isMulti options={procesosServicios.filter(i => i.tipo == 'servicio')} className='basic-multi-select' value={u.servicios} classNamePrefix="select" onChange={(selected) => handleSelectChange(u.usuario.documento, "servicios", selected)}/>}</td>
-                    </tr>
-                )
-            })}
-          </tbody>
+  }, [dataU]);
 
-        </table>
+  // maneja la respuesta al guardar la relacion de usuario con procesos y servicios
+  useEffect(() => {
+    if (responseUsuRelPro && responseUsuRelPro.respuesta) {
+      toast.success(responseUsuRelPro?.respuesta);
+    }
+  }, [responseUsuRelPro]);
+
+  // Actualizar la relación de usuario con procesos y servicios
+  const handleSelectChange = (documento, tipo, selected) => {
+    setUsuariosProcServ((prev) => {
+      const updatedState = prev.map((u) =>
+        u.usuario.documento === documento
+          ? { ...u, [tipo]: selected }
+          : u
+      );
+      // Generar los items actualizados para el documento especificado
+      const usuarioData = updatedState.find(
+        (u) => u.usuario.documento === documento
+      );
+
+      if (usuarioData) {
+        const items = [...usuarioData.procesos, ...usuarioData.servicios];
+        editarUsuarioProcServ(documento, items);
+      }
+
+      return updatedState;
+    });
+  };
+
+  // Actualizar el estado de los usuarios con procesos y servicios al editar
+  useEffect(() => {
+    const newUsuarios = usuariosProServ?.map((u) => {
+      if (u.usuario.documento === dataUpdateU?.username) {
+        return {
+          ...u,
+          procesos: dataUpdateU.procesos,
+          servicios: dataUpdateU.servicios,
+          roles: dataUpdateU.roles
+        };
+      }
+      return u;
+    });
+    setUsuariosProcServ(newUsuarios);
+  }, [dataUpdateU]);
+
+  // maneja cambio de roles del usuario enviando peticion
+  const handleRolesChange = (selectOption, usuario) => {
+    const rolesseleccionados = selectOption.map(option => ({ id: option.value, rol: option.label }));
+    const rolesActuales = usuariosProServ.find(u => u.usuario.documento === usuario.documento)?.roles || [];
+    const rolesQuitados = rolesActuales.filter(r => !rolesseleccionados.some(r2 => r2.id === r.id));
+    const rolesAgregados = rolesseleccionados.filter(r => !rolesActuales.some(r2 => r2.id === r.id));
+    if (rolesQuitados.length > 0) { // si se quita un rol
+      updateUsuarioRoles(usuario.documento, rolesQuitados, "eliminar");
+    } else if (rolesAgregados.length > 0) { // si se agrega un rol
+      updateUsuarioRoles(usuario.documento, rolesAgregados, "agregar");
+    }
+  }
+
+  // cuando el usuario se sincroniza con el microservicio de auhtentication
+  // se guarda el usuario en la base de datos de monitorizaciónHC
+  useEffect(() => {
+    if (!usuarioSincronizado) return;
+    saveUsuario(usuarioSincronizado);
+  }, [usuarioSincronizado])
+
+  // maneja notificación al guardar usuario
+  useEffect(() => {
+    if (!responseSU) return;
+    toast.success(`Usuario ${responseSU.documento} sincronizado correctamente`);
+  }, [responseSU]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    saveUsuarioRelacionProcesoServicio(selectedOptions, documento);
+  }
+
+  // manejo de loading de las peticiones que se ejecutan al montar el componente
+  if (loadingU || loadingR) return <Loader />;
+
+  return (
+    <>
+      {(loadingUps || loadingPs || loadingRPS || loadingSU || loadingUpdateU) && <Loader />}
+      {/** Titulo de la página */}
+      <p className="text-center bg-gray-100 text-gray-800 p-2 rounded-md text-lg font-medium">
+        Ajustes <strong className="text-blue-600">MONITORIZACIONHC</strong>
+      </p>
+      {/** Acordeón - Formulario */}
+      <div className="mb-4 border rounded-xl overflow-visible shadow">
+        <button onClick={() => setOpenForm(!openForm)}
+          className="w-full flex justify-between items-center px-6 py-2 bg-blue-100 hover:bg-blue-200 text-left">
+          <h6 className="text-lg font-semibold text-blue-800">Formulario de sincronización</h6>
+          <span className="ml-2 text-gray-500">&#x25BC;</span> {/* ▼ */}
+        </button>
+
+        {openForm && (
+          <>
+            <ModificarRolesUsuario listRoles={dataR} onData={(respuesta) => { setUsuarioSincronizado(respuesta) }} />
+            <div className='p-6 bg-white space-y-6'>
+              <label>Agregar usuario y relaciones con procesos y/o servicios</label>
+              <form onSubmit={handleSubmit} className="my-3 d-flex align-items-center gap-2">
+                <input type="text" onChange={(e) => setDocumento(e.target.value)} className="form-control" placeholder="Numero de documento" style={{ width: '30%' }} />
+                <Select isMulti options={procesosServicios} onChange={setSelectedOptions} className="basic-multi-select" classNamePrefix="select" placeholder="Selecciona una opción" style={{ width: '30%' }} />
+                <button type="submit" className="btn btn-primary" style={{ whiteSpace: 'nowrap' }}>
+                  Guardar
+                </button>
+              </form>
+            </div>
+          </>
+        )}
       </div>
-    </div>
+
+      {/** Acordeón - Tabla */}
+      <div className="mb-4 border rounded-xl overflow-visible shadow">
+        <button onClick={() => setOpenTabla(!openTabla)}
+          className="w-full flex justify-between items-center px-6 py-2 bg-blue-100 hover:bg-blue-200 text-left">
+          <h6 className="text-lg font-semibold text-blue-800">Usuarios sincronizados con el microservicio</h6>
+          <span className="ml-2 text-gray-500">&#x25BC;</span> {/* ▼ */}
+        </button>
+        {openTabla && (<div className="p-6 bg-gray-100 space-y-6">
+
+          <div className="">
+            <table className="table table-striped table-bordered table-hover">
+              <thead className="table-dark">
+                <tr>
+                  <th scope="col">Documento</th>
+                  <th scope="col">Proceso</th>
+                  <th scope="col">Servicio</th>
+                  <th scope='col'>Roles</th>
+                </tr>
+              </thead>
+              <tbody>
+                {usuariosProServ.map((u, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>{u.usuario.documento}</td>
+                      <td>{<Select isMulti options={procesosServicios.filter(i => i.tipo == 'proceso')} className='basic-multi-select' value={u.procesos} classNamePrefix="select" onChange={(selected) => handleSelectChange(u.usuario.documento, "procesos", selected)} />}</td>
+                      <td>{<Select isMulti options={procesosServicios.filter(i => i.tipo == 'servicio')} className='basic-multi-select' value={u.servicios} classNamePrefix="select" onChange={(selected) => handleSelectChange(u.usuario.documento, "servicios", selected)} />}</td>
+                      <td>{u.roles && (
+                        <Select isMulti options={opcionesRoles} value={u.roles.map(r => ({ value: r.id, label: r.rol }))} onChange={(selectOpci) => handleRolesChange(selectOpci, u.usuario)} />
+                      )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            <Pagination currentPage={page} totalPages={dataU.totalPages} onPageChange={setPage} />
+          </div>
+        </div>)}
+      </div>
+    </>
   );
 }
 
