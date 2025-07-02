@@ -5,7 +5,7 @@ import SincronizarUsuario from './SincronizarUsuario';
 import { toast } from 'react-toastify';
 import { Spinner } from 'react-bootstrap';
 
-function ModificarRolesUsuario({ listRoles }) {
+function ModificarRolesUsuario({ listRoles, onData }) {
 
     const { data, loading, error, updateUsuarioRoles } = useUpdateUsuarioRoles();
 
@@ -21,8 +21,15 @@ function ModificarRolesUsuario({ listRoles }) {
             setShowSincronizar(true);
         } else if (error) {
             toast.error("Ocurrió un error al actualizar los roles del usuario");
+            console.error("Error al actualizar los roles del usuario:", error);
         }
     }, [error])
+
+    // Llamar a la función onData cuando se recibe data
+    useEffect(() => {
+        if (!data) return;
+        onData(data);
+    }, [data])
 
     // Actualizar la lista de roles del usuario sincronizado
     const handleSubmit = (e) => {
@@ -33,7 +40,7 @@ function ModificarRolesUsuario({ listRoles }) {
             toast.error("Debe ingresar un número de documento y seleccionar al menos un rol");
             return;
         }
-        updateUsuarioRoles(doc, rolesSeleccionados);
+        updateUsuarioRoles(doc, rolesSeleccionados, "agregar");
     }
 
     return (
@@ -69,5 +76,4 @@ function ModificarRolesUsuario({ listRoles }) {
         </div>
     )
 }
-
 export default ModificarRolesUsuario
