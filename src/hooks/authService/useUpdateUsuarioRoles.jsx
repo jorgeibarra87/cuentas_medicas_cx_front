@@ -1,16 +1,23 @@
 import { useState } from "react";
-import { actualizarRolesDeUsuario } from "../../api/authservice/usuarioServiceApiAuth";
+import { agragrRolesAUsuario, eliminarRolesAUsuario } from "../../api/authservice/usuarioServiceApiAuth";
 
 const useUpdateUsuarioRoles = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const updateUsuarioRoles = async (documento, roles) => {
+    const updateUsuarioRoles = async (documento, roles, accion) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await actualizarRolesDeUsuario(documento, roles);
+            let response;
+            if (accion === "agregar") {
+                response = await agragrRolesAUsuario(documento, roles);
+            } else if (accion === "eliminar") {
+                response = await eliminarRolesAUsuario(documento, roles);
+            } else {
+                throw new Error("Acción no válida. Use 'agregar' o 'eliminar'.");
+            }
             setData(response);
         } catch (error) {
             setError(error);

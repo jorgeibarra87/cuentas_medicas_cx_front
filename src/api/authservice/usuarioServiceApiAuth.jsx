@@ -25,14 +25,26 @@ export const obtenerUsuarioPorMicroservicioPageable = async (nameMicroservice, p
     }
 }
 
-export const actualizarRolesDeUsuario = async (documento, roles) => {
+export const agragrRolesAUsuario = async (documento, roles) => {
     try {
-        const response = await apiClientAuthService.put(`usuario/roles/${documento}`,
+        const response = await apiClientAuthService.post(`usuario/${documento}/roles`,
             {roles: roles}
         );
         return response.data;
     } catch (error) {
         console.error('Error al obtener todos los usuarios', error);
+        throw error;
+    }
+}
+
+export const eliminarRolesAUsuario = async (documento, roles) => {
+    try {
+        const response = await apiClientAuthService.delete(`usuario/${documento}/roles`, {
+            data: { roles: roles }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al eliminar roles de usuario', error);
         throw error;
     }
 }
