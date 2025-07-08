@@ -27,8 +27,6 @@ function AjustesMhc() {
   const { loadingRPS, saveUsuarioRelacionProcesoServicio, response: responseUsuRelPro, error: errorRPS } = useSaveUsuarioProcServ();
   const { editarUsuarioProcServ } = useEditUsuarioProcServ();
 
-  console.log(usuariosProServ)
-
   const [documento, setDocumento] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [openForm, setOpenForm] = useState(false);
