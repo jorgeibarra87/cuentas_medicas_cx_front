@@ -27,6 +27,8 @@ function AjustesMhc() {
   const { loadingRPS, saveUsuarioRelacionProcesoServicio, response: responseUsuRelPro, error: errorRPS } = useSaveUsuarioProcServ();
   const { editarUsuarioProcServ } = useEditUsuarioProcServ();
 
+  console.log(usuariosProServ)
+
   const [documento, setDocumento] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [openForm, setOpenForm] = useState(false);
@@ -209,8 +211,8 @@ function AjustesMhc() {
                   return (
                     <tr key={index}>
                       <td>{u.usuario.documento}</td>
-                      <td>{<Select isMulti options={procesosServicios.filter(i => i.tipo == 'proceso')} className='basic-multi-select' value={u.procesos} classNamePrefix="select" onChange={(selected) => handleSelectChange(u.usuario.documento, "procesos", selected)} />}</td>
-                      <td>{<Select isMulti options={procesosServicios.filter(i => i.tipo == 'servicio')} className='basic-multi-select' value={u.servicios} classNamePrefix="select" onChange={(selected) => handleSelectChange(u.usuario.documento, "servicios", selected)} />}</td>
+                      <td>{<Select isMulti options={procesosServicios.filter(i => i.tipo == 'PROCESO')} className='basic-multi-select' value={u.procesos} classNamePrefix="select" onChange={(selected) => handleSelectChange(u.usuario.documento, "procesos", selected)} />}</td>
+                      <td>{<Select isMulti options={procesosServicios.filter(i => i.tipo == 'SERVICIO')} className='basic-multi-select' value={u.servicios} classNamePrefix="select" onChange={(selected) => handleSelectChange(u.usuario.documento, "servicios", selected)} />}</td>
                       <td>{u.roles && (
                         <Select isMulti options={opcionesRoles} value={u.roles.map(r => ({ value: r.id, label: r.rol }))} onChange={(selectOpci) => handleRolesChange(selectOpci, u.usuario)} />
                       )}

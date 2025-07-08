@@ -43,6 +43,8 @@ function ReportesPorcentajes () {
 
     }
 
+    if(error) return <div className="alert alert-danger">Error al cargar los datos: {error.message}</div>;
+
     return (
         <div className="container-fluid">
             <div className="row">

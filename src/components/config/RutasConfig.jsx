@@ -77,7 +77,7 @@ export default function RutasConfig() {
                     <Route path='solicitudes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HumanizacionSolicitudes}/></RequireAuth>}/>
                 </Route>
                 <Route path='/monitorizacionhc'>
-                    <Route path='preguntas' element={<RequireAuth isLogged={isLogged} loading={loading} ><Sidebar componente={FormPreguntas}/></RequireAuth>} />
+                    <Route path='preguntas/:tipo' element={<RequireAuth isLogged={isLogged} loading={loading} ><Sidebar componente={FormPreguntas}/></RequireAuth>} />
                     <Route path='reportes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReportesPorcentajes}/></RequireAuth>} />
                     <Route path='ajustes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={AjustesMhc}/></RequireAuth>} />
                 </Route>

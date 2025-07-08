@@ -3,28 +3,35 @@ import { useSelector } from "react-redux";
 import useFecthUsuarioProcServ from "../../hooks/monitorizacionHC/useFetchUsuarioProcServ";
 import Select from "react-select";
 import Swal from "sweetalert2";
+import { useParams } from "react-router-dom";
+import Error404 from "../Error404";
+import AdnIngreso from "../../models/dinamica/AdnIngreso";
 
 const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreguntas, setServicio}) => {
+  
+    const tiposValidos = ["medico", "enfermeria"];
 
     const [ingreso, setIngreso] = useState('');
     const {procServ, loadingUPS , error, fetchUsuaroProcServByDocumento} = useFecthUsuarioProcServ();
+    const {tipo: tipoPregunta} = useParams(); // Medico, Enfermeria
+
 
     const statelogin = useSelector(state => state.login);
     const [usuario] = useState(statelogin.decodeToken);
     const [servicios] = useState(usuario.servicios);
-
+    
     const handleSearch = () =>  {
-        if(ingreso.trim()){
-          fetchAdnIngreso(ingreso); 
-        }
+      if(ingreso.trim()){
+        fetchAdnIngreso(ingreso); 
+      }
     };
-
+    
     useEffect(() => {
-        if(procServ.length == 0){
-            fetchUsuaroProcServByDocumento(usuario.sub);
-        }
+      if(procServ.length == 0){
+        fetchUsuaroProcServByDocumento(usuario.sub);
+      }
     },[procServ]);
-
+    
     useEffect(() => {
       if(error){
         Swal.fire({
@@ -34,19 +41,22 @@ const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPregunt
         })
       }
     },[error]);
-
+    
     const handleChange = (e) => {
-        setIngreso(e.target.value);
-        setAdnIngreso([]);
+      setIngreso(e.target.value);
+      setAdnIngreso(new AdnIngreso());
     }
-
+    
     const handleSelect = (e) => {
-        const { value, tipo } = e;
-        setServicio({id: value, tipo: tipo});
-        fetchPreguntas(value, tipo);
+      const { value, tipo } = e;
+      setServicio({id: value, tipo: tipo});
+      fetchPreguntas(value, tipo, tipoPregunta.toUpperCase());
     }
-
-
+    
+    if (!tiposValidos.includes(tipoPregunta.toLowerCase())) {
+      return <Error404 />;
+    } 
+    
 return (
     <div className="p-4 border rounded-lg shadow-lg">
       <div className="d-flex align-items-center flex-wrap gap-2">
