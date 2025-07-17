@@ -25,7 +25,7 @@ const useFetchProcesoServicioConPreguntas = () => {
          }
      }
 
-     return { procesosServicios, loadingPs: loading, fetchProcesosUsuariosConPreguntas };
+     return { procesosServicios, loadingPs: loading, error, fetchProcesosUsuariosConPreguntas };
 }
 
 export default useFetchProcesoServicioConPreguntas;
