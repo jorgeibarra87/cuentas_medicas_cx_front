@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import UseAxiosInstance from '../../utilities/UseAxiosInstance';
+import { useEffect, useState } from 'react'
 import { Button, Modal } from 'react-bootstrap';
 import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
 import Swal from 'sweetalert2';
-import { focusModal } from '../../utilities/FocusModal';
+import { obtenerBloquesServicio } from '../../api/asignacionCamas/bloqueServicioService';
+import { obtenerEspecialidades } from '../../api/asignacionCamas/especialidadService';
+import { obtenerMedidasAislamiento } from '../../api/asignacionCamas/medidasAislamientoService';
+import { modificarVersionSolicitudCama } from '../../api/asignacionCamas/versionSolicitudCamaService';
+import { obtenerDiagnosticos } from '../../api/asignacionCamas/diagnosticoService';
 
 const initialFormState = {
     requiereAislamiento: false,
@@ -15,7 +18,6 @@ const initialFormState = {
     diagnosticos: []
   }
 export default function FormEditSolicitudCama({versionSolicitudCama, showFormEditSolicitudCama, handleCloseFormEditSolicitudCama, setResponseEditar}) {
-    const axiosInstance = UseAxiosInstance();
 
     const [form, setForm] = useState(initialFormState);
     const [especialidades, setEspecialidades] = useState([]);
@@ -36,8 +38,8 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
         if(versionSolicitudCama != null){
             const getMedidasAislamiento = async () => {
                 try {
-                    const response = await axiosInstance.get(`medidasAislamiento`);
-                    setMedidasAislamiento(response.data);
+                    const response = await obtenerMedidasAislamiento();
+                    setMedidasAislamiento(response);
                 } catch (error) {
                     console.error(error);
                 }
@@ -45,9 +47,9 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
             getMedidasAislamiento();
 
             const getBloquesServicio = async () => {
-                await axiosInstance.get(`bloque-servicio`)
+                obtenerBloquesServicio()
                 .then(response => {
-                    setBloquesServicio(response.data);
+                    setBloquesServicio(response);
                 }).catch(error => {
                     console.error(error);
                 });
@@ -55,9 +57,9 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
             getBloquesServicio();
 
             const getEspecialidades = async () => {
-                axiosInstance.get(`titulosFormacionAcademica/especialidad`)
+                obtenerEspecialidades()
                 .then(response => {
-                    setEspecialidades(response.data);
+                    setEspecialidades(response);
                 }).catch(error => {
                     console.error(error);
                 });
@@ -127,10 +129,13 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
         if (!inputValue) {
             return callback([]);
         }
+        const getDiagnosticos = async (inputValue) => {
+            return await obtenerDiagnosticos(inputValue);
+        }
         if (inputValue.length > 3) {
-            axiosInstance.get(`diagnostico/${inputValue}`)
+            getDiagnosticos(inputValue)
             .then(response => {
-                const options = response.data.map(diagnostico => ({
+                const options = response.map(diagnostico => ({
                     value: diagnostico.id,
                     label: diagnostico.nombre
                 }));
@@ -179,7 +184,7 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await axiosInstance.put(`versionSolicitudCama/${versionSolicitudCama.id}`, form)
+        await modificarVersionSolicitudCama(versionSolicitudCama.id, form)
         .then(response => {
             handleCloseFormEditSolicitudCama();
             Swal.fire({

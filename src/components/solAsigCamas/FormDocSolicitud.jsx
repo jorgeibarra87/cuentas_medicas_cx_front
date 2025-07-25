@@ -1,12 +1,9 @@
-import React from 'react'
 import { Modal, Form, Button } from 'react-bootstrap'
 import FormSolicitudCama from './FormSolicitudCama'
-import UseAxiosInstance from '../../utilities/UseAxiosInstance';
 import { useState } from 'react';
+import { obtenerInformacionPacienteHospitalizadoByIdentificacion } from '../../api/dinamicados/pacientesHospitalizados';
 
 export default function AsignarSolicitud({ showModalSolicitud, handleCloseModalSolicitud }) {
-
-    const axiosInstance = UseAxiosInstance();
 
     const [form, setForm] = useState({
         documento: ''
@@ -23,13 +20,13 @@ export default function AsignarSolicitud({ showModalSolicitud, handleCloseModalS
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axiosInstance.get(`dinamica/api/pacienteHospitalizado/infoIngresoServicioCama/${form.documento}`)
+            const response = await obtenerInformacionPacienteHospitalizadoByIdentificacion(form.documento);
             handleCloseModalSolicitud();
             setShowFormSolicitud(true);
             setForm({
                 documento: ''
             })
-            setPacienteHospitalizado(response.data);
+            setPacienteHospitalizado(response);
         } catch (error) {
             if (error.response && error.response.data && error.response.data.codigoError != undefined) {
                 setError({ ...error, response: { ...error.response, data: { ...error.response.data, mensaje: error.response.data.mensaje.split(',')[1] } } });
