@@ -55,7 +55,7 @@ function FormPreguntas() {
             ingreso: op,
             procesoServicio: servicio
         };
-        saveRespuestas(form);
+        saveRespuestas(form, tipoPregunta.toUpperCase());
     };
 
     // al recibir respuestas limpiamos el ingreso.

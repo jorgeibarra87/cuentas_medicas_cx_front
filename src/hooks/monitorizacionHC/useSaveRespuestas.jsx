@@ -7,11 +7,11 @@ const useSaveRespuestas = () => {
     const [error, setError] = useState(null);
     const [response, setResponse] = useState(null);
 
-    const saveRespuestas = async (objIngresoConRespuestas) => {
+    const saveRespuestas = async (objIngresoConRespuestas, tipoPregunta) => {
         setLoading(true);
         setError(null);
         try {
-            const respuestasData = await guardarRespuestas(objIngresoConRespuestas);
+            const respuestasData = await guardarRespuestas(objIngresoConRespuestas, tipoPregunta);
             setResponse(respuestasData);
         } catch (error) {
             setError(error);

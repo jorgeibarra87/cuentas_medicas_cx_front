@@ -1,9 +1,9 @@
 import Ingreso from "../../models/monitorizacionHc/Ingreso";
 import apiClienteMonitorizacionHc from "./apiClienteMonitorizacionHc";
 
-export const guardarRespuestas = async (respuestas) => {
+export const guardarRespuestas = async (respuestas, tipoPregunta) => {
     try {
-        const response = await apiClienteMonitorizacionHc.post('/respuestas', respuestas);
+        const response = await apiClienteMonitorizacionHc.post(`/respuestas/${tipoPregunta}`, respuestas);
         return response.data;
     }catch(error){
         console.error('Error al guardar las respuestas de monitorizacion microservice',error);
