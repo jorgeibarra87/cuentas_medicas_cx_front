@@ -10,6 +10,16 @@ export const sincronizarUsuario = async (documento) => {
     }
 }
 
+export const obtenerTodosLosUsuarios = async () => {
+    try {
+        const response = await apiClientAuthService.get('usuario');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener todos los usuarios', error);
+        throw error;
+    }
+};
+
 export const obtenerUsuarioPorMicroservicioPageable = async (nameMicroservice, page, size) => {
     try {
         const response = await apiClientAuthService.get(`usuario/microservicio/${nameMicroservice}`,{
