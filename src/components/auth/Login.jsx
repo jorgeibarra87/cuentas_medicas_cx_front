@@ -1,8 +1,5 @@
 import { useState } from "react"
-import { RUTA_BACK_PRODUCCION } from "../../types";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { iniciarSesionAction } from "../../actions/loginActions";
 import Swal from "sweetalert2";
 import spinnerLoginText from "../Loading";
 
@@ -12,7 +9,6 @@ const rutamicroservicioauth = window.env.VITE_URL_AUTH
 
 const Login = () => {
 
-    const dispatch = useDispatch();
     const [datos, setDatos] = useState(initailForm);
     const [mostrarContrasena, setMostrarContrasena] = useState(false);
     const [error, setError] = useState(null);
@@ -31,10 +27,8 @@ const Login = () => {
         }
         spinnerLoginText("Por favor espere...");
         try{
-            const response = await axios.post(`${RUTA_BACK_PRODUCCION}auth/login`, datos);
             const token2 = await  axios.post(`${ruta}${rutamicroservicioauth}/auth/login`, datos);
             localStorage.setItem('tokendos', token2.data.jwt);
-            dispatch(iniciarSesionAction(response.data));
             Swal.close();
             //navigate('/'); // Redirige al usuario a '/'
         }catch(error){
