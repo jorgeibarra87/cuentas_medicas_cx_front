@@ -1,10 +1,9 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
 import { Button, Form, ListGroup, ListGroupItem, Modal } from 'react-bootstrap';
 import { useEvalueteFirst } from '../../hooks/tamizaje/useEvalueteFirst';
 
 export const ModalReevaluate = ({ isOpen, checksArr, onClose, refetch, clearChecks }) => {
-  const [onEvaluate, { data, error, loading }] = useEvalueteFirst();
+  const { fetchFirstEvaluate, data, error, loading } = useEvalueteFirst();
   const [selectValue, setSelectValue] = useState('REEVALUAR SEMANALMENTE');
 
   useEffect(() => {
@@ -15,19 +14,13 @@ export const ModalReevaluate = ({ isOpen, checksArr, onClose, refetch, clearChec
 
   useEffect(() => {
     if (!data) return;
-    if (data?.length > 0) {
-      onClose();
-      console.log('Pacientes agregados correctamente');
-      refetch();
-      clearChecks();
-    } else if (data.error) {
-      console.error(data.error);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    onClose();
+    refetch();
+    clearChecks();
   }, [data]);
 
   const handleEvaluete = () => {
-    onEvaluate({
+    fetchFirstEvaluate({
       status: selectValue,
       arrPatients: checksArr.map((inf) => ({
         documentNumber: inf.documentNumber,

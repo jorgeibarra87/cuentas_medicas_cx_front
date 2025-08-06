@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDisclourse } from '../../hooks/tamizaje/useDisclourse';
-import { useGetData } from '../../hooks/tamizaje/useGetData';
+import { useGetTamizaje } from '../../hooks/tamizaje/useGetTamizaje';
 import { getFormattedDate, getNextSevenDay, getSevenDayAgo, isPassedSeveDays, parseDate, parseDateHours } from '../helpers';
 import { Button, Col, Container, Form, OverlayTrigger, Row, Spinner, Table, Tooltip } from 'react-bootstrap';
 import { DropdownTableCols } from './DropdownTableCols';
@@ -15,7 +15,7 @@ const OPTIONS = {
 };
 
 function Tamizaje() {
-  const [getData, { data, error, loading }] = useGetData();
+  const { getTamizaje, data, loading, error } = useGetTamizaje();
   const [tableColums, setTableColums] = useState({
     age: true,
     gender: true,
@@ -32,13 +32,11 @@ function Tamizaje() {
   const [select, setSelect] = useState(OPTIONS.TODOS);
 
   useEffect(() => {
-    if (!dateValueEnd) return;
-    if (!dateValueStart) return;
-    getData({
+    if (!dateValueEnd || !dateValueStart) return;
+    getTamizaje({
       fechaFinal: dateValueEnd,
       fechaInicial: dateValueStart,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateValueEnd, dateValueStart]);
 
   useEffect(() => {
@@ -68,9 +66,6 @@ function Tamizaje() {
         info.evaluationDate ? `${parseDate(info.evaluationDate)} ${parseDateHours(info.evaluationDate)}` : '\t'
       }\t${info.evaluationDate ? getNextSevenDay(info.evaluationDate) : '\t'}\t${info.secondValue || ''}\n`;
     });
-    /* navigator.clipboard.writeText(text).then(() => {
-      setShowSuccess(true);
-    }); */
 
     const textarea = document.createElement('textarea');
     textarea.value = text;
@@ -78,10 +73,6 @@ function Tamizaje() {
     textarea.select();
     document.execCommand('copy');
     document.body.removeChild(textarea);
-    /* toast.info("Copiado", {
-      position: "top-center",
-      delay: 0,
-    }); */
   };
 
   const clearChecks = () => setChecksArr([]);
@@ -112,14 +103,8 @@ function Tamizaje() {
             <div className="d-flex align-items-center gap-2">
               <Form.Group controlId="date-init">
                 <Form.Label>Inicio</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={dateValueStart}
-                  onChange={(e) => {
-                    setDateValueStart(e.target.value);
-                    setDateValueEnd('');
-                  }}
-                />
+                <Form.Control type="date" value={dateValueStart} 
+                  onChange={(e) => {setDateValueStart(e.target.value); setDateValueEnd(''); }} />
               </Form.Group>
               <Form.Group controlId="date-end">
                 <Form.Label>Fin</Form.Label>
@@ -166,7 +151,7 @@ function Tamizaje() {
             </Button>
             <DeleteBtn disabled={checksArr.length !== 1 || checksArr?.[0]?.firstValue == null} info={checksArr?.[0]} clearChecks={clearChecks}
               refetch={() => {
-                getData({
+                getTamizaje({
                   fechaFinal: dateValueEnd,
                   fechaInicial: dateValueStart,
                 });
@@ -232,11 +217,7 @@ function Tamizaje() {
                   {tableColums.gender && <td>{info.gender}</td>}
                   {tableColums.service && (
                     <td title={info.bethDescription}>
-                      <div style={{
-                          maxWidth: '20ch',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}>
+                      <div style={{maxWidth: '20ch', overflow: 'hidden', textOverflow: 'ellipsis', }}>
                         {info.bethDescription}
                       </div>
                     </td>
@@ -256,12 +237,7 @@ function Tamizaje() {
                     </div>
                   </td>
                   <td title={info.firstValue} className={`${info.firstValue ? (info.firstValue === info.firstValue ? '' : 'bg-danger text-light') : ''}`}>
-                    <div
-                      style={{
-                        maxWidth: '20ch',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}>
+                    <div style={{ maxWidth: '20ch', overflow: 'hidden', textOverflow: 'ellipsis', }}>
                       {info.firstValue || ' '}
                     </div>
                   </td>
@@ -269,11 +245,7 @@ function Tamizaje() {
                   <td>{info.evaluationDate && info.firstValue ? getNextSevenDay(info.evaluationDate) : ''}</td>
                   <td title={info.secondValue} className={`${info.secondValue ? (info.secondValue === info.secondValue ? '' : 'bg-danger text-light') : ''}`}>
                     <div
-                      style={{
-                        maxWidth: '20ch',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}>
+                      style={{maxWidth: '20ch', overflow: 'hidden', textOverflow: 'ellipsis', }}>
                       {info.secondValue || ' '}
                     </div>
                   </td>
@@ -293,7 +265,7 @@ function Tamizaje() {
 
       {isOpen && checksArr.length > 0 && (
         <ModalReevaluate checksArr={checksArr} isOpen={isOpen} onClose={onClose} aria-modal refetch={() => {
-            getData({
+            getTamizaje({
               fechaFinal: dateValueEnd,
               fechaInicial: dateValueStart,
             });
@@ -303,7 +275,7 @@ function Tamizaje() {
       )}
       {isOpenFinish && checksArr.length > 0 && (
         <ModalFinish checksArr={checksArr} isOpen={isOpenFinish} onClose={onCloseFinish} aria-modal refetch={() => { 
-          getData({
+          getTamizaje({
             fechaFinal: dateValueEnd, 
             fechaInicial: dateValueStart,
           }); 

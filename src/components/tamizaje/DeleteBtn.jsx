@@ -1,11 +1,10 @@
-/* eslint-disable react/prop-types */
 import { Button, Spinner } from "react-bootstrap";
 import { DeleteIcon } from "../../icons";
 import { useEffect } from "react";
 import { useDeleteTamizaje } from "../../hooks/tamizaje/useDeleteTamizaje";
 
 export const DeleteBtn = ({ refetch, clearChecks, disabled, info }) => {
-  const [onDelete, { data, loading, error }] = useDeleteTamizaje();
+  const {deleteTamizaje, data, loading, error } = useDeleteTamizaje();
 
   useEffect(() => {
     if (error) {
@@ -15,21 +14,15 @@ export const DeleteBtn = ({ refetch, clearChecks, disabled, info }) => {
 
   useEffect(() => {
     if (!data) return;
-    if (data?.id > 0) {
-      console.log("Tamizaje eliminado correctamente");
-      refetch();
-      clearChecks();
-    } else if (data.error) {
-      console.log(data.error);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    console.log("Tamizaje eliminado correctamente");
+    refetch();
+    clearChecks();
   }, [data]);
   return (
     <Button variant="danger" disabled={disabled || loading} 
       onClick={() => {
-        console.log("info", info);
         if (!info.incomeId) return;
-        onDelete({
+        deleteTamizaje({
           incomeId: info.incomeId,
         });
       }}

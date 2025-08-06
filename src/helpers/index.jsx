@@ -45,6 +45,5 @@ export const isPassedSeveDays = (date) => {
   const differenceInMs = today.getTime() - givenDate.getTime();
 
   const differenceInDays = differenceInMs / (1000 * 60 * 60 * 24);
-  console.log("differenceInDays >= 7", differenceInDays >= 7);
   return differenceInDays >= 7;
 };

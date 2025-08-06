@@ -3,7 +3,7 @@ import { Button, Form, ListGroup, ListGroupItem, Modal } from 'react-bootstrap';
 import { useEvalueteSecond } from '../../hooks/tamizaje/useEvalueteSecond';
 
 export const ModalFinish = ({ isOpen, checksArr, onClose, refetch, clearChecks }) => {
-  const [onEvaluate, { data, error, loading }] = useEvalueteSecond();
+  const {fetchFinalizarTamizaje, data, error, loading } = useEvalueteSecond();
   const [selectValue, setSelectValue] = useState('REEVALUAR SEMANALMENTE');
 
   useEffect(() => {
@@ -14,22 +14,17 @@ export const ModalFinish = ({ isOpen, checksArr, onClose, refetch, clearChecks }
 
   useEffect(() => {
     if (!data) return;
-    if (data?.length > 0) {
-      onClose();
-      console.log('Tamizajes finalizados correctamente');
-      refetch();
-      clearChecks();
-    } else if (data.error) {
-      console.error(data.error);
-    }
+    onClose();
+    console.log('Tamizajes finalizados correctamente');
+    refetch();
+    clearChecks();
   }, [data]);
 
   const handleEvaluete = () => {
-    console.log("checksArr", checksArr);
     if (checksArr.some((inf) => inf.incomeId == null)) {
       return;
     }
-    onEvaluate({
+    fetchFinalizarTamizaje({
       status: selectValue,
       arrPatients: checksArr.map((inf) => ({
         incomeId: inf.incomeId,
