@@ -38,7 +38,7 @@ export default function Sidebar({ componente: Componente }) {
 
     
     useEffect(() => {
-        const token = localStorage.getItem('tokendos');
+        const token = localStorage.getItem('tokenhusjp');
         const usuario2 = jwtDecode(token);
         const combinedAuthorities = usuario.authorities.concat(usuario2.authorities); 
                 

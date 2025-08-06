@@ -29,9 +29,7 @@ export default function Navbar() {
     }
 
     const handleLogout = () => {
-        axiosInstance.post(`${RUTA_BACK_PRODUCCION}auth/logout?token=${token}`);
-        dispatch(cerrarSesionAction());
-        window.location.href = "/";
+        localStorage.removeItem('tokenhusjp');
     }
 
     return (
