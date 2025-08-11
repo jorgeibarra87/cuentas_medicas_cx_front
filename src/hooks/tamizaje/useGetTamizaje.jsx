@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { obtenerTamizajes } from "../../api/dinamicados/nutricionService";
+import { obtenerTamizajes } from "../../api/dinamica/nutricionService";
 import { obtenerEvaluacionesTamizajes } from "../../api/nutricion/tamizajeService";
 
 export const useGetTamizaje = () => {

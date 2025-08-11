@@ -71,7 +71,7 @@ function FormPreguntas() {
             {(loadingRes || loadingAdnI || loadingP) && <Loader />}
             <div className="row">
                 {/* <SearchIngreso fetchAdnIngreso={fetchAdnIngreso} setAdnIngreso={setAdnIngreso} fetchPreguntas={fetchPreguntas} adnIngreso={adnIngreso} fetchRespuestasByIngreso={fetchRespuestasByIngreso} setServicio={setServicio}/> */}
-                <SearchIngreso {...{ fetchAdnIngreso, setAdnIngreso, fetchPreguntas, adnIngreso, setServicio }} />
+                <SearchIngreso {...{ fetchAdnIngreso, setAdnIngreso, fetchPreguntas, adnIngreso, setServicio, setRespuestas }} />
                 {grupoPreguntas.length == 0 ? (
                     adnIngreso.id ? (
                         <div className="mt-4">

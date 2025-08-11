@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import useFecthUsuarioProcServ from "../../hooks/monitorizacionHC/useFetchUsuarioProcServ";
 import Select from "react-select";
-import Swal from "sweetalert2";
 import { useParams } from "react-router-dom";
 import Error404 from "../Error404";
 import AdnIngreso from "../../models/dinamica/AdnIngreso";
 
-const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreguntas, setServicio}) => {
+const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreguntas, setServicio, setRespuestas}) => {
   
     const tiposValidos = ["medico", "enfermeria"];
 
@@ -15,11 +14,9 @@ const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPregunt
     const {procServ, loadingUPS , error, fetchUsuaroProcServByDocumento} = useFecthUsuarioProcServ();
     const {tipo: tipoPregunta} = useParams(); // Medico, Enfermeria
 
-
     const statelogin = useSelector(state => state.login);
     const [usuario] = useState(statelogin.decodeToken);
-    const [servicios] = useState(usuario.servicios);
-    
+
     const handleSearch = () =>  {
       if(ingreso.trim()){
         fetchAdnIngreso(ingreso); 
@@ -32,16 +29,6 @@ const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPregunt
       }
     },[procServ]);
     
-    useEffect(() => {
-      if(error){
-        Swal.fire({
-          title: error?.title || 'Error',
-          text: error?.mensaje || '',
-          icon: error?.icon || 'error',
-        })
-      }
-    },[error]);
-    
     const handleChange = (e) => {
       setIngreso(e.target.value);
       setAdnIngreso(new AdnIngreso());
@@ -51,11 +38,14 @@ const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPregunt
       const { value, tipo } = e;
       setServicio({id: value, tipo: tipo});
       fetchPreguntas(value, tipo, tipoPregunta.toUpperCase());
+      setRespuestas([]); // Limpiamos las respuestas previas
     }
     
     if (!tiposValidos.includes(tipoPregunta.toLowerCase())) {
       return <Error404 />;
     } 
+    
+    if(error) return <div className="alert alert-danger">Se presento un error al cargar los procesos y servicios del usuario</div>;
     
 return (
     <div className="p-4 border rounded-lg shadow-lg">
@@ -64,7 +54,7 @@ return (
         <button onClick={handleSearch} className="btn btn-primary">
           Buscar
         </button>
-        {adnIngreso.paciente && servicios && (
+        {adnIngreso.paciente && (
           <>
             <label className="mx-2 mb-0">doc paciente:</label>
             <span>{adnIngreso.paciente.documento}</span>

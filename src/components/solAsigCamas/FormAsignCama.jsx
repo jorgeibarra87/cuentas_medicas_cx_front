@@ -4,7 +4,7 @@ import Select from 'react-select'
 import { obtenerServiciosByBloqueId } from '../../api/asignacionCamas/solicitudCamaService';
 import { obtenerCamasPorServicio } from '../../api/asignacionCamas/camaService';
 import { guardarVersionSolucitudCama } from '../../api/asignacionCamas/asignacionVersionSolCamaService';
-import { obtenerEstadoDeCamas } from '../../api/dinamicados/hpnDefCamService';
+import { obtenerEstadoDeCamas } from '../../api/dinamica/hpnDefCamService';
 
 const initialFormState = {
     asignacionCama: {

@@ -1,5 +1,5 @@
 import AdnIngreso from '../../models/dinamica/AdnIngreso';
-import apiClienteDinamica from './apiClienteDinamicados';
+import apiClienteDinamica from './apiClienteDinamica';
 
 export const obtenerAdnIngreso = async (idAdnIngreso) => {
     try {

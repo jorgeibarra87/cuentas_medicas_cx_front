@@ -1,7 +1,7 @@
 import { Modal, Form, Button } from 'react-bootstrap'
 import FormSolicitudCama from './FormSolicitudCama'
 import { useState } from 'react';
-import { obtenerInformacionPacienteHospitalizadoByIdentificacion } from '../../api/dinamicados/pacientesHospitalizados';
+import { obtenerInformacionPacienteHospitalizadoByIdentificacion } from '../../api/dinamica/pacientesHospitalizados';
 
 export default function AsignarSolicitud({ showModalSolicitud, handleCloseModalSolicitud }) {
 

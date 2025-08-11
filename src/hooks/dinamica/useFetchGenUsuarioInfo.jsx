@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { obtenerInfoGenUsuario } from "../../api/dinamicados/genUsuarioService";
+import { obtenerInfoGenUsuario } from "../../api/dinamica/genUsuarioService";
 import Swal from "sweetalert2";
 
 const useFetchGenUsuarioInfo = () => {

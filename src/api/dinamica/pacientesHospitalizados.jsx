@@ -1,4 +1,4 @@
-import apiClienteDinamica from "./apiClienteDinamicados";
+import apiClienteDinamica from "./apiClienteDinamica";
 
 export const obtenerInformacionPacienteHospitalizadoByIdentificacion = async (identificacion) => {
     try {

@@ -3,7 +3,7 @@ import SignatureCanvas from 'react-signature-canvas';
 import useFetchPreguntasCheqMan from '../../hooks/sistemas/useFetchPreguntasCheqMan';
 import Loader from '../Loader';
 import useSaveRespuestasCheqMan from '../../hooks/sistemas/useSaveRespuestasCheqMan';
-import useFetchGenUsuarioInfo from '../../hooks/dinamicados/useFetchGenUsuarioInfo';
+import useFetchGenUsuarioInfo from '../../hooks/dinamica/useFetchGenUsuarioInfo';
 
 export default function FormManteEquipos() {
 

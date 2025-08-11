@@ -3,7 +3,7 @@ import { Button, Modal } from 'react-bootstrap'
 import Select from 'react-select'
 import { obtenerServiciosByBloqueId } from '../../api/asignacionCamas/solicitudCamaService';
 import { modificarVersionAginacionSolicitudCama } from '../../api/asignacionCamas/asignacionVersionSolCamaService';
-import { obtenerEstadoDeCamas } from '../../api/dinamicados/hpnDefCamService';
+import { obtenerEstadoDeCamas } from '../../api/dinamica/hpnDefCamService';
 import { obtenerCamasPorServicio } from '../../api/asignacionCamas/camaService';
 
 const initialFormState = {
