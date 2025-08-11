@@ -1,8 +1,8 @@
-import apiClienteDinamicados from "./apiClienteDinamicados";
+import apiClienteDinamica from "./apiClienteDinamicados";
 
 export const obtenerInformacionPacienteHospitalizadoByIdentificacion = async (identificacion) => {
     try {
-        const response = await apiClienteDinamicados.get(`/pacienteHospitalizado/infoIngresoServicioCama/${identificacion}`);
+        const response = await apiClienteDinamica.get(`/pacienteHospitalizado/infoIngresoServicioCama/${identificacion}`);
         return response.data;
     } catch (error) {
         console.error(error);

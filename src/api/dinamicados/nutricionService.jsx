@@ -1,8 +1,8 @@
-import apiClienteDinamicados from "./apiClienteDinamicados"
+import apiClienteDinamica from "./apiClienteDinamicados"
 
 export const obtenerTamizajes = async (fechas) => {
     try {
-        const response = await apiClienteDinamicados.get(`/nutricion/tamizaje/patients?${fechas}`)
+        const response = await apiClienteDinamica.get(`/nutricion/tamizaje/patients?${fechas}`)
         return response.data;
     }
     catch (error) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { obtenerAdnIngreso } from "../../api/dinamica/adnIngresoService";
+import { obtenerAdnIngreso } from "../../api/dinamicados/adnIngresoService";
 import AdnIngreso from "../../models/dinamica/AdnIngreso";
 import Swal from "sweetalert2";
 

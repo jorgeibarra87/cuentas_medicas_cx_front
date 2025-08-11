@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux"
 import { mostrarBarraLateral, ocultarBarraLateral } from "../../actions/sidebarActions";
-import { cerrarSesionAction } from "../../actions/loginActions";
 import { useState } from "react";
 import axios from "axios";
 import { RUTA_BACK_PRODUCCION } from "../../types";
