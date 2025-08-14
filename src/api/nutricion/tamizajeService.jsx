@@ -41,11 +41,8 @@ export const eliminarTamizaje = async (incomeId) => {
 
 export const obtenerEvaluacionesTamizajes = async (ingresosIds) => {
   try {
-    const searchParams = new URLSearchParams();
-    ingresosIds.forEach(id => searchParams.append('ingresosIds', id));
-
-    const url = `/tamizaje/obtenerTamizajes?${searchParams.toString()}`;
-    const response = await apiClientNutricion.get(url);
+    const url = '/tamizaje/obtenerTamizajes';
+    const response = await apiClientNutricion.post(url, ingresosIds);
     return response.data;
   } catch (error) {
     console.error('Error al obtener evaluaciones de tamizajes:', error);
