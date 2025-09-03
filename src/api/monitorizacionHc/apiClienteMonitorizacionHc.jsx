@@ -1,21 +1,8 @@
-import axios from "axios";
+import { createApiClient } from "../apiClientFactory";
 
- const ruta = window.env.VITE_URL_API_GATEWAY
- const rutamicroserviciomonitorizacionhc = window.env.VITE_URL_MONITORIZACION
+const ruta = window.env.VITE_URL_API_GATEWAY;
+const micro = window.env.VITE_URL_MONITORIZACION;
 
-
-const apiClienteMonitorizacionHc = axios.create({
-    baseURL: `${ruta}${rutamicroserviciomonitorizacionhc}/`,
-});
-
-apiClienteMonitorizacionHc.interceptors.request.use((config) =>{
-    const token = localStorage.getItem('tokenhusjp');
-    if(token){
-        config.headers.Authorization = `Bearer ${token}`
-    }
-    return config;
-}, (error) => {
-    return Promise.reject(error);
-});
+const apiClienteMonitorizacionHc = createApiClient(`${ruta}${micro}/`);
 
 export default apiClienteMonitorizacionHc;

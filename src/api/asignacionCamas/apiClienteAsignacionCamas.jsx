@@ -1,20 +1,8 @@
-import axios from "axios";
+import { createApiClient } from "../apiClientFactory";
 
 const ruta = window.env.VITE_URL_API_GATEWAY;
 const rutamicroservicioasignacioncamas = window.env.VITE_URL_ASIGNACION_CAMAS;
 
-const apiClienteAsignacionCamas = axios.create({
-    baseURL: `${ruta}${rutamicroservicioasignacioncamas}/`,
-});
-
-apiClienteAsignacionCamas.interceptors.request.use((config) => {
-    const token = localStorage.getItem('tokenhusjp');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-}, (error) => {
-    return Promise.reject(error);
-});
+const apiClienteAsignacionCamas = createApiClient(`${ruta}${rutamicroservicioasignacioncamas}/`);
 
 export default apiClienteAsignacionCamas;

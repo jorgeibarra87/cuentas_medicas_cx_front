@@ -1,31 +1,11 @@
 import { useEffect, useState } from 'react';
 import imgLogo from '../../img/favicon.ico'
 import Navbar from './Navbar'
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { cerrarSesionAction } from '../../actions/loginActions';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-// import PropTypes from 'prop-types';
 export default function Sidebar({ componente: Componente }) {
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    const handleInactivity = () => {
-        Swal.fire({
-            title: 'Inactividad detectada',
-            text: 'Por seguridad se cerrara la sesión',
-            icon: 'warning',
-            confirmButtonText: 'ENTIENDO'
-        }).then(() =>{
-            dispatch(cerrarSesionAction());
-            navigate("/login");
-        });
-    };
-
-    // Configurar inactividad en 10 minutos 10 * 60 * 1000
-    //useInactivity(10 * 60 * 1000, handleInactivity);
 
     const stateSidebar = useSelector(state => state.sidebar);
     const statelogin = useSelector(state => state.login);
@@ -36,7 +16,6 @@ export default function Sidebar({ componente: Componente }) {
     setSubmenuAbierto(prev => prev === nombre ? null : nombre);
   };
 
-    
     useEffect(() => {
         const token = localStorage.getItem('tokenhusjp');
         const usuario2 = jwtDecode(token);
