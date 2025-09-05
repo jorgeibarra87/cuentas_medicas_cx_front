@@ -37,7 +37,8 @@
     "sockjs-client": "^1.6.1",
     "soluciones-husjp": "file:",
     "sweetalert2": "^11.10.8",
-    "tailwindcss": "^4.1.10"
+    "tailwindcss": "^4.1.10",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

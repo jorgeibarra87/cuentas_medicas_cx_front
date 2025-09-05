@@ -6,11 +6,10 @@ import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 export default function Sidebar({ componente: Componente }) {
 
-
-    const stateSidebar = useSelector(state => state.sidebar);
-    const statelogin = useSelector(state => state.login);
-    const [usuario, setUsuario] = useState(statelogin.decodeToken);
-    const [submenuAbierto, setSubmenuAbierto] = useState(null);
+  const stateSidebar = useSelector(state => state.sidebar);
+  const statelogin = useSelector(state => state.login);
+  const [usuario, setUsuario] = useState(statelogin.decodeToken);
+  const [submenuAbierto, setSubmenuAbierto] = useState(null);
 
   const toggleSubmenu = (nombre) => {
     setSubmenuAbierto(prev => prev === nombre ? null : nombre);
@@ -34,6 +33,13 @@ export default function Sidebar({ componente: Componente }) {
             submenu: [
                 { nombre: 'Actualizar', ruta: '/innProduc/update', roles: ['ROLE_ADMIN', 'ROLE_INNPRODUC'] }, // Roles permitidos para esta subopción
             ]
+        },
+        {
+          nombre: 'Rehabilitación y Terapias',
+          roles: ['ROLE_ADMIN'],
+          submenu: [
+            { nombre: 'Indicadores', ruta: '/rehabilitacion/indicadores', roles: ['ROLE_ADMIN'] }
+          ]
         },
         {
             nombre: 'Sistemas',
@@ -158,18 +164,18 @@ export default function Sidebar({ componente: Componente }) {
         </ul>
       </nav>
 
-      <div id="content">
-        <div className="navbar-fixed">
-          <Navbar />
-        </div>
-        <div className="content-scroll">
-          {Componente && <Componente />}
-          <footer className="footer-dinamico">
-            <p className="text-muted text-center">
-              <small>Soluciones HUSJP © 2024 Hospital Universitario San Jose. Ing. Julio Alvarez. Todos los derechos reservados. EXT. 134</small>
-            </p>
+      <div id="content" className="flex flex-col h-screen"> {/* Usa flexbox para un layout de columna */}
+          <div className="navbar-fixed">
+              <Navbar />
+          </div>
+          <div className="flex-grow overflow-y-auto p-4"> {/* El contenido principal con scroll propio */}
+              {Componente && <Componente />}
+          </div>
+          <footer className="footer-dinamico flex-shrink-0"> {/* El footer queda fijo en la parte inferior */}
+              <p className="text-muted text-center">
+                  <small>Soluciones HUSJP © 2024 Hospital Universitario San Jose. Ing. Julio Alvarez. Todos los derechos reservados. EXT. 134</small>
+              </p>
           </footer>
-        </div>
       </div>
     </div>
     )

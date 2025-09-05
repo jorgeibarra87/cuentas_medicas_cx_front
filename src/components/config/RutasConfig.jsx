@@ -13,7 +13,7 @@ import UsuariosProceso from '../mesaDeProcesos/UsuariosProceso';
 import ProcesosSubprocesos from '../mesaDeProcesos/ProcesosSubprocesos';
 import SolicitudCama from '../solAsigCamas/SolicitudCama';
 import AsignacionCama from '../solAsigCamas/AsignacionCama';
-import { cerrarSesionAction, obtenerToken } from '../../actions/loginActions';
+import { obtenerToken } from '../../actions/loginActions';
 import Tamizaje from '../tamizaje/Tamizaje';
 import FormPreguntas from '../monitorizacionHc/FormPreguntas';
 import ReportesPorcentajes from '../monitorizacionHc/ReportesPorcentajes';
@@ -21,6 +21,7 @@ import AjustesMhc from '../monitorizacionHc/AjustesMhc';
 import FormManteEquipos from '../sistemas/FormManteEquipos';
 import AjustesSistemas from '../sistemas/AjustesSistemas';
 import ProtectedWithIdle from './ProtectedWithIdle';
+import indexRehabilitacion from '../rehabilitacion/IndexRehabilitacion';
 
 export default function RutasConfig() {
 
@@ -100,6 +101,15 @@ export default function RutasConfig() {
                             <Sidebar componente={AjustesMhc} />
                         </ProtectedWithIdle>
                     </RequireAuth>} />
+                </Route>
+                <Route path='/rehabilitacion'>
+                    <Route path='indicadores' element={
+                        <RequireAuth isLogged={isLogged} loading={loading}>
+                            <ProtectedWithIdle>
+                                <Sidebar componente={indexRehabilitacion} />
+                            </ProtectedWithIdle>
+                        </RequireAuth>
+                    }/>
                 </Route>
                 <Route path="/sistemas">
                     <Route path='mantenimientochequeo' element={<RequireAuth isLogged={isLogged} loading={loading}>
