@@ -29,72 +29,72 @@ export default function Sidebar({ componente: Componente }) {
     const opcionesMenu = [
         {
             nombre: 'InnoProduc',
-            roles: ['ROLE_ADMIN'], // Define los roles para esta opción
+            roles: ['ROLE_ADMINISTRADOR'], // Define los roles para esta opción
             submenu: [
-                { nombre: 'Actualizar', ruta: '/innProduc/update', roles: ['ROLE_ADMIN', 'ROLE_INNPRODUC'] }, // Roles permitidos para esta subopción
+                { nombre: 'Actualizar', ruta: '/innProduc/update', roles: ['ROLE_ADMINISTRADOR', 'ROLE_INNPRODUC'] }, // Roles permitidos para esta subopción
             ]
         },
         {
           nombre: 'Rehabilitación y Terapias',
-          roles: ['ROLE_ADMIN'],
+          roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION'],
           submenu: [
-            { nombre: 'Indicadores', ruta: '/rehabilitacion/indicadores', roles: ['ROLE_ADMIN'] }
+            { nombre: 'Indicadores', ruta: '/rehabilitacion/indicadores', roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION'] }
           ]
         },
         {
             nombre: 'Sistemas',
-            roles: ['ROLE_ADMIN','ROLE_SISTEMAS_MANTENIMIENTO'],
+            roles: ['ROLE_ADMINISTRADOR','ROLE_SISTEMAS_MANTENIMIENTO'],
             submenu: [
                 {
-                    nombre: 'Mantenimiento chequeo', ruta: '/sistemas/mantenimientochequeo', roles: ['ROLE_ADMIN', 'ROLE_SISTEMAS_MANTENIMIENTO'],
+                    nombre: 'Mantenimiento chequeo', ruta: '/sistemas/mantenimientochequeo', roles: ['ROLE_ADMINISTRADOR', 'ROLE_SISTEMAS_MANTENIMIENTO'],
                     // submenuAdicional: [
-                    //     { nombre: 'Mantenimiento preventivo chequeo', ruta: '/humanizacion/solicitudes', roles: ['ROLE_ADMIN'] },
-                    //     { nombre: 'solicitudes almacen', ruta: 'almacen', roles: ['ROLE_ADMIN'] }
+                    //     { nombre: 'Mantenimiento preventivo chequeo', ruta: '/humanizacion/solicitudes', roles: ['ROLE_ADMINISTRADOR'] },
+                    //     { nombre: 'solicitudes almacen', ruta: 'almacen', roles: ['ROLE_ADMINISTRADOR'] }
                     // ]
                 },
                 {
-                    nombre: 'Ajustes', ruta: '/sistemas/ajustes', roles: ['ROLE_ADMIN'],
+                    nombre: 'Ajustes', ruta: '/sistemas/ajustes', roles: ['ROLE_ADMINISTRADOR'],
                 }
             ]
         },
         {
             nombre: 'Asignación_de_camas',
-            roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS'],
+            roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS'],
             submenu: [
-                {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']},
-                {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']}
+                {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']},
+                {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']}
             ]
         },
         {
             nombre: 'MesadeProcesos',
-            roles: ['ROLE_ADMIN','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER'],
+            roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER'],
             submenu: [
-                {nombre: 'Procesos y subprocesos', ruta: '/mesaprocesos/procesosysubprocesos', roles: ['ROLE_ADMIN','ROLE_MESADEPROCESOS_COORD']},
-                {nombre: 'Usuarios procesos', ruta: '/mesaprocesos/usuarioprocesos', roles: ['ROLE_ADMIN','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER']}
+                {nombre: 'Procesos y subprocesos', ruta: '/mesaprocesos/procesosysubprocesos', roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD']},
+                {nombre: 'Usuarios procesos', ruta: '/mesaprocesos/usuarioprocesos', roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER']}
             ]
         },
         {
             nombre: 'Nutricion',
-            roles: ['ROLE_ADMIN','ROLE_TAMIZAJE'],
+            roles: ['ROLE_ADMINISTRADOR','ROLE_TAMIZAJE'],
             submenu:[
-                {nombre: 'Tamizaje', ruta: '/nutricion/tamizaje', roles: ['ROLE_ADMIN','ROLE_TAMIZAJE']}
+                {nombre: 'Tamizaje', ruta: '/nutricion/tamizaje', roles: ['ROLE_ADMINISTRADOR','ROLE_TAMIZAJE']}
             ]
         },
         {
             nombre: 'MonitorizacionHc',
-            roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION'],
+            roles: ['ROLE_ADMINISTRADORISTRADOR','ROLE_MONITORIZACION'],
             submenu:[
-                {nombre: 'Monitorizacion Medico', ruta: '/monitorizacionhc/preguntas/medico', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION_MEDICO']},
-                {nombre: 'Monitorizacion Enfermeria', ruta: '/monitorizacionhc/preguntas/enfermeria', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION_ENFERMERIA']},
-                {nombre: 'Reportes', ruta: '/monitorizacionhc/reportes', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION']},
-                {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMINISTRADOR']}
+                {nombre: 'Monitorizacion Medico', ruta: '/monitorizacionhc/preguntas/medico', roles: ['ROLE_ADMINISTRADORISTRADOR','ROLE_MONITORIZACION_MEDICO']},
+                {nombre: 'Monitorizacion Enfermeria', ruta: '/monitorizacionhc/preguntas/enfermeria', roles: ['ROLE_ADMINISTRADORISTRADOR','ROLE_MONITORIZACION_ENFERMERIA']},
+                {nombre: 'Reportes', ruta: '/monitorizacionhc/reportes', roles: ['ROLE_ADMINISTRADORISTRADOR','ROLE_MONITORIZACION']},
+                {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMINISTRADORISTRADOR']}
             ]
         },
         {
             nombre: 'Ajustes',
-            roles: ['ROLE_ADMIN'],
+            roles: ['ROLE_ADMINISTRADOR'],
             submenu: [
-                { nombre: 'Usuario', ruta: '/ajustes/usuario', roles: ['ROLE_ADMIN']}
+                { nombre: 'Usuario', ruta: '/ajustes/usuario', roles: ['ROLE_ADMINISTRADOR']}
             ]
         }
         // Agrega más opciones de menú aquí si es necesario
