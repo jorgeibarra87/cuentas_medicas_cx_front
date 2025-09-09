@@ -82,12 +82,12 @@ export default function Sidebar({ componente: Componente }) {
         },
         {
             nombre: 'MonitorizacionHc',
-            roles: ['ROLE_ADMINISTRADORISTRADOR','ROLE_MONITORIZACION'],
+            roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION'],
             submenu:[
-                {nombre: 'Monitorizacion Medico', ruta: '/monitorizacionhc/preguntas/medico', roles: ['ROLE_ADMINISTRADORISTRADOR','ROLE_MONITORIZACION_MEDICO']},
-                {nombre: 'Monitorizacion Enfermeria', ruta: '/monitorizacionhc/preguntas/enfermeria', roles: ['ROLE_ADMINISTRADORISTRADOR','ROLE_MONITORIZACION_ENFERMERIA']},
-                {nombre: 'Reportes', ruta: '/monitorizacionhc/reportes', roles: ['ROLE_ADMINISTRADORISTRADOR','ROLE_MONITORIZACION']},
-                {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMINISTRADORISTRADOR']}
+                {nombre: 'Monitorizacion Medico', ruta: '/monitorizacionhc/preguntas/medico', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION_MEDICO']},
+                {nombre: 'Monitorizacion Enfermeria', ruta: '/monitorizacionhc/preguntas/enfermeria', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION_ENFERMERIA']},
+                {nombre: 'Reportes', ruta: '/monitorizacionhc/reportes', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION']},
+                {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMINISTRADOR']}
             ]
         },
         {

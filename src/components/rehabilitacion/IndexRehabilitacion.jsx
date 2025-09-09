@@ -33,7 +33,6 @@ function IndexRehabilitacion() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log('Formulario enviado con datos:', form);
     fetchIndicadoresFinalizados(form);
   };
 

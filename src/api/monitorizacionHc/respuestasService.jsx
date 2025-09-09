@@ -11,10 +11,10 @@ export const guardarRespuestas = async (respuestas, tipoPregunta) => {
     }
 }
 
-export const obtenerRespuestasByIngresoId = async (ingreso) => {
+export const obtenerRespuestasByIngresoIdServicioProcesoTipoPregunta = async (params) => {
     try {
-        const response = await apiClienteMonitorizacionHc.get(`/respuestas/obtener/${ingreso}`);
-        return new Ingreso(response.data.ingreso);
+        const response = await apiClienteMonitorizacionHc.get(`respuestas/resumen/individual`, { params });
+        return response.data;
     }catch(error){
         console.error('Error al obtener las respuestas de monitorizacion microservice',error);
         throw error;

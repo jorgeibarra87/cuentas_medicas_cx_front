@@ -41,7 +41,7 @@ function Tamizaje() {
 
   useEffect(() => {
     if (error) {
-      console.log('error', error);
+      console.error('error', error);
     }
   }, [error]);
 

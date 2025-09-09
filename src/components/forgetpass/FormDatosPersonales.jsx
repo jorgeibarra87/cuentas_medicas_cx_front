@@ -27,7 +27,7 @@ function FormDatosPersonales({ datoscontacto }) {
       crearSolicitud(datoscontacto.usunombre);
     }
     if (inputSeleccionado === 'movil') {
-      console.log('Enviar código al móvil:', datoscontacto.gmemovil);
+      // El segundo parámetro true indica que es por móvil
     }
   };
 

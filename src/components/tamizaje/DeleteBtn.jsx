@@ -8,13 +8,13 @@ export const DeleteBtn = ({ refetch, clearChecks, disabled, info }) => {
 
   useEffect(() => {
     if (error) {
-      console.log("error", error);
+      console.error("error", error);
     }
   }, [error]);
 
   useEffect(() => {
     if (!data) return;
-    console.log("Tamizaje eliminado correctamente");
+    console.error("Tamizaje eliminado correctamente");
     refetch();
     clearChecks();
   }, [data]);

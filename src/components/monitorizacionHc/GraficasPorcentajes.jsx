@@ -3,15 +3,14 @@ import Loader from "../Loader";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import useFetchPorcentajesByDates from "../../hooks/monitorizacionHC/useFetchDataRespByDateAndTipoPregunta";
-import useFetchProcesoServicioConPreguntas from "../../hooks/monitorizacionHC/useFetchProcesoServicioConPreguntas";
 import useFetchDataByProServTipoPregunta from "../../hooks/monitorizacionHC/useFetchDataByProServTipoPregunta";
 import useFechDataByGrupoResumen from "../../hooks/monitorizacionHC/useFechDataByGrupoResumen";
 import useFetchResumenRespuByPregunta from "../../hooks/monitorizacionHC/useFetchResumenRespuByPregunta";
 
-function ReportesPorcentajes() {
+function GraficasPorcentajes({procesosServicios}) {
 
     const { porcentajes, setPorcentajes, loading: loadingTodo, error: errorTodo, fetchPorcentajesByDates } = useFetchPorcentajesByDates();
-    const { procesosServicios, loadingPs: loadingProServ, error: errorProServ } = useFetchProcesoServicioConPreguntas();
+    
     const { data: dataGf1, setData: setDataGf1, loading: loadingGf1, error: errorGf1, fetchDataByProServTipoPregunta } = useFetchDataByProServTipoPregunta();
     const { data: dataGf2, setData: setDataGf2, loading: loadingGf2, error: errorGf2, fetchDataByGrupoResumen } = useFechDataByGrupoResumen();
     const { data: dataTbl, setData: setDataTbl, error: errorTbl, loading: loadingTbl, fetchResumenRespuByPregunta } = useFetchResumenRespuByPregunta();
@@ -104,7 +103,6 @@ function ReportesPorcentajes() {
     }
 
     if (errorTodo) return <div className="alert alert-danger">Error al cargar los datos: {errorTodo.message}</div>;
-    if (errorProServ) return <div className="alert alert-danger">Error al cargar los procesos y servicios: {errorProServ.message}</div>;
 
     // Transformar los datos para que cada fila sea un mes con todos los grupos como propiedades
     const transformData = (data) => {
@@ -149,7 +147,7 @@ function ReportesPorcentajes() {
                         </div>
                         <div className="col-auto d-flex align-items-center">
                             <label htmlFor="tipoPregunta" className="form-label mb-0 me-2">Servicio / Proceso</label>
-                            <Select options={opcionesServicios} onChange={handleProServChange} className="w-50 ms-2" isLoading={loadingProServ} placeholder="Seleccione un Proceso/Servicio" required />
+                            <Select options={opcionesServicios} onChange={handleProServChange} className="w-50 ms-2" placeholder="Seleccione un Proceso/Servicio" required />
                         </div>
                         {selectTipoGrafica != null && (
                             <div className="col-auto d-flex align-items-center">
@@ -274,4 +272,4 @@ function ReportesPorcentajes() {
     );
 }
 
-export default ReportesPorcentajes;
+export default GraficasPorcentajes;

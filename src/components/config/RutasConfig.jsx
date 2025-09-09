@@ -16,12 +16,13 @@ import AsignacionCama from '../solAsigCamas/AsignacionCama';
 import { obtenerToken } from '../../actions/loginActions';
 import Tamizaje from '../tamizaje/Tamizaje';
 import FormPreguntas from '../monitorizacionHc/FormPreguntas';
-import ReportesPorcentajes from '../monitorizacionHc/ReportesPorcentajes';
+import ReportesPorcentajes from '../monitorizacionHc/GraficasPorcentajes';
 import AjustesMhc from '../monitorizacionHc/AjustesMhc';
 import FormManteEquipos from '../sistemas/FormManteEquipos';
 import AjustesSistemas from '../sistemas/AjustesSistemas';
 import ProtectedWithIdle from './ProtectedWithIdle';
 import indexRehabilitacion from '../rehabilitacion/IndexRehabilitacion';
+import ReportesIndex from '../monitorizacionHc/ReportesIndex';
 
 export default function RutasConfig() {
 
@@ -94,7 +95,7 @@ export default function RutasConfig() {
                     />
                     <Route path='reportes' element={<RequireAuth isLogged={isLogged} loading={loading}>
                         <ProtectedWithIdle>
-                            <Sidebar componente={ReportesPorcentajes} />
+                            <Sidebar componente={ReportesIndex} />
                         </ProtectedWithIdle></RequireAuth>} />
                     <Route path='ajustes' element={<RequireAuth isLogged={isLogged} loading={loading}>
                         <ProtectedWithIdle>

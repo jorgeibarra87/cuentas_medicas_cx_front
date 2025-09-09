@@ -15,7 +15,6 @@ export const ModalFinish = ({ isOpen, checksArr, onClose, refetch, clearChecks }
   useEffect(() => {
     if (!data) return;
     onClose();
-    console.log('Tamizajes finalizados correctamente');
     refetch();
     clearChecks();
   }, [data]);
