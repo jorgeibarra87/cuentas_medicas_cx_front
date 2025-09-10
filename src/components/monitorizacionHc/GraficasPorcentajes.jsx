@@ -123,6 +123,12 @@ function GraficasPorcentajes({procesosServicios}) {
 
     const colors = ["#8884d8", "#82ca9d", "#ffc658", "#ff7f50", "#8dd1e1", "#a4de6c", "#d0ed57","#d88884", "#ad82ca", "#84d888", "#de6ca4", "#57d0ed", "#7f50ff"];
 
+    const grupos = dataTbl?.reduce((acc, item) => {
+        if (!acc[item.grupo]) acc[item.grupo] = [];
+        acc[item.grupo].push(item);
+        return acc;
+    }, {}) || {};
+
     return (
         <div className="container-fluid">
             <div className="row">
@@ -244,6 +250,7 @@ function GraficasPorcentajes({procesosServicios}) {
                 <table className="table table-striped table-bordered mt-4">
                     <thead>
                         <tr>
+                            <th>Grupo</th>
                             <th>Pregunta</th>
                             <th>Cantidad Si</th>
                             <th>Cantidad No</th>
@@ -252,16 +259,25 @@ function GraficasPorcentajes({procesosServicios}) {
                         </tr>
                     </thead>
                     <tbody>
-                        {dataTbl.map((item, index) => (
-                            <tr key={index}>
-                                <td>{item.pregunta}</td>
-                                <td>{item.cantidadSi}</td>
-                                <td>{item.cantidadNo}</td>
-                                <td>{item.cantidadNoAplica}</td>
-                                <td>{item.porcentaje.toFixed(2)}%</td>
+                        {Object.keys(grupos).map((grupo) => {
+                            const items = grupos[grupo];
+                            return items.map((item, index) => (
+                            <tr key={grupo + index}>
+                                {index === 0 && (
+                                <td rowSpan={items.length} className="">
+                                    {grupo}
+                                </td>
+                                )}
+                                <td className="border px-4 py-2">{item.pregunta}</td>
+                                <td className="border px-4 py-2 text-center">{item.cantidadSi}</td>
+                                <td className="border px-4 py-2 text-center">{item.cantidadNo}</td>
+                                <td className="border px-4 py-2 text-center">{item.cantidadNoAplica}</td>
+                                <td className="border px-4 py-2 text-center">{item.porcentaje.toFixed(2)}%</td>
                             </tr>
-                        ))}
+                            ));
+                        })}
                         <tr>
+                            <td></td>
                             <td><strong>Total</strong></td>
                             <td><strong>{dataTbl.reduce((acc, item) => acc + item.cantidadSi, 0)}</strong></td>
                             <td><strong>{dataTbl.reduce((acc, item) => acc + item.cantidadNo, 0)}</strong></td>
