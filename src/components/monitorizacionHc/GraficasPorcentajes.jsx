@@ -168,11 +168,12 @@ function GraficasPorcentajes({procesosServicios}) {
                 </form>
             </div>
 
-            {loadingTodo || loadingGf1 || loadingGf2 && <Loader />}
+            {loadingTodo || loadingGf1 || loadingGf2 || loadingTbl && <Loader />}
             {errorTodo && <div className="alert alert-danger">Error al cargar los datos: {errorTodo.message}</div>}
             {errorGf1 && <div className="alert alert-danger">Error al cargar los datos del gráfico 1: {errorGf1.message}</div>}
             {errorGf2 && <div className="alert alert-danger">Error al cargar los datos del gráfico 2: {errorGf2.message}</div>}
-
+            {errorTbl && <div className="alert alert-danger">Error al cargar los datos de la tabla: {errorTbl.message}</div>}
+            
             {porcentajes.length > 0 &&(
                 <div className="col-md-12 p-4 rounded-lg">
                     <h2 className="text-center">Porcentajes de Respuestas para </h2>
@@ -260,6 +261,13 @@ function GraficasPorcentajes({procesosServicios}) {
                                 <td>{item.porcentaje.toFixed(2)}%</td>
                             </tr>
                         ))}
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td><strong>{dataTbl.reduce((acc, item) => acc + item.cantidadSi, 0)}</strong></td>
+                            <td><strong>{dataTbl.reduce((acc, item) => acc + item.cantidadNo, 0)}</strong></td>
+                            <td><strong>{dataTbl.reduce((acc, item) => acc + item.cantidadNoAplica, 0)}</strong></td>
+                            <td><strong>{`promedio: ${(dataTbl.reduce((acc, item) => acc + item.porcentaje, 0) / dataTbl.length).toFixed(2)}%`}</strong></td>
+                        </tr>
                     </tbody>
                 </table>
                 <br/>
