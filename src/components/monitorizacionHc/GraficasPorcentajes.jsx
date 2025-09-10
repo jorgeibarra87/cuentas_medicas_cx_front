@@ -265,7 +265,7 @@ function GraficasPorcentajes({procesosServicios}) {
                 <br/>
                 <span>{`Numerador: ${dataTbl.reduce((acc, item) => acc + item.cantidadSi, 0)}`}</span>
                 <br/>
-                <span>{`Denominador: ${(dataTbl[0].cantidadSi + dataTbl[0].cantidadNo + dataTbl[0].cantidadNoAplica) * dataTbl.length }`}</span>
+                <span>{`Denominador: ${dataTbl.reduce((acc, item) => acc + item.cantidadSi + item.cantidadNo, 0)}`}</span>
                 </>
             )}
         </div>
