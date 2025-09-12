@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import UseAxiosInstance from '../../utilities/UseAxiosInstance';
+import { useEffect, useState } from 'react'
 import { FormatearFecha } from '../../utilities/FormatearFecha';
-import { Client } from '@stomp/stompjs'; 
-import SockJS from 'sockjs-client';
 import icono from '../../img/camillero.ico';
 import Swal from 'sweetalert2';
 import spinnerLoginText from '../Loading';
@@ -12,6 +9,9 @@ import InfoModal from './InfoModal';
 import FormEditAsignCama from './FormEditAsignCama';
 import * as bootstrap from 'bootstrap';
 import { useSelector } from 'react-redux';
+import { obtenerBloquesServicio } from '../../api/asignacionCamas/bloqueServicioService';
+import { obtenerVersionSolicitudCamaByIdBloque } from '../../api/asignacionCamas/asignacionVersionSolCamaService';
+import { cancelarAsignacionVersionSolicitudCama, finalizarAsignacionVersionSolicitudCama } from '../../api/asignacionCamas/asignacionSolicitudCama';
 
 // const SOCKET_URL = 'http://localhost:8004/ws-notifications'; 
 // const client = new Client(
@@ -62,7 +62,6 @@ import { useSelector } from 'react-redux';
 
 export default function AsignacionCama() {
 
-    const axiosInstance = UseAxiosInstance();
     const statelogin = useSelector(state => state.login);
 
     const [authorities] = useState(statelogin.decodeToken.authorities);
@@ -98,22 +97,20 @@ export default function AsignacionCama() {
         document.head.appendChild(link);
         //cambia el titulo
         document.title = "Asignaciones de Cama";
-        if(bloquesServicio.length === 0){
-            axiosInstance.get(`bloque-servicio`)
-                .then(response => {
-                    setBloquesServicio(response.data);
-                }).catch(error => {
-                    console.error(error);
-                });
-        }
-        
+
+        const obtenerBloques = async () => {
+            const response = await obtenerBloquesServicio();
+            setBloquesServicio(response);
+        };
+        if(bloquesServicio.length === 0) obtenerBloques();
+
     }, []);
 
     useEffect(() => {
         const getVersionesSolicitudCama = async () => {
-            await axiosInstance.get(`asignacionVersionSolicitudCama/active/${bloqueServicioSeleccionado}`)
+            await obtenerVersionSolicitudCamaByIdBloque(bloqueServicioSeleccionado)
                 .then(response => {
-                    setAsignacionesCama(response.data);
+                    setAsignacionesCama(response);
                     Swal.close();
                 }).catch(error => {
                     console.error(error);
@@ -163,7 +160,7 @@ export default function AsignacionCama() {
                 cancelarAsignacion();
             }
             function cancelarAsignacion() {
-                axiosInstance.put(`asignacionSolicitudCama/${item.asignacionCama.id}/estadoFinalizado`)
+                finalizarAsignacionVersionSolicitudCama(item.asignacionCama.id)
                     .then(() => {
                         Swal.fire({
                             title: 'Finalizado',
@@ -217,10 +214,8 @@ export default function AsignacionCama() {
                 }
             });
             if(!motivo) return;
-
-            await axiosInstance.put(`/asignacionSolicitudCama/${item.asignacionCama.id}/cancelar/motivo/${item.id}`, null ,{
-                params: { motivo }
-            }).then(() => {
+            await cancelarAsignacionVersionSolicitudCama(item.asignacionCama.id, item.id, motivo)
+            .then(() => {
                 const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
                 setAsignacionesCama(asignaciones);
             }).catch(error => {
@@ -230,17 +225,6 @@ export default function AsignacionCama() {
             console.error(error);
         }
     };
-
-    // useEffect(() =>{
-    //     if(asignacionesCama.length === 0){
-    //         axiosInstance.get(`/asignacionVersionSolicitudCama/active`)
-    //         .then((response) => {
-    //             setAsignacionesCama(response.data);
-    //         }).catch((error) => {
-    //             console.error(error);
-    //         });
-    //     }
-    // },[]);
 
     return (
         <>

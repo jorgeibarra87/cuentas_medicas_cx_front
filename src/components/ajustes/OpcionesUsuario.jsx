@@ -1,195 +1,84 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { RUTA_BACK_PRODUCCION } from "../../types";
-import { useSelector } from "react-redux";
-import UseAxiosInstance from "../../utilities/UseAxiosInstance";
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-dt';
-import Select from "react-select";
-import Swal from "sweetalert2";
- 
-DataTable.use(DT);
+import { useEffect, useState } from 'react';
+import Select from 'react-select';
+import useFetchUsuario from '../../hooks/authService/useFetchUsuario';
+import Loader from '../Loader';
+import useFetchRol from '../../hooks/authService/useFetchRol';
+import SincronizarUsuario from '../SincronizarUsuario';
 
-function OpcionesUsuario(){
+function OpcionesUsuario() {
+  const { usuarios, loading: loadingU, error: errorU, fetchUsuarios } = useFetchUsuario();
+  const { roles, loading: loadingRoles, error: errorRoles, fetchRol } = useFetchRol();
+  const [showSincronizar, setShowSincronizar] = useState(false);
+  const [tableData, setTableData] = useState([]);
+  const [inputFind, setInputFind] = useState('');
 
-    const axiosInstance = UseAxiosInstance();
+  // obtener usuarios
+  useEffect(() => {
+    if (usuarios.length > 0) return;
+    fetchUsuarios();
+  }, []);
 
-    const [identificacion, setIdentificacion] = useState(null);
-    const stateLogin = useSelector(state => state.login);
-    const token = stateLogin.token;
-    const [tableData, setTableData] = useState([]);
-    const [rolesDisponibles, setRolesDisponibles] = useState([]);
-    const [serviciosDisponibles, setServiciosDisponibles] = useState([]);
-    const [inputFind, setInputFind] = useState("");
-    const [estadoSincronizando, setEstadoSincronizando] = useState(false);
+  // obtener roles
+  useEffect(() => {
+    if (roles.length > 0) return;
+    fetchRol();
+  }, []);
 
-    const handleChange = (e) => {
-        const {value} = e.target;
-        setIdentificacion(value);
-    }
+  useEffect(() => {
+    if (usuarios.length == 0) return;
+    const data = usuarios.map((entry) => ({
+      ...entry,
+      roles: entry.roles.map((role) => ({
+        value: role.id,
+        label: role.rol,
+      })),
+    }));
+    setTableData(data);
+  }, [usuarios]);
 
-    const handleSubmit = async (e) =>{
-        setEstadoSincronizando(true);
-        e.preventDefault();
-        axiosInstance.get(`${RUTA_BACK_PRODUCCION}usuario/sincronizarConDGH/${identificacion}`)
-            .then((response) => {
-                const usuariosRegistrados = response.data.filter(usuario => usuario.nombreCompleto != null);
-                const usuariosNoRegistrados = response.data.filter(usuario => usuario.nombreCompleto == null);
+  const opcionesRoles = roles.map((rol) => ({ value: rol.id, label: rol.rol }));
 
-                const rolesUnicos = Array.from(
-                    new Set(usuariosNoRegistrados.flatMap(usuario => usuario.roles.map(role => role.rol)))
-                ).map(rol => ({ rol }));
+  if (loadingU || loadingRoles) return <Loader />;
+  if (errorU || errorRoles)return ( <div> Error al cargar los {errorU ? 'usuarios' : 'roles'} {errorU?.message || errorRoles?.message} </div> );
 
-                // Construir el mensaje para mostrar en el Swal
-                const mensajeUsuariosRegistrados = usuariosRegistrados.length > 0
-                    ? `<strong>Usuarios Registrados:</strong><ul>${usuariosRegistrados.map(u => `<li>${u.documento} - ${u.nombreCompleto}</li>`).join('')}</ul>`
-                    : ``;
+  return (
+    <>
+      <SincronizarUsuario show={showSincronizar} handleClose={() => setShowSincronizar(false)} />
+      <div className="mt-4">
+        <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" onClick={() => setShowSincronizar(true)}>
+          Agregar Usuario 
+        </button>
+      </div>
 
-                const mensajeUsuariosNoRegistrados = usuariosNoRegistrados.length > 0
-                    ? `<strong>Usuarios No Registrados:</strong><ul>${usuariosNoRegistrados.map(u => `<li>${u.documento}</li>`).join('')}</ul>`
-                    : ``;
+      <input type="text" className="mt-4 w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Buscar..." value={inputFind} onChange={(e) => setInputFind(e.target.value)} />
 
-                const mensajeRolesNoRegistrados = rolesUnicos.length > 0
-                    ? `<strong>Estos roles no estan en la BD:</strong><ul>${rolesUnicos.map(r => `<li>${r.rol}</li>`).join('')}</ul>`
-                    : ``;
-
-                // Mostrar el Swal con el mensaje construido
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Usuario sincronizado con éxito',
-                    html: `${mensajeUsuariosRegistrados}<br>${mensajeUsuariosNoRegistrados}<br>${mensajeRolesNoRegistrados}`, // Usamos `html` para el formato
-                    showConfirmButton: true
-                });
-                setEstadoSincronizando(false);
-            }).catch((error) =>{
-                console.error("error: ",error)
-            })
-    };
-
-    useEffect(() => {
-        axiosInstance.get(`${RUTA_BACK_PRODUCCION}usuario`)
-        .then((response) => {
-            //convertir los roles, servicios al formato que requiere SelectReact
-            const data = response.data.map(entry => ({
-                ...entry,
-                roles: entry.roles.map(role => ({
-                    value: role.id,
-                    label: role.rol
-                })),
-                servicios: entry.servicios.map(servicio => ({
-                    value: servicio.id,
-                    label: servicio.nombre
-                }))
-            }))
-            setTableData(data);
-        }).catch((error) => {
-            console.error("error: ",error)
-        })
-
-        axiosInstance.get(`${RUTA_BACK_PRODUCCION}roles`)
-            .then((response) => setRolesDisponibles(response.data))
-            .catch((error) => console.error(error));
-
-        axiosInstance.get(`${RUTA_BACK_PRODUCCION}api/gateway/servicios`)
-            .then((response) => setServiciosDisponibles(response.data))
-            .catch((error) => console.error(error));
-        
-    },[]);   
-
-    const opcionesRoles = rolesDisponibles.map((rol) => ({value: rol.id, label: rol.rol}));
-    const opcionesServicios = serviciosDisponibles.map((servicio) => ({value: servicio.id, label: servicio.nombre}))
-
-    const handleRolesChange = (selectedOptions, usuario) =>{
-        const form = {
-            documento: usuario.documento,
-            roles: selectedOptions.map(option => ({id: option.value, rol: option.label})),
-        };
-        axiosInstance.put(`${RUTA_BACK_PRODUCCION}usuario/roles/${usuario.documento}`, form)
-            .then(() => {
-                const newTableData = tableData.map((entry) => {
-                    if(entry.documento === usuario.documento){
-                        return {
-                            ...entry,
-                            roles: selectedOptions
-                        }
-                    }
-                    return entry;
-                });
-                setTableData(newTableData);
-            }
-        ).catch((error) => {
-            console.error("error: ",error)
-        })
-    }
-
-    const handleServiciosChange = (selectedOptions, usuario) =>{
-        const form = {
-            documento: usuario.documento,
-            servicios: selectedOptions.map(option => ({id: option.value, nombre: option.label})),
-        }
-        axiosInstance.put(`${RUTA_BACK_PRODUCCION}usuario/servicios/${usuario.documento}`, form)
-            .then(() => {
-                const newTableData = tableData.map((entry) => {
-                    if(entry.documento === usuario.documento){
-                        return {
-                            ...entry,
-                            servicios: selectedOptions
-                        }
-                    }
-                    return entry;
-                });
-                setTableData(newTableData);
-            }).catch((error) => {
-                console.error("error: ",error)
-            })
-    }
-
-    return (
-        <>
-            <div className="row mt-4">
-                <h3>Sincronizar usuario</h3>
-            </div>
-            <form onSubmit={handleSubmit} className="mt-4">
-                <div className="form-group row">
-                    <span>Número de identificación</span>
-                    <div className="col">
-                        <input name="identificacion" onChange={handleChange} type="text"/>
-                    </div>
-                </div>
-                <button type="submit" className="btn btn-primary" disabled={estadoSincronizando}> {!estadoSincronizando ? `sincronizar` : `sincronizando`}</button>
-            </form>
-            <input className="form-control" type="text" placeholder="Buscar..." value={inputFind} onChange={(e) => setInputFind(e.target.value)}/>
-            <table className="table table-striped table-hover table-bordered">
-                <thead className="">
-                    <tr>
-                        <th>Documento</th>
-                        <th>Nombre Completo</th>
-                        <th>Correo</th>
-                        <th>Roles</th>
-                        <th>Servicios</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        tableData.filter((usuario) => usuario.documento.includes(inputFind) || usuario.nombreCompleto.includes(inputFind.toLocaleUpperCase())).map((usuario) => {
-                            return (
-                                <tr key={usuario.documento}>
-                                    <td>{usuario.documento}</td>
-                                    <td>{usuario.nombreCompleto}</td>
-                                    <td>{usuario.email}</td>
-                                    <td>
-                                        {<Select isMulti options={opcionesRoles} className="basic-multi-select" value={usuario.roles} classNamePrefix="select" onChange={(selectedOptions) => handleRolesChange(selectedOptions, usuario)}/>}
-                                    </td>
-                                    <td>
-                                        {<Select isMulti options={opcionesServicios} className="basic-multi-select" value={usuario.servicios} classNamePrefix="select" onChange={(selectedOptions) => handleServiciosChange(selectedOptions, usuario)}/>}
-                                    </td>
-                                </tr>
-                            )
-                        })
-                    }
-                </tbody>
-            </table>
-        </>
-    )
+      <table className="w-full mt-4 table-auto border-collapse border border-gray-300">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border border-gray-300 px-4 py-2 text-left">Documento</th>
+            <th className="border border-gray-300 px-4 py-2 text-left">Nombre Completo</th>
+            <th className="border border-gray-300 px-4 py-2 text-left">Roles</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tableData.length > 0 &&
+            tableData
+              .filter((usuario) => usuario.username.includes(inputFind) || usuario.nombreCompleto.includes(inputFind.toLocaleUpperCase()))
+              .map((usuario) => {
+                return (
+                  <tr key={usuario.username} className="hover:bg-gray-100">
+                    <td className="border border-gray-300 px-4 py-2">{usuario.username}</td>
+                    <td className="border border-gray-300 px-4 py-2">{usuario.nombreCompleto}</td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <Select isMulti options={opcionesRoles} className="w-full" value={usuario.roles} classNamePrefix="select" />
+                    </td>
+                  </tr>
+                );
+              })}
+        </tbody>
+      </table>
+    </>
+  );
 }
-export default OpcionesUsuario
+export default OpcionesUsuario;

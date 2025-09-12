@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Modal } from 'react-bootstrap'
+import { useEffect, useState } from 'react'
 import Select from 'react-select'
-import UseAxiosInstance from '../../utilities/UseAxiosInstance';
+import { obtenerServiciosByBloqueId } from '../../api/asignacionCamas/solicitudCamaService';
+import { modificarVersionAginacionSolicitudCama } from '../../api/asignacionCamas/asignacionVersionSolCamaService';
+import { obtenerEstadoDeCamas } from '../../api/dinamica/hpnDefCamService';
+import { obtenerCamasPorServicio } from '../../api/asignacionCamas/camaService';
 
 const initialFormState = {
     cama: {
@@ -19,7 +21,6 @@ const initialFormState = {
 
 export default function FormEditAsignCama({ showModalFormEditAsignacion, handleCloseModalFormEditAsignacion, idBloqueServicio, versionAsignacionSolicitudCama, setVersionAsignacionSolicitudCamaEditar }) {
 
-    const axiosInstance = UseAxiosInstance();
     const [form, setForm] = useState(initialFormState);
     const [camas, setCamas] = useState([]);
     const [servicios, setServicios] = useState([]);
@@ -28,14 +29,17 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
     const [botonEditar, setBotonEditar] = useState(false);
 
     useEffect(() => {
-        if (showModalFormEditAsignacion) {
-            axiosInstance.get(`/api/solicitudCamas/servicio/${idBloqueServicio}`)
+        const obtenerServicio = async () => {
+            obtenerServiciosByBloqueId(idBloqueServicio)
                 .then((response) => {
-                    setServicios(response.data);
+                    setServicios(response);
                 }).catch((error) => {
                     console.error(error);
                 });
 
+        }
+        if (showModalFormEditAsignacion) {
+            obtenerServicio();
                 setServicioSeleccionado({ value: versionAsignacionSolicitudCama.servicio.id, label: versionAsignacionSolicitudCama.servicio.nombre });
                 setCamaSeleccionada({ value: versionAsignacionSolicitudCama.cama.id, label: versionAsignacionSolicitudCama.cama.codigo });
 
@@ -78,6 +82,10 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
     const opcionesServicios = servicios.map(servicio => ({ value: servicio.id, label: servicio.nombre }));
 
     const handleSelect = (itemSelect, e) => {
+
+        const getCamasByServicio = async (idServicio) => {
+            return await obtenerCamasPorServicio(idServicio);
+        }
         
         if (e.name === 'servicios') {
             setServicioSeleccionado(itemSelect);
@@ -86,10 +94,10 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
             setForm({
                 ...form, servicio: servicio, cama: null
             })
-            axiosInstance.get(`/cama/${itemSelect.value}`)
+            getCamasByServicio(itemSelect.value)
                 .then((response) => {
-                    setCamas(response.data);
-                    obtenerEstadoCamaPorCodigos(response.data);
+                    setCamas(response);
+                    obtenerEstadoCamaPorCodigos(response);
                 }).catch((error) => {
                     console.error(error);
                 });
@@ -118,10 +126,13 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
     function obtenerEstadoCamaPorCodigos(camas){
         const list = camas.map(cama => (cama.codigo));
         const data = { hcaCodigo : list };
-        axiosInstance.post(`dinamica/api/hpndefcam/obetenerEstadoCamaPorCodigos`, data)
+        const obtenerEstadoDeCam = async (data) => {
+            return await obtenerEstadoDeCamas(data);
+        }
+        obtenerEstadoDeCam(data)
             .then((response) => {
                 const camasEstado = camas.map(cama => {
-                    return {... cama, estadoDgh: response.data.find(c => c.hcaCodigo === cama.codigo).hcaEstado};
+                    return {... cama, estadoDgh: response.find(c => c.hcaCodigo === cama.codigo).hcaEstado};
                 });
                 setCamas(camasEstado);
             }).catch((error) => {
@@ -141,11 +152,14 @@ export default function FormEditAsignCama({ showModalFormEditAsignacion, handleC
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axiosInstance.put(`asignacionVersionSolicitudCama/${versionAsignacionSolicitudCama.id}`, form)
+        const asignarVerSolCama = async (idVerAsigSolCama, data) => {
+            await modificarVersionAginacionSolicitudCama(idVerAsigSolCama, data);
+        }
+        asignarVerSolCama(versionAsignacionSolicitudCama.id, form)
             .then(response => {
                 setForm(initialFormState);
                 handleCloseModalFormEditAsignacion();
-                setVersionAsignacionSolicitudCamaEditar(response.data);
+                setVersionAsignacionSolicitudCamaEditar(response);
             }).catch((error) => {
                 console.error(error);
             });

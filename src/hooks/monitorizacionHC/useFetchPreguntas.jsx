@@ -6,11 +6,11 @@ const useFetchPreguntas = () =>{
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const fetchPreguntas = async (id, tipo) =>{
+    const fetchPreguntas = async (id, tipoGrupo, tipoPregunta) =>{
         setLoading(true);
         setError(null);
         try {
-            const preguntasData = await obtenerPreguntasServicio(id, tipo);
+            const preguntasData = await obtenerPreguntasServicio(id, tipoGrupo, tipoPregunta);
             setPreguntas(preguntasData);
         } catch (error) {
             setError('Error al obtener las preguntas',error);
@@ -19,7 +19,7 @@ const useFetchPreguntas = () =>{
         }
     }
 
-    return {preguntas, setPreguntas, loadingP: loading, fetchPreguntas};
+    return {preguntas, setPreguntas, loadingP: loading, error, fetchPreguntas};
 }
 
 export default useFetchPreguntas;

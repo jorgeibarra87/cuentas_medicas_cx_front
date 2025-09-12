@@ -1,41 +1,25 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
-const useInactivity = (timeout, onInactive) => {
-    const timerRef = useRef(null); // Referencia para el temporizador
-    const hasTriggered = useRef(false); // Estado para evitar múltiples ejecuciones
+export default function useIdleTimer(timeoutMs, onIdle) {
+  const timerRef = useRef(null);
 
-    useEffect(() => {
-        const resetTimer = () => {
-            if (hasTriggered.current) return; // Si ya se ejecutó, no hacer nada
-            clearTimeout(timerRef.current); // Limpiar el temporizador existente
-            timerRef.current = setTimeout(() => {
-                hasTriggered.current = true; // Marcar que ya se ejecutó
-                onInactive(); // Ejecutar la acción
-                removeEventListeners(); // Eliminar listeners
-            }, timeout);
-        };
+  const resetTimer = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(onIdle, timeoutMs);
+  };
 
-        const events = ["mousedown", "keypress", "scroll", "touchstart"];
-        const addEventListeners = () => {
-            events.forEach((event) => window.addEventListener(event, resetTimer));
-        };
+  useEffect(() => {
+    const events = ["mousemove", "keydown", "click"];
+    events.forEach((event) => window.addEventListener(event, resetTimer));
+    resetTimer();
 
-        const removeEventListeners = () => {
-            events.forEach((event) => window.removeEventListener(event, resetTimer));
-        };
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      events.forEach((event) =>
+        window.removeEventListener(event, resetTimer)
+      );
+    };
+  }, []);
 
-        // Configurar listeners y temporizador inicial
-        addEventListeners();
-        resetTimer();
-
-        return () => {
-            // Limpiar listeners y temporizador al desmontar
-            removeEventListeners();
-            clearTimeout(timerRef.current);
-        };
-    }, [timeout, onInactive]);
-
-    return;
-};
-
-export default useInactivity;
+  return null;
+}

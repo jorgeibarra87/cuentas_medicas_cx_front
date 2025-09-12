@@ -1,57 +1,45 @@
-import { useDispatch, useSelector } from "react-redux"
-import { mostrarBarraLateral, ocultarBarraLateral } from "../../actions/sidebarActions";
-import { cerrarSesionAction } from "../../actions/loginActions";
-import { useState } from "react";
-import axios from "axios";
-import { RUTA_BACK_PRODUCCION } from "../../types";
+import { useDispatch, useSelector } from 'react-redux';
+import { mostrarBarraLateral, ocultarBarraLateral } from '../../actions/sidebarActions';
+import { useState } from 'react';
+import { cerrarSesionAction } from '../../actions/loginActions';
 
 export default function Navbar() {
+  const stateSidebar = useSelector((state) => state.sidebar);
+  const statelogin = useSelector((state) => state.login);
+  const [usuario] = useState(statelogin.decodeToken);
+  const dispatch = useDispatch();
 
-    const stateSidebar = useSelector(state => state.sidebar);
-    const statelogin = useSelector(state => state.login);
-    const [usuario] = useState(statelogin.decodeToken);
-    const dispatch = useDispatch();
-    const token = statelogin.token;
-
-    const axiosInstance = axios.create({
-        baseURL: `${RUTA_BACK_PRODUCCION}`,
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-
-    const handleSidebar = () => {
-        if (stateSidebar.state == false) {
-            dispatch(ocultarBarraLateral());
-        } else {
-            dispatch(mostrarBarraLateral());
-        }
+  const handleSidebar = () => {
+    if (stateSidebar.state == false) {
+      dispatch(ocultarBarraLateral());
+    } else {
+      dispatch(mostrarBarraLateral());
     }
+  };
 
-    const handleLogout = () => {
-        axiosInstance.post(`${RUTA_BACK_PRODUCCION}auth/logout?token=${token}`);
-        dispatch(cerrarSesionAction());
-        window.location.href = "/";
-    }
+  const handleLogout = () => {
+    dispatch(cerrarSesionAction());
+  };
 
-    return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-end">
-            <div className="container-fluid">
-                <button type="button" id="sidebarCollapse" onClick={handleSidebar} className="btn">
-                    <i className="bi bi-distribute-vertical"></i>
-                </button>
-                <button className="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="/navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <i className="fas fa-align-justify"></i>
-                </button>
-                <ul className="nav navbar-nav ml-auto justify-content-end">
-                    <li className="nav-item">
-                        <a className="nav-link">Usuario: {usuario.name_user}</a>
-                    </li>
-                    <li className="nav-item">
-                        <a className="nav-link" onClick={handleLogout}>Salir</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    )
+  return (
+    <nav className="bg-white shadow-md">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div className="flex items-center">
+          <button type="button" onClick={handleSidebar} className="text-gray-600 hover:text-gray-900 focus:outline-none">
+            <i className="bi bi-distribute-vertical"></i>
+          </button>
+        </div>
+        <div className="flex items-center space-x-4">
+          <ul className="flex items-center space-x-4">
+            <li>
+              <a className="text-gray-700 hover:text-gray-900">Usuario: {usuario.name_user}</a>
+            </li>
+            <li>
+                <button type="button" onClick={handleLogout} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Salir</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  );
 }

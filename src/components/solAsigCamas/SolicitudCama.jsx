@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBed } from "@fortawesome/free-solid-svg-icons";
 import AsignarSolicitud from './FormDocSolicitud';
-import UseAxiosInstance from '../../utilities/UseAxiosInstance';
 import spinnerLoginText from "../Loading";
 import Swal from 'sweetalert2';
 import { FormatearFecha } from '../../utilities/FormatearFecha';
@@ -12,10 +11,13 @@ import * as bootstrap from 'bootstrap';
 import icono from '../../../public/camaicono.ico'
 import FormEditSolicitudCama from './FormEditSolicitudCama';
 import { useSelector } from 'react-redux';
+import { obtenerBloquesServicio } from '../../api/asignacionCamas/bloqueServicioService';
+import { obtenerEspecialidades } from '../../api/asignacionCamas/especialidadService';
+import { cambiarEstadoFacturacionVersionSolicitudCama, obtenerVersionesSolicitudCamaActivasByIdBloque } from '../../api/asignacionCamas/versionSolicitudCamaService';
+import { cancelarSolicitudCama } from '../../api/asignacionCamas/solicitudCamaService';
 
 function SolicitudCama() {
 
-    const axiosInstance = UseAxiosInstance();
     const statelogin = useSelector(state => state.login);
 
     const [authorities] = useState(statelogin.decodeToken.authorities);    
@@ -31,7 +33,8 @@ function SolicitudCama() {
     const [responseEditar, setResponseEditar] = useState(null);
     const [stateAsignacion, setStateAsignacion] = useState(null);
     // const [servicios, setServicios] = useState([]);
-    const [especialiedades, setEspecialidades] = useState([]);
+    const [especialidades, setEspecialidades] = useState([]);
+
 
     useEffect(() => {
         //cambiar icono 
@@ -41,19 +44,22 @@ function SolicitudCama() {
         document.head.appendChild(link);
         //cambia el titulo
         document.title = "Solicitudes de Cama";
-        if (bloquesServicio.length === 0) {
-            axiosInstance.get(`bloque-servicio`)
-                .then(response => {
-                    setBloquesServicio(response.data);
-                }).catch(error => {
-                    console.error(error);
-                });
+    },[])
+
+    useEffect(() => {
+        // async para obtener los bloques de servicio y especialidades
+        const getBloquesServicio = async () => {
+            const response = await obtenerBloquesServicio();
+            setBloquesServicio(response);
         }
-        if (especialiedades.length === 0) {
+
+        if (bloquesServicio.length === 0) getBloquesServicio();
+        
+        if (especialidades.length === 0) {
             const getEspecialidades = async () => {
-                await axiosInstance.get(`titulosFormacionAcademica/especialidad`)
+                await obtenerEspecialidades()
                     .then(response => {
-                        setEspecialidades(response.data);
+                        setEspecialidades(response);
                     }).catch(error => {
                         console.error(error);
                     });
@@ -69,9 +75,9 @@ function SolicitudCama() {
             return;
         }
         const getVersionesSolicitudCama = async () => {
-            await axiosInstance.get(`versionSolicitudCama/active/${bloqueServicioSeleccionado}`)
+            await obtenerVersionesSolicitudCamaActivasByIdBloque(bloqueServicioSeleccionado)
                 .then(response => {
-                    setVersionSolicitudesActivas(response.data);
+                    setVersionSolicitudesActivas(response);
                     Swal.close();
                 }).catch(error => {
                     console.error(error);
@@ -128,10 +134,7 @@ function SolicitudCama() {
             });
             if (!motivo) return;
             // Realizar la solicitud PUT con Axios
-            const response = await axiosInstance.put(`/solicitudCama/cancelar/${item.solicitudCama.id}`, null, {
-                params: { motivo }
-            });
-            // Mostrar mensaje de éxito si la solicitud fue completada
+            const response = await cancelarSolicitudCama(item.solicitudCama.id, motivo);
             Swal.fire({
                 title: 'Solicitud Cancelada',
                 text: 'La solicitud ha sido cancelada exitosamente.',
@@ -147,11 +150,11 @@ function SolicitudCama() {
     }
 
     const handleChangeFacturacion = async (item) => {
-        await axiosInstance.put(`/versionSolicitudCama/${item.id}/estadoAutorizacionFacturacion`)
+        await cambiarEstadoFacturacionVersionSolicitudCama(item.id)
             .then(response => {
                 setVersionSolicitudesActivas(versionSolicitudesActivas.map((version) => {
                     if (version.id === item.id) {
-                        return { ...version, autorizacionFacturacion: response.data.autorizacionFacturacion };
+                        return { ...version, autorizacionFacturacion: response.autorizacionFacturacion };
                     }
                     return version;
                 }));

@@ -1,101 +1,147 @@
-import useAdnIngreso from "../../hooks/monitorizacionHC/useAdnIngreso";
-import SearchIngreso from "./SearchIngreso";
-import useFetchPreguntas from "../../hooks/monitorizacionHC/useFetchPreguntas";
-import { useEffect, useState } from "react";
-import useSaveRespuestas from "../../hooks/monitorizacionHC/useSaveRespuestas";
-import Ingreso from "../../models/monitorizacionHc/Ingreso";
-import Loader from "../Loader";
-import useFetchRespuestasByIngreso from "../../hooks/monitorizacionHC/useFetchRespuestasByIngreso";
+import useAdnIngreso from '../../hooks/monitorizacionHC/useAdnIngreso';
+import SearchIngreso from './SearchIngreso';
+import useFetchPreguntas from '../../hooks/monitorizacionHC/useFetchPreguntas';
+import React, { useEffect, useState } from 'react';
+import useSaveRespuestas from '../../hooks/monitorizacionHC/useSaveRespuestas';
+import Ingreso from '../../models/monitorizacionHc/Ingreso';
+import Loader from '../Loader';
+import AdnIngreso from '../../models/dinamica/AdnIngreso';
+import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function FormPreguntas() {
-    const { adnIngreso, setAdnIngreso, loadingAdnI, fetchAdnIngreso} = useAdnIngreso();
-    const { preguntas, setPreguntas, loadingP, fetchPreguntas } = useFetchPreguntas();
-    const { loadingRes, responseSr, saveRespuestas } = useSaveRespuestas();
-    const { ingreso, loadingI, fetchRespuestasByIngreso } = useFetchRespuestasByIngreso();
-    
-    const [respuestas, setRespuestas] = useState([]);
-    const [servicio, setServicio] = useState(null);
-    const todasRespondidas = preguntas.length === respuestas.length;
+  const { adnIngreso, setAdnIngreso, loadingAdnI, fetchAdnIngreso } = useAdnIngreso();
+  const { preguntas: grupoPreguntas, setPreguntas, loadingP, fetchPreguntas } = useFetchPreguntas();
+  const { loadingRes, responseSr, saveRespuestas, error } = useSaveRespuestas();
 
-    const handleChange = (id, preguntaTexto, respuesta) => {
-        setRespuestas((prev) => {
-            const respuestasActualizadas = prev.filter((r) => r.pregunta.id !== id);// Eliminamos la respuesta previa de la misma pregunta (si existía)
-            return [...respuestasActualizadas, { pregunta: { id, pregunta: preguntaTexto }, respuesta }];// Agregamos la nueva respuesta
-        });
+  const { tipo: tipoPregunta } = useParams(); // Medico, Enfermeria
+  const [respuestas, setRespuestas] = useState([]);
+  const [servicio, setServicio] = useState(null);
+  const todasRespondidas =
+    grupoPreguntas.reduce((sum, grupo) => {
+      return sum + grupo.preguntas.length;
+    }, 0) === respuestas.length;
+
+  const handleChange = (id, preguntaTexto, respuesta) => {
+    setRespuestas((prev) => {
+      const respuestasActualizadas = prev.filter((r) => r.pregunta.id !== id); // Eliminamos la respuesta previa de la misma pregunta (si existía)
+      return [...respuestasActualizadas, { pregunta: { id, pregunta: preguntaTexto }, respuesta }]; // Agregamos la nueva respuesta
+    });
+  };
+
+  useEffect(() => {
+    document.title = 'Monitorición HC - Formulario de Preguntas';
+  }, []);
+
+  useEffect(() => {
+    setPreguntas([]);
+    setRespuestas([]);
+  }, [adnIngreso]);
+
+  // manejo de errores
+  useEffect(() => {
+    if (error?.response?.data.codigoError === 'MHC-0014') {
+      toast.warning(error.response.data.mensaje.split('|')[1]);
+    } else if (error) {
+      toast.error('se presento un error al guardar las respuestas');
+    }
+  }, [error]);
+
+  const handleSubmit = (e) => {
+    const ingreso = {
+      ...adnIngreso,
+      respuestas: respuestas,
     };
-
-    useEffect(() => {
-        setPreguntas([]);
-        setRespuestas([]);
-    },[adnIngreso]);
-    
-    const handleSubmit = (e) => {
-        const ingreso = {
-            ...adnIngreso,
-            respuestas: respuestas
-        };
-        const op = new Ingreso(ingreso);
-        const form = {
-            ingreso: op,
-            procesoServicio : servicio
-        };
-        saveRespuestas(form); 
+    const op = new Ingreso(ingreso);
+    const form = {
+      ingreso: op,
+      procesoServicio: servicio,
     };
+    saveRespuestas(form, tipoPregunta.toUpperCase());
+  };
 
-    // al recibir respuestas limpiamos el ingreso.
-    useEffect(() => {
-        if(responseSr){
-            setAdnIngreso([]);
-        }
-    },[responseSr]);
-    
-    useEffect(() => {// si el ingreso es null muestra el select de preguntas.
-        if(ingreso.id != null){// si el ingreso no es null no muestra el select de preguntas.
-            setAdnIngreso([]);
-        }
-    },[ingreso]);
+  // al recibir respuestas limpiamos el ingreso.
+  useEffect(() => {
+    if (responseSr || tipoPregunta) {
+      setAdnIngreso(new AdnIngreso());
+      if (responseSr) toast.success('Respuestas guardadas correctamente');
+    }
+  }, [responseSr, tipoPregunta]);
 
-    return (
-        <div className="container">
-            {(loadingRes || loadingAdnI || loadingP || loadingI ) && <Loader />}
-          <div className="row">
-            {/* <SearchIngreso fetchAdnIngreso={fetchAdnIngreso} setAdnIngreso={setAdnIngreso} fetchPreguntas={fetchPreguntas} adnIngreso={adnIngreso} fetchRespuestasByIngreso={fetchRespuestasByIngreso} setServicio={setServicio}/> */}
-            <SearchIngreso {...{fetchAdnIngreso,setAdnIngreso,fetchPreguntas,adnIngreso,fetchRespuestasByIngreso,setServicio}}/>
+  return (
+    <div className="px-4 py-2">
+      {(loadingRes || loadingAdnI || loadingP) && <Loader />}
 
-            {preguntas.length == 0 ? (
-              <></>
-            ) : (
-              <div className="col-md-12">
-                <div className="p-4 border rounded-lg shadow-lg">
-                    <table className="w-full border-collapse border border-gray-300">
-                        <thead>
-                            <tr className="bg-gray-200">
-                                <th className="border p-2">Pregunta</th>
-                                <th className="border p-2">Sí</th>
-                                <th className="border p-2">No</th>
-                                <th className="border p-2">No Aplica</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {preguntas.map(({id, pregunta}) => (
-                                <tr key={id}>
-                                    <td className="border p-2">{pregunta}</td>
-                                    {["Sí","No","No Aplica"].map((opcion) => (
-                                        <td key={opcion} className="border text-center">
-                                            <input type="radio" name={`pregunta-${id}`} value={opcion} checked={!!respuestas.find((r) => r.pregunta.id === id && r.respuesta === opcion)} onChange={() => handleChange(id, pregunta, opcion)}/>
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <button className={`mt-4 px-4 py-2 rounded ${todasRespondidas ? "btn-primary" : "btn-secondary disabled"}`} disabled={!todasRespondidas} onClick={handleSubmit}>Enviar</button>
-                </div>
+      <div className="flex flex-col gap-4">
+        {/* <SearchIngreso fetchAdnIngreso={fetchAdnIngreso} setAdnIngreso={setAdnIngreso} fetchPreguntas={fetchPreguntas} adnIngreso={adnIngreso} fetchRespuestasByIngreso={fetchRespuestasByIngreso} setServicio={setServicio}/> */}
+        <SearchIngreso {...{ fetchAdnIngreso, setAdnIngreso, fetchPreguntas, adnIngreso, setServicio, setRespuestas }} />
+
+        {grupoPreguntas.length === 0 ? (
+          adnIngreso.id ? (
+            <div className="mt-4">
+              <div className="p-6 border rounded-lg shadow-lg bg-white">
+                <h2 className="text-center text-gray-700 text-xl">Esta selección no cuenta con preguntas.</h2>
               </div>
-            )}
+            </div>
+          ) : null
+        ) : (
+          <div className="mt-4">
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+              <table className="w-full text-sm text-left rtl:text-right ">
+                <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
+                  <tr className="bg-gray-200 text-gray-800">
+                    <th className="border p-2 text-left">Grupo</th>
+                    <th className="border p-2 text-left">Pregunta para {tipoPregunta.toUpperCase()}</th>
+                    <th className="border p-2 text-center">Sí</th>
+                    <th className="border p-2 text-center">No</th>
+                    <th className="border p-2 text-center">No Aplica</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {grupoPreguntas.map((grupo) => (
+                    <React.Fragment key={grupo.nombre}>
+                      {grupo.preguntas.map((preguntaItem, preguntaIndex) => (
+                        <tr key={preguntaItem.id} className="bg-white border-b border-gray-200 hover:bg-gray-200 dark:bg-gray-50 dark:border-gray-300 dark:hover:bg-gray-150">
+                          {preguntaIndex === 0 && (
+                            <td rowSpan={grupo.preguntas.length} className="border p-2 align-top font-semibold text-gray-700">
+                              {grupo.nombre}
+                            </td>
+                          )}
+
+                          <td className="border p-2">{preguntaItem.pregunta}</td>
+
+                          {['SI', 'NO', 'NO_APLICA'].map((opcion) => (
+                            <td key={opcion} className="border text-center">
+                              <input type="radio" name={`pregunta-${preguntaItem.id}`} value={opcion} 
+                                checked={!!respuestas.find((r) => r.pregunta.id === preguntaItem.id && r.respuesta === opcion)}
+                                onChange={() =>
+                                  handleChange(
+                                    preguntaItem.id,
+                                    preguntaIndex, 
+                                    opcion,
+                                  )
+                                }
+                                className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                              />
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+
+              <button className={`mt-6 px-4 py-2 rounded text-white transition-colors ${todasRespondidas ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                disabled={!todasRespondidas} onClick={handleSubmit}> 
+                Enviar
+              </button>
+            </div>
           </div>
-        </div>
-      );  
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default FormPreguntas;

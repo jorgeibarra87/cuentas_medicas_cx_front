@@ -1,95 +1,100 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import imgLogo from '../../img/favicon.ico'
 import Navbar from './Navbar'
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import useInactivity from '../../hooks/useInactivity';
-import Swal from 'sweetalert2';
-import { cerrarSesionAction } from '../../actions/loginActions';
-// import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 export default function Sidebar({ componente: Componente }) {
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const stateSidebar = useSelector(state => state.sidebar);
+  const statelogin = useSelector(state => state.login);
+  const [usuario, setUsuario] = useState(statelogin.decodeToken);
+  const [submenuAbierto, setSubmenuAbierto] = useState(null);
 
-    const handleInactivity = () => {
-        Swal.fire({
-            title: 'Inactividad detectada',
-            text: 'Por seguridad se cerrara la sesión',
-            icon: 'warning',
-            confirmButtonText: 'ENTIENDO'
-        }).then(() =>{
-            dispatch(cerrarSesionAction());
-            navigate("/login");
-        });
-    };
+  const toggleSubmenu = (nombre) => {
+    setSubmenuAbierto(prev => prev === nombre ? null : nombre);
+  };
 
-    // Configurar inactividad en 10 minutos 10 * 60 * 1000
-    //useInactivity(10 * 60 * 1000, handleInactivity);
-
-    const stateSidebar = useSelector(state => state.sidebar);
-    const statelogin = useSelector(state => state.login);
-    const [usuario] = useState(statelogin.decodeToken);
+    useEffect(() => {
+        const token = localStorage.getItem('tokenhusjp');
+        const usuario2 = jwtDecode(token);
+        const combinedAuthorities = usuario.authorities.concat(usuario2.authorities); 
+                
+        setUsuario({
+            ...usuario,
+            authorities: combinedAuthorities
+        })
+    }, [])
 
     const opcionesMenu = [
         {
             nombre: 'InnoProduc',
-            roles: ['ROLE_ADMIN'], // Define los roles para esta opción
+            roles: ['ROLE_ADMINISTRADOR'], // Define los roles para esta opción
             submenu: [
-                { nombre: 'Actualizar', ruta: '/innProduc/update', roles: ['ROLE_ADMIN', 'ROLE_INNPRODUC'] }, // Roles permitidos para esta subopción
+                { nombre: 'Actualizar', ruta: '/innProduc/update', roles: ['ROLE_ADMINISTRADOR', 'ROLE_INNPRODUC'] }, // Roles permitidos para esta subopción
+            ]
+        },
+        {
+          nombre: 'Rehabilitación y Terapias',
+          roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION'],
+          submenu: [
+            { nombre: 'Indicadores', ruta: '/rehabilitacion/indicadores', roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION'] }
+          ]
+        },
+        {
+            nombre: 'Sistemas',
+            roles: ['ROLE_ADMINISTRADOR','ROLE_SISTEMAS_MANTENIMIENTO'],
+            submenu: [
+                {
+                    nombre: 'Mantenimiento chequeo', ruta: '/sistemas/mantenimientochequeo', roles: ['ROLE_ADMINISTRADOR', 'ROLE_SISTEMAS_MANTENIMIENTO'],
+                    // submenuAdicional: [
+                    //     { nombre: 'Mantenimiento preventivo chequeo', ruta: '/humanizacion/solicitudes', roles: ['ROLE_ADMINISTRADOR'] },
+                    //     { nombre: 'solicitudes almacen', ruta: 'almacen', roles: ['ROLE_ADMINISTRADOR'] }
+                    // ]
+                },
+                {
+                    nombre: 'Ajustes', ruta: '/sistemas/ajustes', roles: ['ROLE_ADMINISTRADOR'],
+                }
             ]
         },
         // {
-        //     nombre: 'Humanización',
-        //     roles: ['ROLE_ADMIN'],
+        //     nombre: 'Asignación_de_camas',
+        //     roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS'],
         //     submenu: [
-        //         {
-        //             nombre: 'Identificación de necesidades', ruta: '/a', roles: ['ROLE_ADMIN'],
-        //             submenuAdicional: [
-        //                 { nombre: 'solicitudes', ruta: '/humanizacion/solicitudes', roles: ['ROLE_ADMIN'] },
-        //                 { nombre: 'solicitudes almacen', ruta: 'almacen', roles: ['ROLE_ADMIN'] }
-        //             ]
-        //         },
-        //         // { nombre: 'Opcion B', ruta: '/b', roles: ['ROLE_ADMIN'] }
+        //         {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']},
+        //         {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']}
+        //     ]
+        // },
+        // {
+        //     nombre: 'MesadeProcesos',
+        //     roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER'],
+        //     submenu: [
+        //         {nombre: 'Procesos y subprocesos', ruta: '/mesaprocesos/procesosysubprocesos', roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD']},
+        //         {nombre: 'Usuarios procesos', ruta: '/mesaprocesos/usuarioprocesos', roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER']}
         //     ]
         // },
         {
-            nombre: 'Asignación_de_camas',
-            roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS'],
-            submenu: [
-                {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']},
-                {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMIN','ROLE_ADMIN','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']}
-            ]
-        },
-        {
-            nombre: 'MesadeProcesos',
-            roles: ['ROLE_ADMIN','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER'],
-            submenu: [
-                {nombre: 'Procesos y subprocesos', ruta: '/mesaprocesos/procesosysubprocesos', roles: ['ROLE_ADMIN','ROLE_MESADEPROCESOS_COORD']},
-                {nombre: 'Usuarios procesos', ruta: '/mesaprocesos/usuarioprocesos', roles: ['ROLE_ADMIN','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER']}
-            ]
-        },
-        {
             nombre: 'Nutricion',
-            roles: ['ROLE_ADMIN','ROLE_TAMIZAJE'],
+            roles: ['ROLE_ADMINISTRADOR','ROLE_TAMIZAJE'],
             submenu:[
-                {nombre: 'Tamizaje', ruta: '/nutricion/tamizaje', roles: ['ROLE_ADMIN','ROLE_TAMIZAJE']}
+                {nombre: 'Tamizaje', ruta: '/nutricion/tamizaje', roles: ['ROLE_ADMINISTRADOR','ROLE_TAMIZAJE']}
             ]
         },
         {
             nombre: 'MonitorizacionHc',
-            roles: ['ROLE_ADMIN'],
+            roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION'],
             submenu:[
-                {nombre: 'Monitorizacion', ruta: '/monitorizacionhc/preguntas', roles: ['ROLE_ADMIN']},
-                {nombre: 'Reportes', ruta: '/monitorizacionhc/reportes', roles: ['ROLE_ADMIN']},
-                {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMIN']}
+                {nombre: 'Monitorizacion Medico', ruta: '/monitorizacionhc/preguntas/medico', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION_MEDICO']},
+                {nombre: 'Monitorizacion Enfermeria', ruta: '/monitorizacionhc/preguntas/enfermeria', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION_ENFERMERIA']},
+                {nombre: 'Reportes', ruta: '/monitorizacionhc/reportes', roles: ['ROLE_ADMINISTRADOR','ROLE_MONITORIZACION']},
+                {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMINISTRADOR']}
             ]
         },
         {
             nombre: 'Ajustes',
-            roles: ['ROLE_ADMIN'],
+            roles: ['ROLE_ADMINISTRADOR'],
             submenu: [
-                { nombre: 'Usuario', ruta: '/ajustes/usuario', roles: ['ROLE_ADMIN']}
+                { nombre: 'Usuario', ruta: '/ajustes/usuario', roles: ['ROLE_ADMINISTRADOR']}
             ]
         }
         // Agrega más opciones de menú aquí si es necesario
@@ -117,59 +122,62 @@ export default function Sidebar({ componente: Componente }) {
     };
 
     return (
-        <div >
-            <div className="wrapper">
-                <nav id="sidebar" className={`${stateSidebar.state ? 'active' : ''} small`} >
-                    <div className="sidebar-header d-inline-flex align-items-center">
-                        <img src={imgLogo} alt='logo' style={{ width: '40px', height: '40px' }} className="mr-2" />
-                        <Link to='/' className="mb-0 mx-1 sin-estilo "> Soluciones HUSJP</Link>
-                    </div>
-                    <ul className="list-unstyled components">
-                        {opcionesFiltradas.map((opcion, index) => (
-                            <li key={index}>
-                                <a href={`#${opcion.nombre}Submenu`} data-bs-toggle="collapse" data-toggle="collapse" aria-expanded="false" className="dropdown-toggle">{opcion.nombre}</a>
-                                <ul className="collapse list-unstyled" id={`${opcion.nombre}Submenu`}>
-                                    {filtrarSubopciones(opcion.submenu).map((subopcion, subindex) => (
-                                        <li key={subindex} className=' nav-item dropdown'>
-                                            <div className="dropend" >
-                                                {subopcion.submenuAdicional ? (
-                                                    <>
-                                                        <Link to={subopcion.ruta} className='dropdown-toggle' data-bs-toggle="dropdown" >{subopcion.nombre}</Link>
-                                                        <ul className="dropdown-menu">
-                                                            {filtrarSubmenuAdicional(subopcion.submenuAdicional).map((submenuadicional, subadcionalindex) => (
-                                                                <li key={subadcionalindex} className='specialmenu'>
-                                                                    <Link to={submenuadicional.ruta} className='negrito'>{submenuadicional.nombre}</Link>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </>
-                                                ) : (
-                                                    <Link to={subopcion.ruta}>{subopcion.nombre}</Link>
-                                                )}
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
-                <div id="content">
-                    <div className="navbar-fixed">
-                       <Navbar />
-                    </div>
-                    <div className="content-scroll">
-                        {Componente && <Componente />}
-                        <footer className="footer-dinamico">
-                            <p className="text-muted text-center">
-                                Soluciones HUSJP © 2024 Hospital Universitario San Jose. Ing. Juio Alvarez. Todos los derechos reservados. EXT. 134
-                            </p>
-                        </footer>
-                    </div>
-                </div> 
-            </div>
-            
+        <div className="wrapper">
+      <nav id="sidebar" className={`${stateSidebar.state ? 'active' : ''} small`}>
+        <div className="sidebar-header text-center">
+          <img src={imgLogo} alt='logo' style={{ width: '40px', height: '40px' }} />
+          <Link to='/' className="sin-estilo">Soluciones HUSJP</Link>
         </div>
+        <ul className="list-unstyled components">
+          {opcionesFiltradas.map((opcion, index) => (
+            <li key={index}>
+              <button
+                className="dropdown-toggle w-full text-left px-3 py-2 text-white hover:bg-gray-200"
+                onClick={() => toggleSubmenu(opcion.nombre)}
+              >
+                {opcion.nombre}
+              </button>
+              {submenuAbierto === opcion.nombre && (
+                <ul className="list-unstyled pl-4">
+                  {filtrarSubopciones(opcion.submenu).map((subopcion, subindex) => (
+                    <li key={subindex}>
+                      {subopcion.submenuAdicional ? (
+                        <details className="pl-2">
+                          <summary className="cursor-pointer">{subopcion.nombre}</summary>
+                          <ul className="pl-4">
+                            {filtrarSubmenuAdicional(subopcion.submenuAdicional).map((submenuadicional, subadcionalindex) => (
+                              <li key={subadcionalindex}>
+                                <Link to={submenuadicional.ruta}>{submenuadicional.nombre}</Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                      ) : (
+                        <Link to={subopcion.ruta} className="block px-2 py-1 hover:bg-gray-300">{subopcion.nombre}</Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div id="content" className="flex flex-col h-screen"> {/* Usa flexbox para un layout de columna */}
+          <div className="navbar-fixed">
+              <Navbar />
+          </div>
+          <div className="flex-grow overflow-y-auto p-4"> {/* El contenido principal con scroll propio */}
+              {Componente && <Componente />}
+          </div>
+          <footer className="footer-dinamico flex-shrink-0"> {/* El footer queda fijo en la parte inferior */}
+              <p className="text-muted text-center">
+                  <small>Soluciones HUSJP © 2024 Hospital Universitario San Jose. Ing. Julio Alvarez. Todos los derechos reservados. EXT. 134</small>
+              </p>
+          </footer>
+      </div>
+    </div>
     )
 }
 

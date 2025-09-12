@@ -1,11 +1,13 @@
-import React from 'react'
 import { useEffect } from 'react'
-import { Button, Modal } from 'react-bootstrap'
-import UseAxiosInstance from '../../utilities/UseAxiosInstance'
 import { useState } from 'react'
 import Select from 'react-select'
 import AsyncSelect from 'react-select/async'
 import Swal from "sweetalert2";
+import { obtenerMedidasAislamiento } from '../../api/asignacionCamas/medidasAislamientoService'
+import { obtenerBloquesServicio } from '../../api/asignacionCamas/bloqueServicioService'
+import { obtenerEspecialidades } from '../../api/asignacionCamas/especialidadService'
+import { guardarVersionSolicitudCama } from '../../api/asignacionCamas/versionSolicitudCamaService'
+import { obtenerDiagnosticos } from '../../api/asignacionCamas/diagnosticoService'
 
 const initialFormState = {
     requiereAislamiento: false,
@@ -41,9 +43,6 @@ const initialFormState = {
 }
 
 export default function FormSolicitudCama({ showFormSolicitud, handleCloseFormSolicitud, pacienteHospitalizado }) {
-
-
-    const axiosInstance = UseAxiosInstance();
 
     const [form, setForm] = useState(initialFormState);
     const [especialidades, setEspecialidades] = useState([]);
@@ -89,8 +88,8 @@ export default function FormSolicitudCama({ showFormSolicitud, handleCloseFormSo
     
             const getMedidasAislamiento = async () => {
                 try {
-                    const response = await axiosInstance.get(`medidasAislamiento`);
-                    setMedidasAislamiento(response.data);
+                    const response = await obtenerMedidasAislamiento();
+                    setMedidasAislamiento(response);
                 } catch (error) {
                     console.error(error);
                 }
@@ -98,19 +97,15 @@ export default function FormSolicitudCama({ showFormSolicitud, handleCloseFormSo
             getMedidasAislamiento();
 
             const getBloquesServicio = async () => {
-                await axiosInstance.get(`bloque-servicio`)
-                .then(response => {
-                    setBloquesServicio(response.data);
-                }).catch(error => {
-                    console.error(error);
-                });
+                const response = await obtenerBloquesServicio();
+                setBloquesServicio(response);
             }
             getBloquesServicio();
 
             const getEspecialidades = async () => {
-                axiosInstance.get(`titulosFormacionAcademica/especialidad`)
+                obtenerEspecialidades()
                 .then(response => {
-                    setEspecialidades(response.data);
+                    setEspecialidades(response);
                 }).catch(error => {
                     console.error(error);
                 });
@@ -163,9 +158,9 @@ export default function FormSolicitudCama({ showFormSolicitud, handleCloseFormSo
             return callback([]);
         }
         if (inputValue.length > 3) {
-            axiosInstance.get(`diagnostico/${inputValue}`)
+            obtenerDiagnosticos(inputValue)
             .then(response => {
-                const options = response.data.map(diagnostico => ({
+                const options = response.map(diagnostico => ({
                     value: diagnostico.id,
                     label: diagnostico.nombre
                 }));
@@ -180,8 +175,7 @@ export default function FormSolicitudCama({ showFormSolicitud, handleCloseFormSo
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            
-            await axiosInstance.post(`versionSolicitudCama`, form);
+            await guardarVersionSolicitudCama(form);
             setForm(initialFormState);
             opcionesBloqueServicio.length = 0;
             opcionesEspecialidades.length = 0;

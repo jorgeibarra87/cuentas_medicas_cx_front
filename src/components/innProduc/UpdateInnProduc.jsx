@@ -80,31 +80,42 @@ function UpdateInnProduc() {
 
     return (
         <>
-            <h2>Actualizar valores</h2>
-            <form onSubmit={handleSubmit} className="mt-4">
-                <div className="form-group row">
-                    <label htmlFor="iprcodigo" className="col-form-label col">Código:</label>
-                    <div className="col">
-                        <input type='text' id='iprcodigo' name='iprcodigo' placeholder='Digite código' className="form-control" onChange={handleChange} value={form.iprcodigo} required />
-                    </div>
-                    <div className="col-auto">
-                        <button type="button" className="btn btn-primary" onClick={buscarPorCodigo}>Buscar</button>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="iprdescor">Descripción:</label>
-                    <input type='text' id='iprdescor' name='iprdescor' placeholder='Digite descripción' className="form-control" onChange={handleChange} value={form.iprdescor} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="iprcostpe">Costo:</label>
-                    <input type='text' id='iprcostpe' name='iprcostpe' placeholder='Digite costo' className="form-control" onChange={handleChange} value={formatearNumeroVisualmente(form.iprcostpe)} required />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="iprulcope">Último costo:</label>
-                    <input type='text' id='iprulcope' name='iprulcope' placeholder='Digite último costo' className="form-control" onChange={handleChange} value={formatearNumeroVisualmente(form.iprulcope)} required />
-                </div>
-                <button type="submit" className="btn btn-primary">Actualizar</button>
-            </form>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">Actualizar valores</h2>
+        <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="flex items-center space-x-2">
+            <label htmlFor="iprcodigo" className="text-sm font-medium text-gray-700 w-20">Código:</label>
+            <div className="flex-grow flex items-center space-x-2">
+                <input type="text" id="iprcodigo" name="iprcodigo" placeholder="Código" 
+                className="flex-grow text-sm px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500" 
+                onChange={handleChange} value={form.iprcodigo} required />
+                <button type="button" className="text-sm px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500" 
+                onClick={buscarPorCodigo} >
+                Buscar
+                </button>
+            </div>
+            </div>
+            <div className="flex items-center space-x-2">
+            <label htmlFor="iprdescor" className="text-sm font-medium text-gray-700 w-20">Descripción:</label>
+            <input type="text" id="iprdescor" name="iprdescor" placeholder="Descripción" 
+                className="flex-grow text-sm px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500" 
+                onChange={handleChange} value={form.iprdescor} required />
+            </div>
+            <div className="flex items-center space-x-2">
+            <label htmlFor="iprcostpe" className="text-sm font-medium text-gray-700 w-20">Costo:</label>
+            <input type="text" id="iprcostpe" name="iprcostpe" placeholder="Costo" 
+                className="flex-grow text-sm px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500" 
+                onChange={handleChange} value={formatearNumeroVisualmente(form.iprcostpe)} required />
+            </div>
+            <div className="flex items-center space-x-2">
+            <label htmlFor="iprulcope" className="text-sm font-medium text-gray-700 w-20">Último costo:</label>
+            <input type="text" id="iprulcope" name="iprulcope" placeholder="Último costo" 
+                className="flex-grow text-sm px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500" 
+                onChange={handleChange} value={formatearNumeroVisualmente(form.iprulcope)} required />
+            </div>
+            <button type="submit" className="w-full text-sm px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Actualizar
+            </button>
+        </form>
         </>
     )
 }
