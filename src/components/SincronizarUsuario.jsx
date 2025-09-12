@@ -1,11 +1,10 @@
 /** Este componente se encarga de sicronizar unicamente al usuario con el authentication-service
  * solo sincroniza documento, NO SINCRONIZA ROLES
  */
-
-import { Modal, Spinner } from 'react-bootstrap'
 import useSaveUsuarioAuthSer from '../hooks/authService/useSaveUsuario';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import Loader from './Loader';
 
 function SincronizarUsuario({ show, handleClose, documento }) {
 
@@ -63,29 +62,61 @@ function SincronizarUsuario({ show, handleClose, documento }) {
     }
 
     return (
-        <Modal show={show} onHide={handleClose} >
-            <Modal.Header closeButton>
-                <span>Sincronizar usuario</span>
-            </Modal.Header>
-            <Modal.Body>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <div className="input-group mb-3">
-                            <input type="text" className="form-control" id="documento" value={inputDoc} placeholder="Ingrese el número de documento" onChange={handleChange} />
-                            <button type="submit" className="btn btn-primary" disabled={loading}>
-                                {loading ? (
-                                <>
-                                    <Spinner size='sm' animation='border' className='me-2' />
-                                    Sincronizando...
-                                </>
-                                ):(
-                                "Sincronizar")}
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </Modal.Body>
-        </Modal>
+        <div
+  className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300 ${show ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+  onClick={handleClose}
+>
+  <div
+    className="bg-white rounded-lg shadow-xl w-full max-w-sm relative"
+    onClick={(e) => e.stopPropagation()}
+  >
+    {/* Encabezado del Modal */}
+    <div className="flex items-center justify-between p-4 border-b border-gray-200">
+      <span className="text-xl font-semibold text-gray-800">Sincronizar usuario</span>
+      <button
+        type="button"
+        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+        onClick={handleClose}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    {/* Cuerpo del Modal */}
+    <div className="p-4">
+      <form onSubmit={handleSubmit}>
+        <div className="relative mb-4">
+          <div className="relative flex items-stretch w-full mb-3">
+            <input
+              type="text"
+              className="relative w-full px-3 py-2 text-base text-gray-700 placeholder-gray-400 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              id="documento"
+              value={inputDoc}
+              placeholder="Ingrese el número de documento"
+              onChange={handleChange}
+            />
+            <button
+              type="submit"
+              className="flex-shrink-0 px-4 py-2 text-white bg-blue-600 border border-blue-600 rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader />
+                  <span className="ml-2">Sincronizando...</span>
+                </>
+              ) : (
+                "Sincronizar"
+              )}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
     )
 }
 

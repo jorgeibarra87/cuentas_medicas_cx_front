@@ -1,4 +1,3 @@
-import { Modal, Form, Button } from 'react-bootstrap'
 import FormSolicitudCama from './FormSolicitudCama'
 import { useState } from 'react';
 import { obtenerInformacionPacienteHospitalizadoByIdentificacion } from '../../api/dinamica/pacientesHospitalizados';

@@ -1,5 +1,3 @@
-import React from 'react'
-import { Modal } from 'react-bootstrap';
 import { FormatearFecha } from '../../utilities/FormatearFecha';
 
 function InfoModal({show, handleClose, data}) {

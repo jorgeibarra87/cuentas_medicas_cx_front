@@ -1,72 +1,72 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import useFecthUsuarioProcServ from "../../hooks/monitorizacionHC/useFetchUsuarioProcServ";
-import Select from "react-select";
-import { useParams } from "react-router-dom";
-import Error404 from "../Error404";
-import AdnIngreso from "../../models/dinamica/AdnIngreso";
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import useFecthUsuarioProcServ from '../../hooks/monitorizacionHC/useFetchUsuarioProcServ';
+import Select from 'react-select';
+import { useParams } from 'react-router-dom';
+import Error404 from '../Error404';
+import AdnIngreso from '../../models/dinamica/AdnIngreso';
 
-const SearchIngreso = ({fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreguntas, setServicio, setRespuestas}) => {
-  
-    const tiposValidos = ["medico", "enfermeria"];
+const SearchIngreso = ({ fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreguntas, setServicio, setRespuestas }) => {
+  const tiposValidos = ['medico', 'enfermeria'];
 
-    const [ingreso, setIngreso] = useState('');
-    const {procServ, loadingUPS , error, fetchUsuaroProcServByDocumento} = useFecthUsuarioProcServ();
-    const {tipo: tipoPregunta} = useParams(); // Medico, Enfermeria
+  const [ingreso, setIngreso] = useState('');
+  const { procServ, loadingUPS, error, fetchUsuaroProcServByDocumento } = useFecthUsuarioProcServ();
+  const { tipo: tipoPregunta } = useParams(); // Medico, Enfermeria
 
-    const statelogin = useSelector(state => state.login);
-    const [usuario] = useState(statelogin.decodeToken);
+  const statelogin = useSelector((state) => state.login);
+  const [usuario] = useState(statelogin.decodeToken);
 
-    const handleSearch = () =>  {
-      if(ingreso.trim()){
-        fetchAdnIngreso(ingreso); 
-      }
-    };
-    
-    useEffect(() => {
-      if(procServ.length == 0){
-        fetchUsuaroProcServByDocumento(usuario.sub);
-      }
-    },[procServ]);
-    
-    const handleChange = (e) => {
-      setIngreso(e.target.value);
-      setAdnIngreso(new AdnIngreso());
+  const handleSearch = () => {
+    if (ingreso.trim()) {
+      fetchAdnIngreso(ingreso);
     }
-    
-    const handleSelect = (e) => {
-      const { value, tipo } = e;
-      setServicio({id: value, tipo: tipo});
-      fetchPreguntas(value, tipo, tipoPregunta.toUpperCase());
-      setRespuestas([]); // Limpiamos las respuestas previas
+  };
+
+  useEffect(() => {
+    if (procServ.length == 0) {
+      fetchUsuaroProcServByDocumento(usuario.sub);
     }
-    
-    if (!tiposValidos.includes(tipoPregunta.toLowerCase())) {
-      return <Error404 />;
-    } 
-    
-    if(error) return <div className="alert alert-danger">Se presento un error al cargar los procesos y servicios del usuario</div>;
-    
-return (
-    <div className="p-4 border rounded-lg shadow-lg">
-      <div className="d-flex align-items-center flex-wrap gap-2">
-        <input type="text" value={ingreso} onChange={(e) => handleChange(e)} placeholder="Número de ingreso" className="form-control" style={{ maxWidth: '200px' }} />
-        <button onClick={handleSearch} className="btn btn-primary">
+  }, [procServ]);
+
+  const handleChange = (e) => {
+    setIngreso(e.target.value);
+    setAdnIngreso(new AdnIngreso());
+  };
+
+  const handleSelect = (e) => {
+    const { value, tipo } = e;
+    setServicio({ id: value, tipo: tipo });
+    fetchPreguntas(value, tipo, tipoPregunta.toUpperCase());
+    setRespuestas([]); // Limpiamos las respuestas previas
+  };
+
+  if (!tiposValidos.includes(tipoPregunta.toLowerCase())) {
+    return <Error404 />;
+  }
+
+  if (error) return <div className="alert alert-danger">Se presento un error al cargar los procesos y servicios del usuario</div>;
+
+  return (
+    <div className="p-4 border rounded-lg shadow-lg bg-white">
+      <div className="flex items-center flex-wrap gap-2">
+        <input type="text" value={ingreso} onChange={(e) => handleChange(e)} placeholder="Número de ingreso"
+          className="w-full max-w-xs px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button onClick={handleSearch} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
           Buscar
         </button>
         {adnIngreso.paciente && (
           <>
-            <label className="mx-2 mb-0">doc paciente:</label>
-            <span>{adnIngreso.paciente.documento}</span>
-            <span className="mx-2">selecciona las preguntas:</span>
-            <div style={{ minWidth: '300px' }}>
-              <Select options={procServ} onChange={handleSelect}/>
+            <label className="mx-2 mb-0 text-sm font-medium text-gray-700">doc paciente:</label>
+            <span className="text-sm text-gray-800">{adnIngreso.paciente.documento}</span>
+            <span className="mx-2 text-sm text-gray-600">selecciona las preguntas:</span>
+            <div className="min-w-[300px]">
+              <Select options={procServ} onChange={handleSelect} />
             </div>
           </>
         )}
       </div>
     </div>
   );
-}
+};
 
 export default SearchIngreso;

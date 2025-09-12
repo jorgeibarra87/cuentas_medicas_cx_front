@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDisclourse } from '../../hooks/tamizaje/useDisclourse';
 import { useGetTamizaje } from '../../hooks/tamizaje/useGetTamizaje';
 import { getFormattedDate, getNextSevenDay, getSevenDayAgo, isPassedSeveDays, parseDate, parseDateHours } from '../helpers';
-import { Button, Col, Container, Form, OverlayTrigger, Row, Spinner, Table, Tooltip } from 'react-bootstrap';
 import { DropdownTableCols } from './DropdownTableCols';
 import { DeleteBtn } from './DeleteBtn';
 import { ModalReevaluate } from './ModalReevaluate';
@@ -88,68 +87,90 @@ function Tamizaje() {
     if (b?.close && !b.firstValue) return -1;
     return new Date(a.folioDate).getTime() - new Date(b.folioDate).getTime();
   });
-  
+
   return (
-    <div className=''>
-      <Container className="my-4 px-4">
-        <Row className="align-items-center justify-content-between">
+    <div className="">
+      <div className="my-4 px-4">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           {/* Logo y título */}
-          <Col xs="auto" className="d-flex align-items-center gap-2">
-            <h1 className="h4 mb-0">Tamizaje nutricional</h1>
-          </Col>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-gray-800">Tamizaje nutricional</h1>
+          </div>
+
           {/* Controles */}
-          <Col xs="auto" className="d-flex align-items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
             {/* Inputs de fecha */}
-            <div className="d-flex align-items-center gap-2">
-              <Form.Group controlId="date-init">
-                <Form.Label>Inicio</Form.Label>
-                <Form.Control type="date" value={dateValueStart} 
-                  onChange={(e) => {setDateValueStart(e.target.value); setDateValueEnd(''); }} />
-              </Form.Group>
-              <Form.Group controlId="date-end">
-                <Form.Label>Fin</Form.Label>
-                <Form.Control type="date" value={dateValueEnd} onChange={(e) => setDateValueEnd(e.target.value)} />
-              </Form.Group>
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col">
+                <label htmlFor="date-init" className="text-sm font-medium text-gray-700">
+                  Inicio
+                </label>
+                <input id="date-init" type="date" value={dateValueStart}
+                  onChange={(e) => {
+                    setDateValueStart(e.target.value);
+                    setDateValueEnd('');
+                  }}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
+              </div>
+
+              <div className="flex flex-col">
+                <label htmlFor="date-end" className="text-sm font-medium text-gray-700">
+                  Fin
+                </label>
+                <input id="date-end" type="date" value={dateValueEnd}
+                  onChange={(e) => setDateValueEnd(e.target.value)}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"/>
+              </div>
             </div>
 
             {/* Select de estado */}
-            <Form.Group controlId="option-type">
-              <Form.Label>Estado</Form.Label>
-              <Form.Select value={select} onChange={(e) => setSelect(e.target.value)}>
+            <div className="flex flex-col">
+              <label htmlFor="option-type" className="text-sm font-medium text-gray-700">
+                Estado
+              </label>
+              <select id="option-type" value={select} onChange={(e) => setSelect(e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 {Object.keys(OPTIONS).map((key) => (
                   <option key={key} value={OPTIONS[key]}>
                     {key}
                   </option>
                 ))}
-              </Form.Select>
-            </Form.Group>
-          </Col>
-        </Row>
-      </Container>
-
-      <Container className="my-2 px-4">
-        <Row className="align-items-center justify-content-between flex-wrap">
-          {/* Dropdown y selección */}
-          <Col xs="auto" className="d-flex align-items-center gap-3">
-            <DropdownTableCols handleChange={handleChange} tableColums={tableColums} />
-            <div className="d-flex align-items-center gap-2 mb-0">
-              <span className="text-muted">Seleccionados</span>
-              {loading ? <Spinner animation="grow" size="sm" variant="primary" /> : `(${checksArr.length})`}
+              </select>
             </div>
-          </Col>
+          </div>
+        </div>
+      </div>
+
+      <div className="my-2 px-4">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          {/* Dropdown y selección */}
+          <div className="flex items-center gap-3">
+            <DropdownTableCols handleChange={handleChange} tableColums={tableColums} />
+            <div className="flex items-center gap-2">
+              <span className="text-gray-500">Seleccionados</span>
+              {loading ? <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div> : `(${checksArr.length})`}
+            </div>
+          </div>
 
           {/* Botones de acción */}
-          <Col xs="auto" className="d-flex align-items-center gap-3">
-            <Button variant="secondary" disabled={loading || !data || checksArr.length === 0} onClick={handleCopy}>
+          <div className="flex items-center gap-3">
+            <button disabled={loading || !data || checksArr.length === 0} onClick={handleCopy}
+              className="px-4 py-2 rounded-md text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
               Copiar
-            </Button>
-            <Button variant="primary" disabled={loading || !data || checksArr.length === 0 || isCreated} onClick={onOpen}>
+            </button>
+
+            <button disabled={loading || !data || checksArr.length === 0 || isCreated} onClick={onOpen}
+              className="px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
               Reevaluar
-            </Button>
-            <Button variant="success" disabled={loading || !data || checksArr.length === 0 || isNew || checksArr.some((inf) => inf.close)} onClick={onOpenFinish}>
+            </button>
+
+            <button disabled={loading || !data || checksArr.length === 0 || isNew || checksArr.some((inf) => inf.close)}
+              onClick={onOpenFinish}
+              className="px-4 py-2 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
               Finalizar
-            </Button>
-            <DeleteBtn disabled={checksArr.length !== 1 || checksArr?.[0]?.firstValue == null} info={checksArr?.[0]} clearChecks={clearChecks}
+            </button>
+
+            <DeleteBtn disabled={checksArr.length !== 1 || checksArr?.[0]?.firstValue == null} info={checksArr?.[0]} clearChecks={clearChecks} 
               refetch={() => {
                 getTamizaje({
                   fechaFinal: dateValueEnd,
@@ -157,114 +178,111 @@ function Tamizaje() {
                 });
               }}
             />
-          </Col>
+          </div>
 
           {/* Total de exámenes */}
-          <Col xs="auto" className="d-flex align-items-center gap-2">
-            <span className="text-muted">Total exámenes</span>
-            {loading || !data ? <Spinner animation="grow" size="sm" variant="primary" /> : <span className="ms-2">{arr.length}</span>}
-          </Col>
-        </Row>
-      </Container>
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500">Total exámenes</span>
+            {loading || !data ? <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div> : <span className="ml-2">{arr.length}</span>}
+          </div>
+        </div>
+      </div>
 
-      <div className="container table-responsive" style={{ maxHeight: 'calc(100vh - 300px)', maxWidth : 'calc(100vw - 300px)', overflowX: 'auto' , overflowY: 'auto', whiteSpace: 'nowrap'}}>
-        <Table bordered hover className="text-uppercase table-small-text" style={{ minWidth: '100%', whiteSpace: 'nowrap' }}>
-          <thead className="sticky-top bg-light">
+      <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 300px)', maxWidth: 'calc(100vw - 300px)' }}>
+        <table className="w-full text-xs uppercase min-w-full border border-collapse border-gray-300">
+          <thead className="sticky top-0 bg-gray-100">
             <tr>
-              <th className="sticky-left bg-light px-3" style={{ backgroundColor: 'gray' }}>
-                <Form.Check type="checkbox" checked={checksArr.length === arr.length} onChange={(e) => {setChecksArr(e.target.checked ? arr || [] : []);}} />
+              <th className="sticky left-0 bg-gray-200 px-3 border border-gray-300">
+                <input type="checkbox" checked={checksArr.length === arr.length}
+                  onChange={(e) => {
+                    setChecksArr(e.target.checked ? arr || [] : []);
+                  }}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"/>
               </th>
-              <th style={{ minWidth: '20ch' }} className="bg-light">HC</th>
-              <th style={{ minWidth: '40ch' }} className="bg-light">PACIENTE</th>
-              {tableColums.age && <th className="bg-light">EDAD</th>}
-              {tableColums.gender && <th className="bg-light">GÉNERO</th>}
-              {tableColums.service && (
-                <th className="bg-light" style={{ minWidth: '20ch' }}>SERVICIO</th>
-              )}
-              {tableColums.bethCode && <th className="bg-light">CAMA</th>}
-              {tableColums.income && <th className="bg-light">INGRESO</th>}
-              <th className="bg-light" style={{ minWidth: '20ch' }}>FECHA FOLIO</th>
-              <th className="bg-light">VALOR</th>
-              <th className="bg-light">PRIMERA EVALUACIÓN</th>
-              <th className="bg-light">FECHA 1RA EVALUACIÓN</th>
-              <th className="bg-light">PRÓXIMA EVALUACIÓN</th>
-              <th className="bg-light">SEGUNDA EVALUACIÓN</th>
-              <th></th>
+              <th className="min-w-[20ch] bg-gray-100 border border-gray-300">HC</th>
+              <th className="min-w-[40ch] bg-gray-100 border border-gray-300">PACIENTE</th>
+              {tableColums.age && <th className="bg-gray-100 border border-gray-300">EDAD</th>}
+              {tableColums.gender && <th className="bg-gray-100 border border-gray-300">GÉNERO</th>}
+              {tableColums.service && <th className="min-w-[20ch] bg-gray-100 border border-gray-300">SERVICIO</th>}
+              {tableColums.bethCode && <th className="bg-gray-100 border border-gray-300">CAMA</th>}
+              {tableColums.income && <th className="bg-gray-100 border border-gray-300">INGRESO</th>}
+              <th className="min-w-[20ch] bg-gray-100 border border-gray-300">FECHA FOLIO</th>
+              <th className="bg-gray-100 border border-gray-300">VALOR</th>
+              <th className="bg-gray-100 border border-gray-300">PRIMERA EVALUACIÓN</th>
+              <th className="bg-gray-100 border border-gray-300">FECHA 1RA EVALUACIÓN</th>
+              <th className="bg-gray-100 border border-gray-300">PRÓXIMA EVALUACIÓN</th>
+              <th className="bg-gray-100 border border-gray-300">SEGUNDA EVALUACIÓN</th>
+              <th className="border border-gray-300"></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="100%">
-                  <div className="d-flex align-items-center justify-content-center w-100 h-100" style={{ minHeight: '40vh' }}>
-                    <Spinner animation="border" />
+                <td colSpan="100%" className="border border-gray-300">
+                  <div className="flex items-center justify-center w-full h-full" style={{ minHeight: '40vh' }}>
+                    <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 </td>
               </tr>
             ) : (
               sort.map((info) => (
-                <tr key={info.id} className={checksArr.some((inf) => inf.id === info.id)? 'table-primary': info?.close && !info.firstValue? 'table-secondary'
-                      : !info.secondValue && !info.close && info.evaluationDate && isPassedSeveDays(info.evaluationDate) ? 'table-warning bg-warning blink' : ''
-                  }>
-                  <td className="sticky-left px-3">
-                    <Form.Check type="checkbox" checked={checksArr.some((inf) => inf.id === info.id)} onChange={(e) => {
+                <tr key={info.id} className={`text-center 
+                  ${checksArr.some((inf) => inf.id === info.id) ? 'bg-blue-100' : ''}
+                  ${info?.close && !info.firstValue ? 'bg-gray-200' : ''}
+                  ${!info.secondValue && !info.close && info.evaluationDate && isPassedSeveDays(info.evaluationDate) ? 'bg-yellow-200 animate-pulse' : ''}
+                `}>
+                  <td className="sticky left-0 bg-white px-3 border border-gray-300">
+                    <input type="checkbox" checked={checksArr.some((inf) => inf.id === info.id)}
+                      onChange={(e) => {
                         setChecksArr((prev) => (e.target.checked ? [...prev, info] : prev.filter((it) => it.id !== info.id)));
-                      }} />
+                      }}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
                   </td>
-                  <td>{info.documentNumber}</td>
-                  <td title={info.patient}>{info.patient}</td>
-                  {tableColums.age && <td>{info.age}</td>}
-                  {tableColums.gender && <td>{info.gender}</td>}
+                  <td className="border border-gray-300">{info.documentNumber}</td>
+                  <td className="border border-gray-300" title={info.patient}>
+                    {info.patient}
+                  </td>
+                  {tableColums.age && <td className="border border-gray-300">{info.age}</td>}
+                  {tableColums.gender && <td className="border border-gray-300">{info.gender}</td>}
                   {tableColums.service && (
-                    <td title={info.bethDescription}>
-                      <div style={{maxWidth: '20ch', overflow: 'hidden', textOverflow: 'ellipsis', }}>
-                        {info.bethDescription}
-                      </div>
+                    <td className="border border-gray-300" title={info.bethDescription}>
+                      <div className="max-w-[20ch] truncate">{info.bethDescription}</div>
                     </td>
                   )}
-                  {tableColums.bethCode && <td>{info.bethCode}</td>}
-                  {tableColums.income && <td>{info.incomeConsec}</td>}
-                  <td>
+                  {tableColums.bethCode && <td className="border border-gray-300">{info.bethCode}</td>}
+                  {tableColums.income && <td className="border border-gray-300">{info.incomeConsec}</td>}
+                  <td className="border border-gray-300">
                     {parseDate(info.folioDate)} {parseDateHours(info.folioDate, true)}
                   </td>
-                  <td title={info.valueNut} className={`${info.firstValue ? (info.valueNut === info.firstValue ? '' : 'bg-danger text-light') : ''}`}>
-                    <div style={{
-                        maxWidth: '20ch',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}>
-                      {info.valueNut}
-                    </div>
+                  <td className={`border border-gray-300 ${info.firstValue && info.valueNut !== info.firstValue ? 'bg-red-500 text-white' : ''}`} title={info.valueNut}>
+                    <div className="max-w-[20ch] truncate">{info.valueNut}</div>
                   </td>
-                  <td title={info.firstValue} className={`${info.firstValue ? (info.firstValue === info.firstValue ? '' : 'bg-danger text-light') : ''}`}>
-                    <div style={{ maxWidth: '20ch', overflow: 'hidden', textOverflow: 'ellipsis', }}>
-                      {info.firstValue || ' '}
-                    </div>
+                  <td className="border border-gray-300" title={info.firstValue}>
+                    <div className="max-w-[20ch] truncate">{info.firstValue || ' '}</div>
                   </td>
-                  <td> {info.evaluationDate ? `${parseDate(info.evaluationDate)}  ${parseDateHours(info.evaluationDate)}` : ''} </td>
-                  <td>{info.evaluationDate && info.firstValue ? getNextSevenDay(info.evaluationDate) : ''}</td>
-                  <td title={info.secondValue} className={`${info.secondValue ? (info.secondValue === info.secondValue ? '' : 'bg-danger text-light') : ''}`}>
-                    <div
-                      style={{maxWidth: '20ch', overflow: 'hidden', textOverflow: 'ellipsis', }}>
-                      {info.secondValue || ' '}
-                    </div>
+                  <td className="border border-gray-300">{info.evaluationDate ? `${parseDate(info.evaluationDate)} ${parseDateHours(info.evaluationDate)}` : ''}</td>
+                  <td className="border border-gray-300">{info.evaluationDate && info.firstValue ? getNextSevenDay(info.evaluationDate) : ''}</td>
+                  <td className="border border-gray-300" title={info.secondValue}>
+                    <div className="max-w-[20ch] truncate">{info.secondValue || ' '}</div>
                   </td>
-                  <td>
+                  <td className="border border-gray-300">
                     {info.usuerName && (
-                      <OverlayTrigger overlay={<Tooltip>{info.usuerName}</Tooltip>}>
-                        <span className="text-primary">ℹ️</span>
-                      </OverlayTrigger>
+                      <div className="group relative flex justify-center">
+                        <span className="text-blue-600 cursor-pointer">ℹ️</span>
+                        <span className="absolute bottom-full mb-1 hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded shadow">{info.usuerName}</span>
+                      </div>
                     )}
                   </td>
                 </tr>
               ))
             )}
           </tbody>
-        </Table>
+        </table>
       </div>
 
       {isOpen && checksArr.length > 0 && (
-        <ModalReevaluate checksArr={checksArr} isOpen={isOpen} onClose={onClose} aria-modal refetch={() => {
+        <ModalReevaluate checksArr={checksArr} isOpen={isOpen} onClose={onClose} aria-modal
+          refetch={() => {
             getTamizaje({
               fechaFinal: dateValueEnd,
               fechaInicial: dateValueStart,
@@ -274,13 +292,14 @@ function Tamizaje() {
         />
       )}
       {isOpenFinish && checksArr.length > 0 && (
-        <ModalFinish checksArr={checksArr} isOpen={isOpenFinish} onClose={onCloseFinish} aria-modal refetch={() => { 
-          getTamizaje({
-            fechaFinal: dateValueEnd, 
-            fechaInicial: dateValueStart,
-          }); 
-        }} 
-        clearChecks={clearChecks} />
+        <ModalFinish checksArr={checksArr} isOpen={isOpenFinish} onClose={onCloseFinish} aria-modal
+          refetch={() => {
+            getTamizaje({
+              fechaFinal: dateValueEnd,
+              fechaInicial: dateValueStart,
+            });
+          }}
+          clearChecks={clearChecks} />
       )}
     </div>
   );

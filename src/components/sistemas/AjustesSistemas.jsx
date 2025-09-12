@@ -6,7 +6,6 @@ import useFetchRolesByMicroservice from '../../hooks/authService/useFetchRolesBy
 import Select from 'react-select';
 import useUpdateUsuarioRoles from '../../hooks/authService/useUpdateUsuarioRoles';
 import ModificarRolesUsuario from '../ModificarRolesUsuario';
-import { Spinner } from 'react-bootstrap';
 
 function AjustesSistemas() {
 
@@ -69,79 +68,70 @@ function AjustesSistemas() {
     return (
         <>
             {loadingUpdateU && <Loader />}
-            
-            {/* Título de la página */}
             <p className="text-center bg-gray-100 text-gray-800 p-2 rounded-md text-lg font-medium">
                 Ajustes <strong className="text-blue-600">ADMINSTRACIONALMACENAMIENTOINFORMACIONSISTEMAS</strong>
             </p>
-            {/* Acordeón - Formulario */}
-            <div className="mb-4 border rounded-xl overflow-visible shadow">
+            <div className="mb-4 border border-gray-300 rounded-xl shadow-lg overflow-hidden">
                 <button onClick={() => setOpenForm(!openForm)}
-                    className="w-full flex justify-between items-center px-6 py-2 bg-blue-100 hover:bg-blue-200 text-left" >
+                    className="w-full flex justify-between items-center px-6 py-3 bg-blue-100 hover:bg-blue-200 text-left transition-colors duration-200" >
                     <h6 className="text-lg font-semibold text-blue-800">Formulario de sincronización</h6>
-                    <span className="ml-2 text-gray-500">&#x25BC;</span> {/* ▼ */}
+                    <span className={`ml-2 text-gray-500 transform transition-transform duration-300 ${openForm ? 'rotate-180' : ''}`}>&#x25BC;</span>
                 </button>
-
                 {openForm && (
+                <div className="p-6 bg-white">
                     <ModificarRolesUsuario listRoles={dataR} />
+                </div>
                 )}
             </div>
-
+            
             {/* Acordeón - Tabla */}
-            <div className="mb-4 border rounded-xl overflow-visible shadow">
+            <div className="mb-4 border border-gray-300 rounded-xl shadow-lg overflow-hidden">
                 <button onClick={() => setOpenTabla(!openTabla)}
-                    className="w-full flex justify-between items-center px-6 py-2 bg-blue-100 hover:bg-blue-200 text-left" >
-                    <h6 className="text-lg font-semibold text-blue-800">Usuarios sincronizados con el microservicio </h6>
-                    <span className="ml-2 text-gray-500">&#x25BC;</span> {/* ▼ */}
+                className="w-full flex justify-between items-center px-6 py-3 bg-blue-100 hover:bg-blue-200 text-left transition-colors duration-200" >
+                <h6 className="text-lg font-semibold text-blue-800">Usuarios sincronizados con el microservicio</h6>
+                <span className={`ml-2 text-gray-500 transform transition-transform duration-300 ${openTabla ? 'rotate-180' : ''}`}>&#x25BC;</span>
                 </button>
-
                 {openTabla && (
-                    <div className="p-6 bg-white space-y-6">
-                        <input className="w-full mb-4 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                            type="text" placeholder="Buscar..." value={inputFind} onChange={(e) => setInputFind(e.target.value)}
-                        />
-                        <div className="flex flex-col lg:flex-row items-start lg:items-end gap-4">
-                            <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="px-4 py-2 font-semibold text-gray-700">Documento</th>
-                                        <th className="px-4 py-2 font-semibold text-gray-700">Nombre Completo</th>
-                                        <th className="px-4 py-2 font-semibold text-gray-700">Roles</th>
+                <div className="p-6 bg-white space-y-6">
+                    <input className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    type="text" placeholder="Buscar..." value={inputFind} onChange={(e) => setInputFind(e.target.value)} />
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead className="bg-gray-100">
+                            <tr>
+                                <th className="px-4 py-2 font-semibold text-gray-700 text-left whitespace-nowrap">Documento</th>
+                                <th className="px-4 py-2 font-semibold text-gray-700 text-left whitespace-nowrap">Nombre Completo</th>
+                                <th className="px-4 py-2 font-semibold text-gray-700 text-left whitespace-nowrap">Roles</th>
+                            </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                            {dataU?.content && dataU.content.length > 0 ? (
+                                dataU.content.filter((usuario) => usuario.username.toLowerCase().includes(inputFind.toLowerCase()) || usuario.nombreCompleto.toLowerCase().includes(inputFind.toLowerCase()))
+                                .map((usuario) => (
+                                    <tr key={usuario.id} className="hover:bg-gray-50 transition-colors duration-150">
+                                    <td className="px-4 py-3 whitespace-nowrap">{usuario.username}</td>
+                                    <td className="px-4 py-3 whitespace-nowrap">{usuario.nombreCompleto}</td>
+                                    <td className="px-4 py-3">
+                                        <Select isMulti options={opcionesRoles} value={usuario.roles.map((rol) => ({ value: rol.id, label: rol.rol }))}
+                                        onChange={(selectOpci) => handleRolesChange(selectOpci, usuario)} classNamePrefix="react-select" />
+                                    </td>
                                     </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                    {dataU?.content && dataU.content.length > 0 ? (
-                                        dataU.content
-                                            .filter((usuario) =>
-                                                usuario.username.toLowerCase().includes(inputFind.toLowerCase()) || usuario.nombreCompleto.toLowerCase().includes(inputFind.toLowerCase())
-                                            )
-                                            .map((usuario) => (
-                                                <tr key={usuario.id} className="hover:bg-gray-50">
-                                                    <td className="px-4 py-2">{usuario.username}</td>
-                                                    <td className="px-4 py-2">{usuario.nombreCompleto}</td>
-                                                    <td className="px-4 py-2">
-                                                        <Select isMulti options={opcionesRoles}
-                                                            value={usuario.roles.map((rol) => ({ value: rol.id, label: rol.rol }))}
-                                                            onChange={(selectOpci) => handleRolesChange(selectOpci, usuario)}
-                                                        />
-                                                    </td>
-                                                </tr>
-                                            ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan={3} className="text-center px-4 py-6 text-gray-500 italic">
-                                                NO HAY USUARIOS ASOCIADOS
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="mt-6">
-                            {dataU?.totalPages > 1 && (<Pagination currentPage={page} totalPages={dataU?.totalPages || 1} onPageChange={setPage} />)}
-                        </div>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={3} className="text-center px-4 py-6 text-gray-500 italic">
+                                        NO HAY USUARIOS ASOCIADOS
+                                    </td>
+                                </tr>
+                            )}
+                            </tbody>
+                        </table>
                     </div>
+                    
+                    <div className="mt-6 flex justify-center">
+                        {dataU?.totalPages > 1 && (<Pagination currentPage={page} totalPages={dataU?.totalPages || 1} onPageChange={setPage} />)}
+                    </div>
+                </div>
                 )}
             </div>
         </>

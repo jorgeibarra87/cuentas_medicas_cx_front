@@ -57,22 +57,22 @@ export default function Sidebar({ componente: Componente }) {
                 }
             ]
         },
-        {
-            nombre: 'Asignación_de_camas',
-            roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS'],
-            submenu: [
-                {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']},
-                {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']}
-            ]
-        },
-        {
-            nombre: 'MesadeProcesos',
-            roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER'],
-            submenu: [
-                {nombre: 'Procesos y subprocesos', ruta: '/mesaprocesos/procesosysubprocesos', roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD']},
-                {nombre: 'Usuarios procesos', ruta: '/mesaprocesos/usuarioprocesos', roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER']}
-            ]
-        },
+        // {
+        //     nombre: 'Asignación_de_camas',
+        //     roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS'],
+        //     submenu: [
+        //         {nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']},
+        //         {nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_ENFERMERO_URGENCIAS']}
+        //     ]
+        // },
+        // {
+        //     nombre: 'MesadeProcesos',
+        //     roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER'],
+        //     submenu: [
+        //         {nombre: 'Procesos y subprocesos', ruta: '/mesaprocesos/procesosysubprocesos', roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD']},
+        //         {nombre: 'Usuarios procesos', ruta: '/mesaprocesos/usuarioprocesos', roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER']}
+        //     ]
+        // },
         {
             nombre: 'Nutricion',
             roles: ['ROLE_ADMINISTRADOR','ROLE_TAMIZAJE'],
