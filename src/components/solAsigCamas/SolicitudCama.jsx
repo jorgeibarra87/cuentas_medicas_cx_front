@@ -6,7 +6,6 @@ import AsignarSolicitud from './FormDocSolicitud';
 import spinnerLoginText from "../Loading";
 import { FormatearFecha } from '../../utilities/FormatearFecha';
 import FormAsignCama from './FormAsignCama';
-import * as bootstrap from 'bootstrap';
 import icono from '../../../public/camaicono.ico'
 import FormEditSolicitudCama from './FormEditSolicitudCama';
 import { useSelector } from 'react-redux';
@@ -89,20 +88,20 @@ function SolicitudCama() {
     }, [bloqueServicioSeleccionado]);
 
     //useEffect oara inicializar los tooltips
-    useEffect(() => {
-        const existingTooltips = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        existingTooltips.forEach(tooltipEl => {
-            const tooltipInstance = bootstrap.Tooltip.getInstance(tooltipEl);
-            if (tooltipInstance) {
-                tooltipInstance.dispose();
-            }
-        });
-        // Inicializar nuevos tooltips
-        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.forEach(tooltipTriggerEl => {
-            new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    }, [versionSolicitudesActivas]);
+    // useEffect(() => {
+    //     const existingTooltips = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    //     existingTooltips.forEach(tooltipEl => {
+    //         const tooltipInstance = bootstrap.Tooltip.getInstance(tooltipEl);
+    //         if (tooltipInstance) {
+    //             tooltipInstance.dispose();
+    //         }
+    //     });
+    //     // Inicializar nuevos tooltips
+    //     const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    //     tooltipTriggerList.forEach(tooltipTriggerEl => {
+    //         new bootstrap.Tooltip(tooltipTriggerEl);
+    //     });
+    // }, [versionSolicitudesActivas]);
 
     useEffect(() => {
         if (bloqueServicioSeleccionado == '0') {

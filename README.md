@@ -7,10 +7,9 @@ http://localhost:5173/
 
 # Dependencias con las que ya cuenta el proyecto
 - redux
-- bootstrap
+- tailwindcss
 - sockjs-client
 - react-router-dom
-- react-bootstrap
 - jwt-decode
 - recharts
 
