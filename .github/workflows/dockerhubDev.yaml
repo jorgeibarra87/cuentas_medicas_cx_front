@@ -26,10 +26,17 @@ jobs:
                 password: ${{ secrets.DOCKERHUB_TOKEN }}
             
             - name: Build Docker image
-              run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/microservices:frontentsolutionv2-image .
+              run: |
+                IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/microservices:frontentsolutionv2-image
+                VERSION_TAG=${GITHUB_REF_NAME}
+                docker build -t $IMAGE_NAME-$VERSION_TAG -t $IMAGE_NAME-latest .
 
             - name: Push Docker image
-              run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/microservices:frontentsolutionv2-image
+              run: |
+                IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/microservices:frontentsolutionv2-image
+                VERSION_TAG=${GITHUB_REF_NAME}
+                docker push $IMAGE_NAME-$VERSION_TAG
+                docker push $IMAGE_NAME-latest
 
             - name: Logout from Docker Hub
               run: docker logout
