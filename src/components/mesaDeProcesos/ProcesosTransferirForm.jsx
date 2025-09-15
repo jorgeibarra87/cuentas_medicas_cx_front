@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Modal } from 'react-bootstrap'
+import { useEffect, useState } from 'react'
 import UseAxiosInstance from '../../utilities/UseAxiosInstance';
 import { useDispatch } from 'react-redux';
 import { mesadeprocesos_agregar_usuario_a_area, mesadeprocesos_eliminar_usuario_de_area } from '../../actions/mesadeprocesosActions';
-import Swal from 'sweetalert2';
 
 const initalForm = {
     idUsuarioProceso: 0,
@@ -55,10 +53,10 @@ function ProcesosTransferirForm({ show, handleClose, usuarioTransferir }) {
                 const usuarioActualizado = {...usuarioTransferir, usuarios: response.data};
                 dispatch(mesadeprocesos_agregar_usuario_a_area(usuarioActualizado));
                 handleClose();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Usuario Transferido',
-                })
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: 'Usuario Transferido',
+                // })
             }).catch((error) => {
                 if(error.response.data.codigoError != null){
                     setError({...error, response: {...error.response, data: {...error.response.data, mensaje: error.response.data.mensaje.split(',')[1]}}})

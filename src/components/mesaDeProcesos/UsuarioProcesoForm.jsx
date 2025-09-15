@@ -1,9 +1,6 @@
-import axios from "axios";
-import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { mesadeprocesos_agregar_usuario_a_area } from "../../actions/mesadeprocesosActions";
-import Swal from "sweetalert2";
 import UseAxiosInstance from "../../utilities/UseAxiosInstance";
 
 
@@ -125,10 +122,10 @@ export default function UsuarioProcesoForm({ show, handleClose, areas }) {
                 setSubProcesos(null);
                 setUsuarios(null);
                 setFormState(initialFormState);
-                Swal.fire({
-                    icon: 'success',
-                    text: 'Usuario agregado correctamente'
-                });
+                // Swal.fire({
+                //     icon: 'success',
+                //     text: 'Usuario agregado correctamente'
+                // });
                 setStadoBoton(false);
                 handleClose();
             }).catch((error) => {

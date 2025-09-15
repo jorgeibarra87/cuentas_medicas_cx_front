@@ -1,12 +1,13 @@
-import { useState } from "react"
-import { RUTA_BACK_PRODUCCION } from "../../types";
+import { useState, useEffect } from "react"
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { iniciarSesionAction } from "../../actions/loginActions";
-import Swal from "sweetalert2";
+
 import spinnerLoginText from "../Loading";
 
 const initailForm = {username: "",password: "",};
+const ruta = window.env.VITE_URL_API_GATEWAY
+const rutamicroservicioauth = window.env.VITE_URL_AUTH
 
 const Login = () => {
 
@@ -15,6 +16,16 @@ const Login = () => {
     const [mostrarContrasena, setMostrarContrasena] = useState(false);
     const [error, setError] = useState(null);
     const [message, setMessage] = useState("");
+
+    const [showExpired, setShowExpired] = useState(false);
+
+    useEffect(() => {
+        const reason = localStorage.getItem("sessionExpiredReason");
+        if (reason === "inactivity") {
+            setShowExpired(true);
+            localStorage.removeItem("sessionExpiredReason"); // limpiar para no repetir
+        }
+    }, []);
 
     const handleChange = (e) => {
         setDatos({...datos, [e.target.name]: e.target.value,});
@@ -29,20 +40,20 @@ const Login = () => {
         }
         spinnerLoginText("Por favor espere...");
         try{
-            const response = await axios.post(`${RUTA_BACK_PRODUCCION}auth/login`, datos);
-            dispatch(iniciarSesionAction(response.data));
-            Swal.close();
+            const token2 = await  axios.post(`${ruta}${rutamicroservicioauth}/auth/login`, datos);
+            dispatch(iniciarSesionAction(token2.data));
+            // Swal.close();
             //navigate('/'); // Redirige al usuario a '/'
         }catch(error){
             console.error(error);
             if (error && error.code === 'ERR_NETWORK') {
-                Swal.fire({
-                    title: "¡Error!",
-                    text: `Codigo del error: ${error.code}`,
-                    icon: "error"
-                })
+                // Swal.fire({
+                //     title: "¡Error!",
+                //     text: `Codigo del error: ${error.code}`,
+                //     icon: "error"
+                // })
             } else {
-                Swal.close();
+                // Swal.close();
                 setError(error);
                 setMessage("Verificar los datos.");
             }
@@ -57,42 +68,98 @@ const Login = () => {
     }
 
     return (
-        <section className="vh-100 gradient-custom" style={{ background: "#1B244025" }}>
-            <div className="container py-5 h-100">
-                <div className="row d-flex justify-content-center align-items-center h-100">
-                    <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-                        <div className="card text-white" style={{ background: "#1B2440" }}>
-                            <div className="card-body p-5 text-center">
-                                <div className="mb-md-5 mt-md-4 pb-5">
-                                    <h2 className="fw-bold mb-2 text-uppercase">Solution Husjp</h2>
-                                    <p className="text-white-50 mb-5">Por favor ingresa tu usuario y contraseña!</p>
-                                    <form onSubmit={handleSubmit}>
-                                        <div data-mdb-input-init className="form-outline form-white mb-4">
-                                            <input type="text" id="username" className="form-control form-control-lg" name="username" onChange={handleChange} value={datos.username} required />
-                                            <label className="form-label" htmlFor="username">Usuario</label>
-                                        </div>
-                                        <div data-mdb-input-init className="form-outline form-white mb-4">
-                                            <div className="input-group">
-                                                <input type={mostrarContrasena ? 'text' : 'password'} id="password" className="form-control form-control-lg" name="password" onChange={handleChange} value={datos.password} required />
-                                                <span className="input-group-text" onMouseDown={showPass} onMouseUp={hidePass} onMouseLeave={hidePass}>{mostrarContrasena ? <i className="bi bi-eye"></i> : <i className="bi bi-eye-slash"></i>}</span>
-                                            </div>
-                                            <label className="form-label" htmlFor="password">Contraseña</label>
-                                        </div>
-                                        {error && message && (
-                                            <div className='col-md-12 alert alert-warning' role="alert">
-                                                <span className="alert-link">{message}</span>
-                                            </div>
-                                        )}
-                                        <p className="small mb-5 pb-lg-2"><a className="text-white-50" href="#!">Olvido su contraseña?</a></p>
-                                        <input data-mdb-button-init data-mdb-ripple-init className="btn btn-outline-light btn-lg px-5" type="submit" value='Iniciar' />
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+        <div className="flex items-center justify-center min-h-screen bg-gray-200" style={{ background: "#1B244025" }}>
+            <div className="w-full max-w-md">
+                <div className="bg-[#1B2440] text-white rounded-lg shadow-xl p-8">
+                <div className="text-center">
+                    <h2 className="text-3xl font-bold uppercase mb-2">Solution Husjp</h2>
+                    <p className="text-gray-400 mb-8">¡Por favor ingresa tu usuario y contraseña!</p>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="relative mb-6">
+                        <input 
+                        type="text" 
+                        id="username" 
+                        className="peer w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-blue-500 text-lg px-2 py-1 placeholder-transparent" 
+                        name="username" 
+                        onChange={handleChange} 
+                        value={datos.username} 
+                        required 
+                        placeholder="Usuario"
+                        />
+                        <label 
+                        htmlFor="username" 
+                        className="absolute left-2 -top-6 text-white text-sm transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-1 peer-focus:-top-6 peer-focus:text-white peer-focus:text-sm"
+                        >
+                        Usuario
+                        </label>
                     </div>
+                    <div className="relative mb-6">
+                        <div className="flex items-center">
+                        <input 
+                            type={mostrarContrasena ? 'text' : 'password'} 
+                            id="password" 
+                            className="peer w-full bg-transparent border-b-2 border-white focus:outline-none focus:border-blue-500 text-lg px-2 py-1 placeholder-transparent" 
+                            name="password" 
+                            onChange={handleChange} 
+                            value={datos.password} 
+                            required 
+                            placeholder="Contraseña"
+                        />
+                        <span 
+                            className="absolute right-2 top-1 cursor-pointer" 
+                            onMouseDown={showPass} 
+                            onMouseUp={hidePass} 
+                            onMouseLeave={hidePass}
+                        >
+                            {mostrarContrasena ? (
+                            <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            ) : (
+                            <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 1.768 0 3.491.45 5.008 1.284M21 21L3 3" />
+                            </svg>
+                            )}
+                        </span>
+                        </div>
+                        <label 
+                        htmlFor="password" 
+                        className="absolute left-2 -top-6 text-white text-sm transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-1 peer-focus:-top-6 peer-focus:text-white peer-focus:text-sm"
+                        >
+                        Contraseña
+                        </label>
+                    </div>
+                    {error && message && (
+                        <div className='w-full p-4 bg-yellow-600 text-white rounded-md mb-4' role="alert">
+                        <span className="font-bold">{message}</span>
+                        </div>
+                    )}
+                    <p className="text-sm mb-4">
+                        <a className="text-gray-400 hover:text-white" href="#!">¿Olvidaste tu contraseña?</a>
+                    </p>
+                    <button 
+                        type="submit" 
+                        className="w-full text-white bg-transparent border-2 border-white px-5 py-2 rounded-lg text-lg font-bold hover:bg-white hover:text-[#1B2440] transition-colors" 
+                    >
+                        Iniciar
+                    </button>
+                    </form>
+                </div>
                 </div>
             </div>
-        </section>
+            {showExpired && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <div className="bg-white p-6 rounded shadow-lg text-center">
+                    <h2 className="text-lg font-bold mb-2">Sesión expirada</h2>
+                    <p>Tu sesión ha caducado por inactividad. Vuelve a iniciar sesión.</p>
+                    <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" onClick={() => setShowExpired(false)}>
+                    Entendido
+                    </button>
+                </div>
+                </div>
+            )}
+        </div>
     )
 }
 

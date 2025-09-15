@@ -1,66 +1,50 @@
-/* eslint-disable react/prop-types */
-import { Button, Dropdown, Form } from "react-bootstrap";
+import { useState, useRef, useEffect } from "react";
 import { TableIcon } from "../../icons";
 
 export const DropdownTableCols = ({ tableColums, handleChange }) => {
-  return (
-    <Dropdown align="end" autoClose="outside">
-      <Dropdown.Toggle as={Button} variant="light" className="border">
-        <TableIcon size={20} />
-      </Dropdown.Toggle>
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  // Cierra al hacer click fuera
+  useEffect(() => {
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
-      <Dropdown.Menu style={{ zIndex: 9999 }}>
-        <Dropdown.Item as="div" className="d-flex">
-          <Form.Check
-            className="w-100"
-            type="checkbox"
-            id="item-1"
-            label="Edad"
-            checked={tableColums.age}
-            onChange={(e) => handleChange(e.target.checked, "age")}
-          />
-        </Dropdown.Item>
-        <Dropdown.Item as="div" className="d-flex">
-          <Form.Check
-            className="w-100"
-            type="checkbox"
-            id="item-2"
-            label="Género"
-            checked={tableColums.gender}
-            onChange={(e) => handleChange(e.target.checked, "gender")}
-          />
-        </Dropdown.Item>
-        <Dropdown.Item as="div" className="d-flex">
-          <Form.Check
-            className="w-100"
-            type="checkbox"
-            id="item-3"
-            label="Servicio"
-            checked={tableColums.service}
-            onChange={(e) => handleChange(e.target.checked, "service")}
-          />
-        </Dropdown.Item>
-        <Dropdown.Item as="div" className="d-flex">
-          <Form.Check
-            className="w-100"
-            type="checkbox"
-            id="item-4"
-            label="Cama"
-            checked={tableColums.bethCode}
-            onChange={(e) => handleChange(e.target.checked, "bethCode")}
-          />
-        </Dropdown.Item>
-        <Dropdown.Item as="div" className="d-flex">
-          <Form.Check
-            className="w-100"
-            type="checkbox"
-            id="item-5"
-            label="Ingreso"
-            checked={tableColums.income}
-            onChange={(e) => handleChange(e.target.checked, "income")}
-          />
-        </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
+  const items = [
+    { key: "age", label: "Edad" },
+    { key: "gender", label: "Género" },
+    { key: "service", label: "Servicio" },
+    { key: "bethCode", label: "Cama" },
+    { key: "income", label: "Ingreso" },
+  ];
+
+  return (
+    <div className="relative inline-block" ref={ref}>
+      {/* Botón toggle */}
+      <button type="button" onClick={() => setOpen((prev) => !prev)}
+        className="flex items-center justify-center px-2 py-1 border rounded bg-white hover:bg-gray-100" >
+        <TableIcon size={20} />
+      </button>
+
+      {/* Menú dropdown */}
+      {open && (
+        <div className="absolute mt-2 w-48 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg z-50">
+          <div className="py-1">
+            {items.map((item) => (
+              <label key={item.key} className="flex items-center px-3 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" >
+                <input type="checkbox" checked={tableColums[item.key]} onChange={(e) => handleChange(e.target.checked, item.key)}
+                  className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                {item.label}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };

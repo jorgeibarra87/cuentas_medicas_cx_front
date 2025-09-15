@@ -17,7 +17,7 @@ const useFecthUsuarioProcServ = () => {
         } catch (error) {
             if(error?.response?.data?.codigoError){
                 setError({
-                    mensaje: error.response.data.mensaje.split['|'][1],
+                    mensaje: error.response.data.mensaje.split('|')[1],
                     title: 'Error',
                     icon: 'error'
                 })

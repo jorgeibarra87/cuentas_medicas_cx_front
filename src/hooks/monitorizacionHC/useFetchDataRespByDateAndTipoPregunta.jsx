@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { obtenerPorcentajesPorFechas } from "../../api/monitorizacionHc/porcentajesService";
+import { obtenerInfoRespuestasPorFechaYTipoPregunta } from "../../api/monitorizacionHc/respuestasService";
 
 const useFetchPorcentajesByDates = () => {
 
@@ -7,11 +7,11 @@ const useFetchPorcentajesByDates = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const fetchPorcentajesByDates = async (fechaDesde, fechaHasta) => {
+    const fetchPorcentajesByDates = async (fechaDesde, fechaHasta, tipoPregunta) => {
         setLoading(true);
         setError(null);
         try {
-            const porcentajesData = await obtenerPorcentajesPorFechas(fechaDesde, fechaHasta);
+            const porcentajesData = await obtenerInfoRespuestasPorFechaYTipoPregunta(fechaDesde, fechaHasta, tipoPregunta);
             setPorcentajes(porcentajesData);
         } catch (error) {
             setError('Error al obtener los porcentajes por fechas',error);
@@ -20,7 +20,7 @@ const useFetchPorcentajesByDates = () => {
         }
     }
 
-    return { porcentajes, loading, error, fetchPorcentajesByDates };
+    return { porcentajes, setPorcentajes, loading, error, fetchPorcentajesByDates };
 }
 
 export default useFetchPorcentajesByDates;

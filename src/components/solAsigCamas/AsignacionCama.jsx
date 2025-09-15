@@ -1,10 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import UseAxiosInstance from '../../utilities/UseAxiosInstance';
+import { useEffect, useState } from 'react'
 import { FormatearFecha } from '../../utilities/FormatearFecha';
-import { Client } from '@stomp/stompjs'; 
-import SockJS from 'sockjs-client';
 import icono from '../../img/camillero.ico';
-import Swal from 'sweetalert2';
 import spinnerLoginText from '../Loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
@@ -12,6 +8,9 @@ import InfoModal from './InfoModal';
 import FormEditAsignCama from './FormEditAsignCama';
 import * as bootstrap from 'bootstrap';
 import { useSelector } from 'react-redux';
+import { obtenerBloquesServicio } from '../../api/asignacionCamas/bloqueServicioService';
+import { obtenerVersionSolicitudCamaByIdBloque } from '../../api/asignacionCamas/asignacionVersionSolCamaService';
+import { cancelarAsignacionVersionSolicitudCama, finalizarAsignacionVersionSolicitudCama } from '../../api/asignacionCamas/asignacionSolicitudCama';
 
 // const SOCKET_URL = 'http://localhost:8004/ws-notifications'; 
 // const client = new Client(
@@ -62,7 +61,6 @@ import { useSelector } from 'react-redux';
 
 export default function AsignacionCama() {
 
-    const axiosInstance = UseAxiosInstance();
     const statelogin = useSelector(state => state.login);
 
     const [authorities] = useState(statelogin.decodeToken.authorities);
@@ -98,23 +96,21 @@ export default function AsignacionCama() {
         document.head.appendChild(link);
         //cambia el titulo
         document.title = "Asignaciones de Cama";
-        if(bloquesServicio.length === 0){
-            axiosInstance.get(`bloque-servicio`)
-                .then(response => {
-                    setBloquesServicio(response.data);
-                }).catch(error => {
-                    console.error(error);
-                });
-        }
-        
+
+        const obtenerBloques = async () => {
+            const response = await obtenerBloquesServicio();
+            setBloquesServicio(response);
+        };
+        if(bloquesServicio.length === 0) obtenerBloques();
+
     }, []);
 
     useEffect(() => {
         const getVersionesSolicitudCama = async () => {
-            await axiosInstance.get(`asignacionVersionSolicitudCama/active/${bloqueServicioSeleccionado}`)
+            await obtenerVersionSolicitudCamaByIdBloque(bloqueServicioSeleccionado)
                 .then(response => {
-                    setAsignacionesCama(response.data);
-                    Swal.close();
+                    setAsignacionesCama(response);
+                    // Swal.close();
                 }).catch(error => {
                     console.error(error);
                 });
@@ -151,36 +147,36 @@ export default function AsignacionCama() {
     }
 
     const handleFinalizar  = async (item) => {
-        Swal.fire({
-            title: 'Finalizar Traslado',
-            text: '¿Está seguro que el paciente llego a la cama de destino?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Aceptar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if(result.isConfirmed){
-                cancelarAsignacion();
-            }
-            function cancelarAsignacion() {
-                axiosInstance.put(`asignacionSolicitudCama/${item.asignacionCama.id}/estadoFinalizado`)
-                    .then(() => {
-                        Swal.fire({
-                            title: 'Finalizado',
-                            text: 'se finalizo exitosamente.',
-                            icon: 'success',
-                            timer: 1500,
-                            timerProgressBar: true,
-                            showConfirmButton: false
-                        });
-                        const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
-                        setAsignacionesCama(asignaciones);
-                    }
-                    ).catch(error => {
-                        console.error(error);
-                    });
-            }
-        });
+        // Swal.fire({
+        //     title: 'Finalizar Traslado',
+        //     text: '¿Está seguro que el paciente llego a la cama de destino?',
+        //     icon: 'question',
+        //     showCancelButton: true,
+        //     confirmButtonText: 'Aceptar',
+        //     cancelButtonText: 'Cancelar'
+        // }).then((result) => {
+        //     if(result.isConfirmed){
+        //         cancelarAsignacion();
+        //     }
+        //     function cancelarAsignacion() {
+        //         finalizarAsignacionVersionSolicitudCama(item.asignacionCama.id)
+        //             .then(() => {
+        //                 Swal.fire({
+        //                     title: 'Finalizado',
+        //                     text: 'se finalizo exitosamente.',
+        //                     icon: 'success',
+        //                     timer: 1500,
+        //                     timerProgressBar: true,
+        //                     showConfirmButton: false
+        //                 });
+        //                 const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
+        //                 setAsignacionesCama(asignaciones);
+        //             }
+        //             ).catch(error => {
+        //                 console.error(error);
+        //             });
+        //     }
+        // });
     };
 
     const handleEditar = (item) => {
@@ -202,45 +198,32 @@ export default function AsignacionCama() {
     },[versionAsignacionSolicitudCamaEditar]);
 
     const handleCancelar = async (item) => {
-        try{
-            const { value: motivo} = await Swal.fire({
-                title: 'Motivo de Cancelación',
-                text: 'Por favor ingrese el motivo de la cancelación',
-                input: 'text',
-                showCancelButton: true,
-                confirmButtonText: 'Aceptar',
-                cancelButtonText: 'Cancelar',
-                inputValidator: (value) => {
-                    if(!value){
-                        return 'Por favor ingrese un motivo';
-                    }
-                }
-            });
-            if(!motivo) return;
-
-            await axiosInstance.put(`/asignacionSolicitudCama/${item.asignacionCama.id}/cancelar/motivo/${item.id}`, null ,{
-                params: { motivo }
-            }).then(() => {
-                const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
-                setAsignacionesCama(asignaciones);
-            }).catch(error => {
-                console.error(error);
-            });
-        }catch(error){
-            console.error(error);
-        }
+        // try{
+        //     const { value: motivo} = await Swal.fire({
+        //         title: 'Motivo de Cancelación',
+        //         text: 'Por favor ingrese el motivo de la cancelación',
+        //         input: 'text',
+        //         showCancelButton: true,
+        //         confirmButtonText: 'Aceptar',
+        //         cancelButtonText: 'Cancelar',
+        //         inputValidator: (value) => {
+        //             if(!value){
+        //                 return 'Por favor ingrese un motivo';
+        //             }
+        //         }
+        //     });
+        //     if(!motivo) return;
+        //     await cancelarAsignacionVersionSolicitudCama(item.asignacionCama.id, item.id, motivo)
+        //     .then(() => {
+        //         const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
+        //         setAsignacionesCama(asignaciones);
+        //     }).catch(error => {
+        //         console.error(error);
+        //     });
+        // }catch(error){
+        //     console.error(error);
+        // }
     };
-
-    // useEffect(() =>{
-    //     if(asignacionesCama.length === 0){
-    //         axiosInstance.get(`/asignacionVersionSolicitudCama/active`)
-    //         .then((response) => {
-    //             setAsignacionesCama(response.data);
-    //         }).catch((error) => {
-    //             console.error(error);
-    //         });
-    //     }
-    // },[]);
 
     return (
         <>

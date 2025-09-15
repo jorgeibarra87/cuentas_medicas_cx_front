@@ -1,96 +1,94 @@
-import Swal from "sweetalert2"
-
 export default function HumanizacionSolicitudes() {
 
     const agregarSolicitud = () => {
-        Swal.fire({
-            title: 'Crear Solicitud',
-            input: 'text',
-            inputLabel: 'Ingrese documento de identidad.',
-            inputPlaceholder: 'Buscar...',
-            showCancelButton: true,
-            confirmButtonText: 'Buscar',
-            showLoaderOnConfirm: true,
-            preConfirm: () => {
-                // return axios.get(`https://api.example.com/search?query=`)
-                //     .then(response => {
-                //         if (response.data.error) {
-                //             throw new Error(response.data.error);
-                //         }
-                //         return response.data;
-                //     })
-                //     .catch(error => {
-                //         Swal.showValidationMessage(
-                //             `Solicitud fallida: ${error}`
-                //         );
-                //     });
-            },
-            allowOutsideClick: () => !Swal.isLoading()
-        }).then((result) => {
-            if (result.isConfirmed) {
+        // Swal.fire({
+        //     title: 'Crear Solicitud',
+        //     input: 'text',
+        //     inputLabel: 'Ingrese documento de identidad.',
+        //     inputPlaceholder: 'Buscar...',
+        //     showCancelButton: true,
+        //     confirmButtonText: 'Buscar',
+        //     showLoaderOnConfirm: true,
+        //     preConfirm: () => {
+        //         // return axios.get(`https://api.example.com/search?query=`)
+        //         //     .then(response => {
+        //         //         if (response.data.error) {
+        //         //             throw new Error(response.data.error);
+        //         //         }
+        //         //         return response.data;
+        //         //     })
+        //         //     .catch(error => {
+        //         //         Swal.showValidationMessage(
+        //         //             `Solicitud fallida: ${error}`
+        //         //         );
+        //         //     });
+        //     },
+        //     allowOutsideClick: () => !Swal.isLoading()
+        // }).then((result) => {
+        //     if (result.isConfirmed) {
                 
-                Swal.fire({
-                    title: 'Resultado',
-                    html: `
-                        <table class="table table-bordered small table-sm">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>No Ingreso</th>
-                                    <th>Nombres</th>
-                                    <th>Apellidos</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>123456</td>
-                                    <td>Julio Cesar</td>
-                                    <td>Alvarez Cuaces</td>
-                                </tr>
-                            </tbody>
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Edad</th>
-                                    <th>Municipio Recide</th>
-                                    <th>Cllasificación T.S</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>88</td>
-                                    <td>Popayan</td>
-                                    <td>Abandono S</td>
-                                </tr>
-                            </tbody>
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Aislamiento</th>
-                                    <th>Servicio</th>
-                                    <th>Estrato S.E</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>No Aplica</td>
-                                    <td>Quirurgicas</td>
-                                    <td>1</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button id="option1" class="btn btn-primary">Agregar Recurso</button>
-                        <button id="option2" class="btn btn-secondary small">Agregar Recurso <br> Especial</button>
-                    `,
-                    showConfirmButton: false,
-                    didRender: () => {
-                        document.getElementById('option1').addEventListener('click', () => {
-                            window.location.href = 'https://example.com/opcion1';
-                        });
-                        document.getElementById('option2').addEventListener('click', () => {
-                            window.location.href = 'https://example.com/opcion2';
-                        });
-                    }
-                });
-            }
-        });
+        //         Swal.fire({
+        //             title: 'Resultado',
+        //             html: `
+        //                 <table class="table table-bordered small table-sm">
+        //                     <thead class="table-dark">
+        //                         <tr>
+        //                             <th>No Ingreso</th>
+        //                             <th>Nombres</th>
+        //                             <th>Apellidos</th>
+        //                         </tr>
+        //                     </thead>
+        //                     <tbody>
+        //                         <tr>
+        //                             <td>123456</td>
+        //                             <td>Julio Cesar</td>
+        //                             <td>Alvarez Cuaces</td>
+        //                         </tr>
+        //                     </tbody>
+        //                     <thead class="table-dark">
+        //                         <tr>
+        //                             <th>Edad</th>
+        //                             <th>Municipio Recide</th>
+        //                             <th>Cllasificación T.S</th>
+        //                         </tr>
+        //                     </thead>
+        //                     <tbody>
+        //                         <tr>
+        //                             <td>88</td>
+        //                             <td>Popayan</td>
+        //                             <td>Abandono S</td>
+        //                         </tr>
+        //                     </tbody>
+        //                     <thead class="table-dark">
+        //                         <tr>
+        //                             <th>Aislamiento</th>
+        //                             <th>Servicio</th>
+        //                             <th>Estrato S.E</th>
+        //                         </tr>
+        //                     </thead>
+        //                     <tbody>
+        //                         <tr>
+        //                             <td>No Aplica</td>
+        //                             <td>Quirurgicas</td>
+        //                             <td>1</td>
+        //                         </tr>
+        //                     </tbody>
+        //                 </table>
+        //                 <button id="option1" class="btn btn-primary">Agregar Recurso</button>
+        //                 <button id="option2" class="btn btn-secondary small">Agregar Recurso <br> Especial</button>
+        //             `,
+        //             showConfirmButton: false,
+        //             didRender: () => {
+        //                 document.getElementById('option1').addEventListener('click', () => {
+        //                     window.location.href = 'https://example.com/opcion1';
+        //                 });
+        //                 document.getElementById('option2').addEventListener('click', () => {
+        //                     window.location.href = 'https://example.com/opcion2';
+        //                 });
+        //             }
+        //         });
+        //     }
+        // });
     }
     return (
         <div className="ps-3  mt-5 color-fondo pt-3 pe-3">

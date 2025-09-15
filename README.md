@@ -8,7 +8,6 @@ http://localhost:5173/
 # Dependencias con las que ya cuenta el proyecto
 - redux
 - bootstrap
-- sweetalert2
 - sockjs-client
 - react-router-dom
 - react-bootstrap

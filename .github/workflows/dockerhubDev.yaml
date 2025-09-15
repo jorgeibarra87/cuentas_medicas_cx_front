@@ -2,12 +2,12 @@ name: CI/CD Publis Docker image
 
 on:
   push:
-    branches:
-      - dev
+    tags:
+    - "v*.*.*"
 
 jobs:
     upload_image:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
 
         steps:
             - name: Checkout code

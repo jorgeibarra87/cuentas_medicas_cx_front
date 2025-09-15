@@ -20,12 +20,12 @@ const useFetchUsuariosProcServ = () => {
             const usuarioProcServ = usuariosData.map((usuario) => {
                 return {
                     usuario: {id: usuario.id, documento: usuario.documento},
-                    procesos: usuario.procesosServicios.filter(item => item.tipo == 'proceso').map((proceso) => ({
+                    procesos: usuario.procesosServicios.filter(item => item.tipo == 'PROCESO').map((proceso) => ({
                         value: proceso.id,
                         label: proceso.nombre,
                         tipo: proceso.tipo
                     })),
-                    servicios: usuario.procesosServicios.filter(item => item.tipo == 'servicio').map((servicio) => ({
+                    servicios: usuario.procesosServicios.filter(item => item.tipo == 'SERVICIO').map((servicio) => ({
                         value: servicio.id,
                         label: servicio.nombre,
                         tipo: servicio.tipo
