@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { guardarRespuestasCheqMan } from "../../api/sistemas/preguntasCheMantService";
-import Swal from "sweetalert2";
 
 const useSaveRespuestasCheqMan = () => {
     const [data, setData] = useState(null);
@@ -9,12 +8,12 @@ const useSaveRespuestasCheqMan = () => {
 
     useEffect(()=> {
         if(data?.message){
-            Swal.fire({
-                title: 'Éxito',
-                text: `${data.message}`,
-                icon: 'success',
-                confirmButtonText: 'Aceptar'
-            });
+            // Swal.fire({
+            //     title: 'Éxito',
+            //     text: `${data.message}`,
+            //     icon: 'success',
+            //     confirmButtonText: 'Aceptar'
+            // });
             setData(null); 
         }
     }, [data]);

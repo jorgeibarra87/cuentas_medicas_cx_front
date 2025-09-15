@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import Swal from 'sweetalert2';
+
 import UseAxiosInstance from '../../utilities/UseAxiosInstance';
 import { useDispatch, useSelector } from 'react-redux';
 import { mesadeprocesos_actualizar_proceso_de_area, mesadeprocesos_agregar_proceso_a_area } from '../../actions/mesadeprocesosActions';
@@ -49,13 +49,13 @@ export default function ProcesosForm({ show, handleClose, areas, editProceso }) 
                     //response && response.data.map(proceso => delete proceso.idarea);
                     dispatch(mesadeprocesos_agregar_proceso_a_area({...areaSeleccionada, procesos: response.data}));
                 }
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Proceso Agregado',
-                    showConfirmButton: false,
-                    showCloseButton: true,
-                    timer: 1500
-                });
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: 'Proceso Agregado',
+                //     showConfirmButton: false,
+                //     showCloseButton: true,
+                //     timer: 1500
+                // });
                 setFormu(initialFormState);
                 handleClose();
             }).catch((error) => {
@@ -66,11 +66,11 @@ export default function ProcesosForm({ show, handleClose, areas, editProceso }) 
                 .then((response) => {
                     dispatch(mesadeprocesos_actualizar_proceso_de_area(response.data));
                 })
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Proceso Actualizado',
-                    timer: 1000
-                });
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: 'Proceso Actualizado',
+                //     timer: 1000
+                // });
                 setFormu(initialFormState);
                 handleClose();
         }

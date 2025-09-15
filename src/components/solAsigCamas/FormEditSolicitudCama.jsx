@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
-import Swal from 'sweetalert2';
 import { obtenerBloquesServicio } from '../../api/asignacionCamas/bloqueServicioService';
 import { obtenerEspecialidades } from '../../api/asignacionCamas/especialidadService';
 import { obtenerMedidasAislamiento } from '../../api/asignacionCamas/medidasAislamientoService';
@@ -186,14 +185,14 @@ export default function FormEditSolicitudCama({versionSolicitudCama, showFormEdi
         await modificarVersionSolicitudCama(versionSolicitudCama.id, form)
         .then(response => {
             handleCloseFormEditSolicitudCama();
-            Swal.fire({
-                icon: 'success',
-                title: 'Solicitud de cama actualizada',
-                showConfirmButton: false,
-                timer: 1100
-            }).then(() => {
-                setResponseEditar(response.data);
-            });
+            // Swal.fire({
+            //     icon: 'success',
+            //     title: 'Solicitud de cama actualizada',
+            //     showConfirmButton: false,
+            //     timer: 1100
+            // }).then(() => {
+            //     setResponseEditar(response.data);
+            // });
             
         }).catch(error => {
             console.error(error);

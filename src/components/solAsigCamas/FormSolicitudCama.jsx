@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import Select from 'react-select'
 import AsyncSelect from 'react-select/async'
-import Swal from "sweetalert2";
 import { obtenerMedidasAislamiento } from '../../api/asignacionCamas/medidasAislamientoService'
 import { obtenerBloquesServicio } from '../../api/asignacionCamas/bloqueServicioService'
 import { obtenerEspecialidades } from '../../api/asignacionCamas/especialidadService'
@@ -181,26 +180,26 @@ export default function FormSolicitudCama({ showFormSolicitud, handleCloseFormSo
             opcionesEspecialidades.length = 0;
             opcionesMedidas.length = 0;
             handleCloseFormSolicitud();
-            Swal.fire({
-                icon: 'success',
-                title: 'Guardado',
-                text: `Solicitud guardada correctamente`
-            });
+            // Swal.fire({
+            //     icon: 'success',
+            //     title: 'Guardado',
+            //     text: `Solicitud guardada correctamente`
+            // });
         } catch (error) {
             if (error.response && error.response.data && error.response.data.codigoError != undefined) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Opss...',
-                    text: `${error.response.data.mensaje.split(',')[1]}`
-                });
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Opss...',
+                //     text: `${error.response.data.mensaje.split(',')[1]}`
+                // });
             }
             else {
                 console.error(error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Opss...',
-                    text: `Revisar la consola para más detalles`
-                });
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Opss...',
+                //     text: `Revisar la consola para más detalles`
+                // });
             }            
         }
     };

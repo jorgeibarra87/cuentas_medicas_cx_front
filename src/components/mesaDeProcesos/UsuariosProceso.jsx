@@ -7,7 +7,6 @@ import { FormatearFecha } from '../../utilities/FormatearFecha';
 import UsuarioProcesoForm from './UsuarioProcesoForm';
 import { mesadeprocesos_actualizar_usuario_de_area, mesadeprocesos_agregar_usuario_a_area, mesadeprocesos_eliminar_usuario_de_area } from '../../actions/mesadeprocesosActions';
 
-import Swal from 'sweetalert2';
 import UseAxiosInstance from '../../utilities/UseAxiosInstance';
 import ProcesosTransferirForm from './ProcesosTransferirForm';
 
@@ -146,47 +145,47 @@ const UsuariosProceso = () => {
     }
 
     const handleDelete = async (e) => {
-        Swal.fire({
-            title: '¿Está seguro de eliminar el usuario?',
-            text: "No podrá revertir esta acción",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar',
-            preConfirm: async () => {
-                try {
-                    // capturamos el id del select que está seleccionado
-                    const idArea = document.querySelector('select[name="area"]').value;
-                    const areaSeleccionada = areas.find(area => area.id == idArea);
-                    const areaConUsuario = { ...areaSeleccionada, usuarios: e };
+        // Swal.fire({
+        //     title: '¿Está seguro de eliminar el usuario?',
+        //     text: "No podrá revertir esta acción",
+        //     icon: 'warning',
+        //     showCancelButton: true,
+        //     confirmButtonColor: '#3085d6',
+        //     cancelButtonColor: '#d33',
+        //     confirmButtonText: 'Sí, eliminar',
+        //     cancelButtonText: 'Cancelar',
+        //     preConfirm: async () => {
+        //         try {
+        //             // capturamos el id del select que está seleccionado
+        //             const idArea = document.querySelector('select[name="area"]').value;
+        //             const areaSeleccionada = areas.find(area => area.id == idArea);
+        //             const areaConUsuario = { ...areaSeleccionada, usuarios: e };
 
-                    // Realizamos la operación de eliminación
-                    await axiosInstance.delete(`usuarioprocesos/${e.id}`);
+        //             // Realizamos la operación de eliminación
+        //             await axiosInstance.delete(`usuarioprocesos/${e.id}`);
 
-                    // Ejecutamos la acción en el reducer
-                    dispatch(mesadeprocesos_eliminar_usuario_de_area(areaConUsuario));
+        //             // Ejecutamos la acción en el reducer
+        //             dispatch(mesadeprocesos_eliminar_usuario_de_area(areaConUsuario));
 
-                    // Si todo sale bien, retornamos el mensaje para actualizar el Swal
-                    return 'Eliminado correctamente';
-                } catch (error) {
-                    console.error(error);
-                    // Retornamos el mensaje de error que mostrará Swal
-                    Swal.showValidationMessage('Ocurrió un problema al eliminar el usuario');
-                    throw error; // Importante para que Swal detecte el error y no cierre el modal
-                }
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Eliminado!',
-                    text: result.value,
-                    icon: 'success',
-                    confirmButtonText: 'Ok'
-                });
-            }
-        });
+        //             // Si todo sale bien, retornamos el mensaje para actualizar el Swal
+        //             return 'Eliminado correctamente';
+        //         } catch (error) {
+        //             console.error(error);
+        //             // Retornamos el mensaje de error que mostrará Swal
+        //             Swal.showValidationMessage('Ocurrió un problema al eliminar el usuario');
+        //             throw error; // Importante para que Swal detecte el error y no cierre el modal
+        //         }
+        //     }
+        // }).then((result) => {
+        //     if (result.isConfirmed) {
+        //         Swal.fire({
+        //             title: 'Eliminado!',
+        //             text: result.value,
+        //             icon: 'success',
+        //             confirmButtonText: 'Ok'
+        //         });
+        //     }
+        // });
     }
 
     const handleEdit = (usuario) => {
@@ -226,36 +225,36 @@ const UsuariosProceso = () => {
     }
 
     const handleFinalizar = (usuario) => {
-        Swal.fire({
-            icon: 'info',
-            text: 'Adjunte el enlace o describa la solución',
-            input: 'text',
-            inputAttributes: {
-                autocapitalize: 'off'
-            },
-            showCancelButton: true,
-            confirmButtonText: 'Finalizar',
-            cancelButtonText: 'Cancelar',
-            showLoaderOnConfirm: true,
-            preConfirm: async (enlace) => {
-                try {
-                    const response = await axiosInstance.put(`usuarioprocesos/estado/${usuario.id}?enlace=${enlace}`);
-                    dispatch(mesadeprocesos_actualizar_usuario_de_area(response.data));
-                } catch (error) {
-                    console.error('error al finalizar',error);
-                    Swal.showValidationMessage(`Ocurrió un error al finalizar el usuario`);
-                }
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Finalizado',
-                    text: 'El usuario ha sido finalizado correctamente',
-                });
-            }
-        }
-        );
+        // Swal.fire({
+        //     icon: 'info',
+        //     text: 'Adjunte el enlace o describa la solución',
+        //     input: 'text',
+        //     inputAttributes: {
+        //         autocapitalize: 'off'
+        //     },
+        //     showCancelButton: true,
+        //     confirmButtonText: 'Finalizar',
+        //     cancelButtonText: 'Cancelar',
+        //     showLoaderOnConfirm: true,
+        //     preConfirm: async (enlace) => {
+        //         try {
+        //             const response = await axiosInstance.put(`usuarioprocesos/estado/${usuario.id}?enlace=${enlace}`);
+        //             dispatch(mesadeprocesos_actualizar_usuario_de_area(response.data));
+        //         } catch (error) {
+        //             console.error('error al finalizar',error);
+        //             Swal.showValidationMessage(`Ocurrió un error al finalizar el usuario`);
+        //         }
+        //     }
+        // }).then((result) => {
+        //     if (result.isConfirmed) {
+        //         Swal.fire({
+        //             icon: 'success',
+        //             title: 'Finalizado',
+        //             text: 'El usuario ha sido finalizado correctamente',
+        //         });
+        //     }
+        // }
+        // );
     }
 
     const generarReporte = async () => {

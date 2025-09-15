@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { obtenerInfoGenUsuario } from "../../api/dinamica/genUsuarioService";
-import Swal from "sweetalert2";
 
 const useFetchGenUsuarioInfo = () => {
     const [data, setData] = useState(null);
@@ -9,20 +8,20 @@ const useFetchGenUsuarioInfo = () => {
 
     useEffect(() => {
         if (data?.oid) {
-            Swal.fire({
-                title: 'Información del Usuario',
-                html: data.usudescri,  // Cambiado text por html para mejor formato
-                icon: 'info',
-                showCancelButton: true,  // Añadido para mostrar ambos botones
-                confirmButtonText: 'Sí',  // Corregida mayúscula
-                cancelButtonText: 'No',
-                reverseButtons: true,    // Opcional: orden más común (No, Sí)
-                focusCancel: true         // Opcional: enfoca el botón de cancelar
-            }).then((result) => {
-                if (result.isDismissed) {  // Mejor condición para capturar cancelación
-                    setData(null);
-                }
-            });
+            // Swal.fire({
+            //     title: 'Información del Usuario',
+            //     html: data.usudescri,  // Cambiado text por html para mejor formato
+            //     icon: 'info',
+            //     showCancelButton: true,  // Añadido para mostrar ambos botones
+            //     confirmButtonText: 'Sí',  // Corregida mayúscula
+            //     cancelButtonText: 'No',
+            //     reverseButtons: true,    // Opcional: orden más común (No, Sí)
+            //     focusCancel: true         // Opcional: enfoca el botón de cancelar
+            // }).then((result) => {
+            //     if (result.isDismissed) {  // Mejor condición para capturar cancelación
+            //         setData(null);
+            //     }
+            // });
         }
     }, [data]);
 

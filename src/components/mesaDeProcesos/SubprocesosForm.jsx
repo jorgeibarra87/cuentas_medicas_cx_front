@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import UseAxiosInstance from '../../utilities/UseAxiosInstance';
-import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
 import { mesadeprocesos_actualizar_subproceso_de_proceso, mesadeprocesos_agregar_subproceso_a_proceso } from '../../actions/mesadeprocesosActions';
 
@@ -40,23 +39,23 @@ function SubprocesosForm({ show, handleClose, proceso , editSubProceso}) {
                 dispatch(mesadeprocesos_agregar_subproceso_a_proceso({id: proceso.id, subprocesos: [response.data]}));
                 setForm(initialFormState);
                 handleClose();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Subproceso Agregado',
-                    showConfirmButton: false,
-                    timer: 1000
-                });
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: 'Subproceso Agregado',
+                //     showConfirmButton: false,
+                //     timer: 1000
+                // });
             }else{
                 const response = await axiosInstance.put(`/subprocesos/${editSubProceso.id}`, formWithProcesoId);
                 dispatch(mesadeprocesos_actualizar_subproceso_de_proceso(response.data));
                 setForm(initialFormState);
                 handleClose();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Subproceso Actualizado',
-                    showConfirmButton: false,
-                    timer: 1000
-                })
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: 'Subproceso Actualizado',
+                //     showConfirmButton: false,
+                //     timer: 1000
+                // })
             }
         }catch(error){
             console.error(error);

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { guardarRespuestas } from "../../api/monitorizacionHc/respuestasService";
-import Swal from "sweetalert2";
 
 const useSaveRespuestas = () => {
     const [loading, setLoading] = useState(false);

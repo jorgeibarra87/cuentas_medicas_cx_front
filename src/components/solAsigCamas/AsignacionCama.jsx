@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FormatearFecha } from '../../utilities/FormatearFecha';
 import icono from '../../img/camillero.ico';
-import Swal from 'sweetalert2';
 import spinnerLoginText from '../Loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
@@ -111,7 +110,7 @@ export default function AsignacionCama() {
             await obtenerVersionSolicitudCamaByIdBloque(bloqueServicioSeleccionado)
                 .then(response => {
                     setAsignacionesCama(response);
-                    Swal.close();
+                    // Swal.close();
                 }).catch(error => {
                     console.error(error);
                 });
@@ -148,36 +147,36 @@ export default function AsignacionCama() {
     }
 
     const handleFinalizar  = async (item) => {
-        Swal.fire({
-            title: 'Finalizar Traslado',
-            text: '¿Está seguro que el paciente llego a la cama de destino?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Aceptar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if(result.isConfirmed){
-                cancelarAsignacion();
-            }
-            function cancelarAsignacion() {
-                finalizarAsignacionVersionSolicitudCama(item.asignacionCama.id)
-                    .then(() => {
-                        Swal.fire({
-                            title: 'Finalizado',
-                            text: 'se finalizo exitosamente.',
-                            icon: 'success',
-                            timer: 1500,
-                            timerProgressBar: true,
-                            showConfirmButton: false
-                        });
-                        const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
-                        setAsignacionesCama(asignaciones);
-                    }
-                    ).catch(error => {
-                        console.error(error);
-                    });
-            }
-        });
+        // Swal.fire({
+        //     title: 'Finalizar Traslado',
+        //     text: '¿Está seguro que el paciente llego a la cama de destino?',
+        //     icon: 'question',
+        //     showCancelButton: true,
+        //     confirmButtonText: 'Aceptar',
+        //     cancelButtonText: 'Cancelar'
+        // }).then((result) => {
+        //     if(result.isConfirmed){
+        //         cancelarAsignacion();
+        //     }
+        //     function cancelarAsignacion() {
+        //         finalizarAsignacionVersionSolicitudCama(item.asignacionCama.id)
+        //             .then(() => {
+        //                 Swal.fire({
+        //                     title: 'Finalizado',
+        //                     text: 'se finalizo exitosamente.',
+        //                     icon: 'success',
+        //                     timer: 1500,
+        //                     timerProgressBar: true,
+        //                     showConfirmButton: false
+        //                 });
+        //                 const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
+        //                 setAsignacionesCama(asignaciones);
+        //             }
+        //             ).catch(error => {
+        //                 console.error(error);
+        //             });
+        //     }
+        // });
     };
 
     const handleEditar = (item) => {
@@ -199,31 +198,31 @@ export default function AsignacionCama() {
     },[versionAsignacionSolicitudCamaEditar]);
 
     const handleCancelar = async (item) => {
-        try{
-            const { value: motivo} = await Swal.fire({
-                title: 'Motivo de Cancelación',
-                text: 'Por favor ingrese el motivo de la cancelación',
-                input: 'text',
-                showCancelButton: true,
-                confirmButtonText: 'Aceptar',
-                cancelButtonText: 'Cancelar',
-                inputValidator: (value) => {
-                    if(!value){
-                        return 'Por favor ingrese un motivo';
-                    }
-                }
-            });
-            if(!motivo) return;
-            await cancelarAsignacionVersionSolicitudCama(item.asignacionCama.id, item.id, motivo)
-            .then(() => {
-                const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
-                setAsignacionesCama(asignaciones);
-            }).catch(error => {
-                console.error(error);
-            });
-        }catch(error){
-            console.error(error);
-        }
+        // try{
+        //     const { value: motivo} = await Swal.fire({
+        //         title: 'Motivo de Cancelación',
+        //         text: 'Por favor ingrese el motivo de la cancelación',
+        //         input: 'text',
+        //         showCancelButton: true,
+        //         confirmButtonText: 'Aceptar',
+        //         cancelButtonText: 'Cancelar',
+        //         inputValidator: (value) => {
+        //             if(!value){
+        //                 return 'Por favor ingrese un motivo';
+        //             }
+        //         }
+        //     });
+        //     if(!motivo) return;
+        //     await cancelarAsignacionVersionSolicitudCama(item.asignacionCama.id, item.id, motivo)
+        //     .then(() => {
+        //         const asignaciones = asignacionesCama.filter(asignacion => asignacion.id !== item.id);
+        //         setAsignacionesCama(asignaciones);
+        //     }).catch(error => {
+        //         console.error(error);
+        //     });
+        // }catch(error){
+        //     console.error(error);
+        // }
     };
 
     return (

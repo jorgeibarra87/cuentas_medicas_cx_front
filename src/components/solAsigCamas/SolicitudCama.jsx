@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBed } from "@fortawesome/free-solid-svg-icons";
 import AsignarSolicitud from './FormDocSolicitud';
 import spinnerLoginText from "../Loading";
-import Swal from 'sweetalert2';
 import { FormatearFecha } from '../../utilities/FormatearFecha';
 import FormAsignCama from './FormAsignCama';
 import * as bootstrap from 'bootstrap';
@@ -78,7 +77,7 @@ function SolicitudCama() {
             await obtenerVersionesSolicitudCamaActivasByIdBloque(bloqueServicioSeleccionado)
                 .then(response => {
                     setVersionSolicitudesActivas(response);
-                    Swal.close();
+                    // Swal.close();
                 }).catch(error => {
                     console.error(error);
                 });
@@ -118,35 +117,35 @@ function SolicitudCama() {
 
     const handleCanel = async (item) => {
 
-        try {
-            const { value: motivo } = await Swal.fire({
-                title: 'Cancelar Solicitud',
-                text: 'Por favor ingresa el motivo de la cancelación:',
-                input: 'text',
-                showCancelButton: true,
-                confirmButtonText: 'Cancelar solicitud',
-                cancelButtonText: 'Regresar',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return 'El motivo es obligatorio';
-                    }
-                }
-            });
-            if (!motivo) return;
-            // Realizar la solicitud PUT con Axios
-            const response = await cancelarSolicitudCama(item.solicitudCama.id, motivo);
-            Swal.fire({
-                title: 'Solicitud Cancelada',
-                text: 'La solicitud ha sido cancelada exitosamente.',
-                icon: 'success',
-                confirmButtonText: 'Aceptar'
-            });
-            const versionesActualizadas = versionSolicitudesActivas.filter((version) => version.id !== item.id);
-            setVersionSolicitudesActivas(versionesActualizadas);
-            return response.data;
-        } catch (error) {
-            console.error(error);
-        }
+        // try {
+        //     const { value: motivo } = await Swal.fire({
+        //         title: 'Cancelar Solicitud',
+        //         text: 'Por favor ingresa el motivo de la cancelación:',
+        //         input: 'text',
+        //         showCancelButton: true,
+        //         confirmButtonText: 'Cancelar solicitud',
+        //         cancelButtonText: 'Regresar',
+        //         inputValidator: (value) => {
+        //             if (!value) {
+        //                 return 'El motivo es obligatorio';
+        //             }
+        //         }
+        //     });
+        //     if (!motivo) return;
+        //     // Realizar la solicitud PUT con Axios
+        //     const response = await cancelarSolicitudCama(item.solicitudCama.id, motivo);
+        //     Swal.fire({
+        //         title: 'Solicitud Cancelada',
+        //         text: 'La solicitud ha sido cancelada exitosamente.',
+        //         icon: 'success',
+        //         confirmButtonText: 'Aceptar'
+        //     });
+        //     const versionesActualizadas = versionSolicitudesActivas.filter((version) => version.id !== item.id);
+        //     setVersionSolicitudesActivas(versionesActualizadas);
+        //     return response.data;
+        // } catch (error) {
+        //     console.error(error);
+        // }
     }
 
     const handleChangeFacturacion = async (item) => {

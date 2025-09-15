@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { iniciarSesionAction } from "../../actions/loginActions";
-import Swal from "sweetalert2";
+
 import spinnerLoginText from "../Loading";
 
 const initailForm = {username: "",password: "",};
@@ -42,18 +42,18 @@ const Login = () => {
         try{
             const token2 = await  axios.post(`${ruta}${rutamicroservicioauth}/auth/login`, datos);
             dispatch(iniciarSesionAction(token2.data));
-            Swal.close();
+            // Swal.close();
             //navigate('/'); // Redirige al usuario a '/'
         }catch(error){
             console.error(error);
             if (error && error.code === 'ERR_NETWORK') {
-                Swal.fire({
-                    title: "¡Error!",
-                    text: `Codigo del error: ${error.code}`,
-                    icon: "error"
-                })
+                // Swal.fire({
+                //     title: "¡Error!",
+                //     text: `Codigo del error: ${error.code}`,
+                //     icon: "error"
+                // })
             } else {
-                Swal.close();
+                // Swal.close();
                 setError(error);
                 setMessage("Verificar los datos.");
             }
