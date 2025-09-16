@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
 import InfoModal from './InfoModal';
 import FormEditAsignCama from './FormEditAsignCama';
-import * as bootstrap from 'bootstrap';
 import { useSelector } from 'react-redux';
 import { obtenerBloquesServicio } from '../../api/asignacionCamas/bloqueServicioService';
 import { obtenerVersionSolicitudCamaByIdBloque } from '../../api/asignacionCamas/asignacionVersionSolCamaService';
@@ -121,20 +120,20 @@ export default function AsignacionCama() {
         }
     }, [bloqueServicioSeleccionado]);
 
-    useEffect(() => {
-        const existingTooltips = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        existingTooltips.forEach(toolTipEl => {
-            const tooltipInstance = bootstrap.Tooltip.getInstance(toolTipEl);
-            if(tooltipInstance){
-                tooltipInstance.dispose();
-            }
-        });
-        // inicializar nuevos tooltips
-        const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.forEach(tooltipTriggerEl => {
-            new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    } ,[asignacionesCama]);
+    // useEffect(() => {
+    //     const existingTooltips = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    //     existingTooltips.forEach(toolTipEl => {
+    //         const tooltipInstance = bootstrap.Tooltip.getInstance(toolTipEl);
+    //         if(tooltipInstance){
+    //             tooltipInstance.dispose();
+    //         }
+    //     });
+    //     // inicializar nuevos tooltips
+    //     const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    //     tooltipTriggerList.forEach(tooltipTriggerEl => {
+    //         new bootstrap.Tooltip(tooltipTriggerEl);
+    //     });
+    // } ,[asignacionesCama]);
 
     const handleBloqueServicio = (e) => {
         const {value} = e.target;
@@ -292,7 +291,7 @@ export default function AsignacionCama() {
                                         <tr key={index}>
                                             <td>
                                                 <button className="btn" onClick={() => handleInfo(item)}>
-                                                    <FontAwesomeIcon icon={faEye} />
+                                                    {/* <FontAwesomeIcon icon={faEye} /> */}
                                                 </button>
                                             </td>
                                             <td>{item.asignacionCama.id}</td>
