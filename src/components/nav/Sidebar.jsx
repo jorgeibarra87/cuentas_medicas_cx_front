@@ -59,10 +59,10 @@ export default function Sidebar({ componente: Componente }) {
         },
         {
           nombre: 'Referencia Contrareferencia',
-          roles: ['ROLE_ADMINISTRADOR','ROLE_REFERENCIA_FORMULARIO','ROLE_REFERENCIA_EXPORTAR_DATA','ROLE_REFERENCIA_MODIFICAR_DATA'],
+          roles: ['ROLE_ADMINISTRADOR','ROLE_REFERENCIA_FORMULARIO','ROLE_REFERENCIA_EXPORTAR_DATA','ROLE_REFERENCIA_MODIFICAR_DATA', 'ROLE_REFERENCIA_COMENTARIO_TRIAGE'],
           submenu: [
-            { nombre: 'Formulario de datos', ruta: '/referenciacontrareferencia/formulario', roles: ['ROLE_ADMINISTRADOR','ROLE_REFERENCIA_FORMULARIO','ROLE_REFERENCIA_EXPORTAR_DATA'] },
-            { nombre: 'Tabla de referencias', ruta: '/referenciacontrareferencia/datos', roles: ['ROLE_ADMINISTRADOR','ROLE_REFERENCIA_FORMULARIO','ROLE_REFERENCIA_EXPORTAR_DATA','ROLE_REFERENCIA_MODIFICAR_DATA'] }
+            { nombre: 'Formulario de datos', ruta: '/referenciacontrareferencia/formulario', roles: ['ROLE_ADMINISTRADOR','ROLE_REFERENCIA_FORMULARIO'] },
+            { nombre: 'Tabla de referencias', ruta: '/referenciacontrareferencia/datos', roles: ['ROLE_ADMINISTRADOR','ROLE_REFERENCIA_EXPORTAR_DATA','ROLE_REFERENCIA_MODIFICAR_DATA', 'ROLE_REFERENCIA_COMENTARIO_TRIAGE'] }
           ]
         },
         // {

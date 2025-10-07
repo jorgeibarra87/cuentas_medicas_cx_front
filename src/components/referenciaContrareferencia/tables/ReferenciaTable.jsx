@@ -128,14 +128,15 @@ export default function ReferenciaTable() {
   if (errorDatosRef) return <div><h2>{`se presento un error ${errorDatosRef}`}</h2></div>
 
   // organizamos la data otebnida para exportar en formato plano
-  const datosExportar = (datos) =>  {
+  const datosExportar = (datos) => {
     return datos.map(dato => {
       const hospitalPlano = dato.hospital ? `${dato.hospital.nombre}, ${dato.hospital.ciudad}` : '';
 
       const ingresosPlanos = dato.ingresos && dato.ingresos.length > 0
         ? dato.ingresos.map(ingreso => ingreso.fechaIngreso).join(', ') : 'No hay ingresos';
 
-      return {...dato,
+      return {
+        ...dato,
         hospital: hospitalPlano,
         ingresos: ingresosPlanos,
       };
@@ -161,7 +162,7 @@ export default function ReferenciaTable() {
       toast.error(`Error al obtener datos: ${error.message}`);
       return;
     }
-    
+
     const worksheet = XLSX.utils.json_to_sheet(datosExportar(response));
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
@@ -173,13 +174,13 @@ export default function ReferenciaTable() {
     const formBuscar = new FormData(event.target);
     const terminoBusqueda = formBuscar.get("terminoBusqueda").toLowerCase();
 
-    if(!terminoBusqueda || terminoBusqueda.trim() === "") {
+    if (!terminoBusqueda || terminoBusqueda.trim() === "") {
       toast.info("Por favor, ingrese un término de búsqueda.");
       return;
     }
 
     const response = await buscarDatosPorIdODocumento(terminoBusqueda);
-    if(response.length > 0) {
+    if (response.length > 0) {
       setDatosRef((prev) => ({
         ...prev, content: response
       }));
@@ -187,10 +188,10 @@ export default function ReferenciaTable() {
     else {
       toast.info("No se encontraron resultados para el término de búsqueda ingresado.");
       setDatosRef((prev) => (
-        {...prev, content: [] }
+        { ...prev, content: [] }
       ));
     }
-    
+
   }
 
   return (
@@ -200,14 +201,14 @@ export default function ReferenciaTable() {
           <div className="flex justify-between items-center space-x-4 p-1 rounded-lg">
             <div className="flex items-center space-x-2">
               <form id="formBuscar" className="flex items-center space-x-2" onSubmit={handleSearch}>
-                <input className="border border-gray-300 rounded-md p-1" placeholder="Buscar" name="terminoBusqueda" required/>
+                <input className="border border-gray-300 rounded-md p-1" placeholder="Buscar" name="terminoBusqueda" required />
                 <button type="submit" className="text-white rounded-lg px-1.5 py-1 dark:bg-blue-600 dark:hover:bg-blue-900">Buscar</button>
               </form>
             </div>
             <div className="flex items-center space-x-2">
               <form id='formFechas' onSubmit={handleExport}>
-                <input name="fechaInicio" className="border border-gray-300 rounded-md p-1" type="date" required/>
-                <input name="fechaFin" className="border border-gray-300 rounded-md p-1" type="date" required/>
+                <input name="fechaInicio" className="border border-gray-300 rounded-md p-1" type="date" required />
+                <input name="fechaFin" className="border border-gray-300 rounded-md p-1" type="date" required />
                 <button type="submit" className="text-white rounded-lg px-1.5 py-1 dark:bg-blue-600 dark:hover:bg-blue-900">Exportar Datos</button>
               </form>
             </div>
@@ -245,7 +246,10 @@ export default function ReferenciaTable() {
                 <th scope="col" className="px-6 py-3">CAUSA DE RECHAZO</th>
                 <th scope="col" className="px-6 py-3">NOMBRE DEL MEDICO QUE REGISTRA LA DECISION</th>
                 <th scope="col" className="px-6 py-3">INGRESOS EN HUSJ</th>
-                <th scope="col" className="px-6 py-3">Opciones</th>
+                {
+                  (authorities.includes('ROLE_REFERENCIA_MODIFICAR_DATA') || authorities.includes('ROLE_ADMINISTRADOR')) &&
+                  <th scope="col" className="px-6 py-3">Opciones</th>
+                }
                 <th scope="col" className="px-6 py-3">Comentario triage</th>
               </tr>
             </thead>
@@ -311,22 +315,25 @@ export default function ReferenciaTable() {
                         "No hay ingresos"
                       )}
                     </td>
-                    <td className="text-center py-2 text-xs">
-                      <button className="text-blue-500 hover:text-blue-700 mr-2" title="Editar">
-                        <FontAwesomeIcon icon={faPenClip} />
-                      </button>
-                    </td>
+                    {
+                      (authorities.includes('ROLE_REFERENCIA_MODIFICAR_DATA') || authorities.includes('ROLE_ADMINISTRADOR')) &&
+                      <td className="text-center py-2 text-xs">
+                        <button className="text-blue-500 hover:text-blue-700 mr-2" title="Editar">
+                          <FontAwesomeIcon icon={faPenClip} />
+                        </button>
+                      </td>
+                    }
                     <td className="px-6 py-2 text-xs">
                       {d.observacionTriage == null || d.observacionTriage === '' ? (
                         authorities.includes('ROLE_REFERENCIA_COMENTARIO_TRIAGE') || authorities.includes('ROLE_ADMINISTRADOR') ? (
                           <>
-                            <textarea type="text" onChange={(e) => setObservacionInput(e.target.value)} className="border border-gray-300 rounded-md p-1"/>
+                            <textarea type="text" onChange={(e) => setObservacionInput(e.target.value)} className="border border-gray-300 rounded-md p-1" />
                             <button disabled={isPutting} onClick={() => handleSaveObservacionTriage(d.id, observacionInput)} className="text-white rounded-lg px-1.5 py-1 dark:bg-blue-600 dark:hover:bg-blue-900" >
                               Guardar
                             </button>
                           </>
-                        ) : ( <span className="text-gray-500 italic">Sin observación registrada</span> )
-                      ) : ( d.observacionTriage )}
+                        ) : (<span className="text-gray-500 italic">Sin observación registrada</span>)
+                      ) : (d.observacionTriage)}
                     </td>
                   </tr>
                 )
