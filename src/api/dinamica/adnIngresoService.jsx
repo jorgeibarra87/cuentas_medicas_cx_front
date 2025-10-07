@@ -10,3 +10,13 @@ export const obtenerAdnIngreso = async (idAdnIngreso) => {
         throw error;
     }
 }
+
+export const obtenerAdnIngresoHistoricoPorDocumento = async (documento) => {
+    try {
+        const response = await apiClienteDinamica.get(`adnIngreso/GenPacien/todos/${documento}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener el historial de adnIngreso', error);
+        throw error;
+    }
+}
