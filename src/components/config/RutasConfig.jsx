@@ -23,6 +23,9 @@ import AjustesSistemas from '../sistemas/AjustesSistemas';
 import ProtectedWithIdle from './ProtectedWithIdle';
 import indexRehabilitacion from '../rehabilitacion/IndexRehabilitacion';
 import ReportesIndex from '../monitorizacionHc/ReportesIndex';
+import FormDatos from '../referenciaContrareferencia/forms/FormDatos';
+import ReferenciaTable from '../referenciaContrareferencia/tables/ReferenciaTable';
+import HospitalTableRefContraRef from '../referenciaContrareferencia/tables/HospitalTableRefContraRef';
 
 export default function RutasConfig() {
 
@@ -126,6 +129,11 @@ export default function RutasConfig() {
                 </Route>
                 <Route path='/ajustes'>
                     <Route path='usuario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={OpcionesUsuario} /></RequireAuth>}></Route>
+                </Route>
+                <Route path='/referenciacontrareferencia'>
+                    <Route path='formulario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormDatos}/></RequireAuth>}/>
+                    <Route path='datos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReferenciaTable}/></RequireAuth>}/>
+                    <Route path='hospitales' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HospitalTableRefContraRef} /></RequireAuth>}/>
                 </Route>
                 <Route path='*' element={<Error404 />} />
             </Routes>
