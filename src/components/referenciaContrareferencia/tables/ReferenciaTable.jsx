@@ -289,10 +289,10 @@ export default function ReferenciaTable() {
                     <td className="text-center py-2 text-xs">{d.sodos}</td>
                     <td className="text-center py-2 text-xs">{d.glasgow}</td>
                     <td className="text-center py-2 text-xs">{d.escalaDolorVisual}</td>
-                    <td className="text-center py-2 text-xs">{d.requiereAislamiento}</td>
-                    <td className="text-center py-2 text-xs">{d.enviadaUrgenciaVital}</td>
+                    <td className="text-center py-2 text-xs">{d.requiereAislamiento === true ? 'SI' : 'NO'}</td>
+                    <td className="text-center py-2 text-xs">{d.enviadaUrgenciaVital === true ? 'SI' : 'NO'}</td>
                     <td className="text-center py-2 text-xs">{d.causaRemisionNivelLLL}</td>
-                    <td className="text-center py-2 text-xs">{d.estado = 1 ? 'ACEPTADA' : 'EN ESPERA'}</td>
+                    <td className="text-center py-2 text-xs">{d.estado === true ? 'ACEPTADA' : 'EN ESPERA'}</td>
                     <td className="text-center py-2 text-xs">{d.id}</td>
                     <td className="text-center py-2 text-xs">{d.causaRechazo}</td>
                     <td className="text-center py-2 text-xs">{d.nombreMedicoRegistraDecision}</td>
