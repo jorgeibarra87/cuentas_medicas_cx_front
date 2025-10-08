@@ -158,15 +158,14 @@ export default function ReferenciaTable() {
 
     try {
       const response = await obtenerDatosEntreFechasRefContraReferencia(fechaInicio, fechaFin);
+      const worksheet = XLSX.utils.json_to_sheet(datosExportar(response));
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+      XLSX.writeFile(workbook, 'reporte_referencia_contrareferencia.xlsx');
     } catch (error) {
       toast.error(`Error al obtener datos: ${error.message}`);
       return;
     }
-
-    const worksheet = XLSX.utils.json_to_sheet(datosExportar(response));
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-    XLSX.writeFile(workbook, 'reporte_referencia_contrareferencia.xlsx');
   }
 
   const handleSearch = async (event) => {
@@ -202,14 +201,14 @@ export default function ReferenciaTable() {
             <div className="flex items-center space-x-2">
               <form id="formBuscar" className="flex items-center space-x-2" onSubmit={handleSearch}>
                 <input className="border border-gray-300 rounded-md p-1" placeholder="Buscar" name="terminoBusqueda" required />
-                <button type="submit" className="text-white rounded-lg px-1.5 py-1 dark:bg-blue-600 dark:hover:bg-blue-900">Buscar</button>
+                <button type="submit" className="text-white rounded-lg px-1.5 py-1 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-900">Buscar</button>
               </form>
             </div>
             <div className="flex items-center space-x-2">
               <form id='formFechas' onSubmit={handleExport}>
                 <input name="fechaInicio" className="border border-gray-300 rounded-md p-1" type="date" required />
                 <input name="fechaFin" className="border border-gray-300 rounded-md p-1" type="date" required />
-                <button type="submit" className="text-white rounded-lg px-1.5 py-1 dark:bg-blue-600 dark:hover:bg-blue-900">Exportar Datos</button>
+                <button type="submit" className="text-white rounded-lg px-1.5 py-1 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-900">Exportar Datos</button>
               </form>
             </div>
           </div>
@@ -236,7 +235,7 @@ export default function ReferenciaTable() {
                 <th scope="col" className="px-6 py-3">TA</th>
                 <th scope="col" className="px-6 py-3">TEMPERATURA</th>
                 <th scope="col" className="px-6 py-3">SO2</th>
-                <th scope="col" className="px-6 py-3">GRASGOW</th>
+                <th scope="col" className="px-6 py-3">GLASGOW</th>
                 <th scope="col" className="px-6 py-3">ESCALA DE DOLOR VISUAL /10</th>
                 <th scope="col" className="px-6 py-3">REQUIERE AISLAMIENTO</th>
                 <th scope="col" className="px-6 py-3">ENVIADA COMO URGENCIA VITAL</th>
@@ -292,7 +291,7 @@ export default function ReferenciaTable() {
                     <td className="text-center py-2 text-xs">{d.requiereAislamiento === true ? 'SI' : 'NO'}</td>
                     <td className="text-center py-2 text-xs">{d.enviadaUrgenciaVital === true ? 'SI' : 'NO'}</td>
                     <td className="text-center py-2 text-xs">{d.causaRemisionNivelLLL}</td>
-                    <td className="text-center py-2 text-xs">{d.estado === true ? 'ACEPTADA' : 'EN ESPERA'}</td>
+                    <td className="text-center py-2 text-xs">{d.estado === true ? 'ACEPTADA' : 'RECHAZADA'}</td>
                     <td className="text-center py-2 text-xs">{d.id}</td>
                     <td className="text-center py-2 text-xs">{d.causaRechazo}</td>
                     <td className="text-center py-2 text-xs">{d.nombreMedicoRegistraDecision}</td>
@@ -328,7 +327,7 @@ export default function ReferenciaTable() {
                         authorities.includes('ROLE_REFERENCIA_COMENTARIO_TRIAGE') || authorities.includes('ROLE_ADMINISTRADOR') ? (
                           <>
                             <textarea type="text" onChange={(e) => setObservacionInput(e.target.value)} className="border border-gray-300 rounded-md p-1" />
-                            <button disabled={isPutting} onClick={() => handleSaveObservacionTriage(d.id, observacionInput)} className="text-white rounded-lg px-1.5 py-1 dark:bg-blue-600 dark:hover:bg-blue-900" >
+                            <button disabled={isPutting} onClick={() => handleSaveObservacionTriage(d.id, observacionInput)} className="text-white rounded-lg px-1.5 py-1 bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-900" >
                               Guardar
                             </button>
                           </>
