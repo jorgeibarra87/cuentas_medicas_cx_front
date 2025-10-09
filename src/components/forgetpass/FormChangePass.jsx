@@ -113,37 +113,42 @@ export default function FormChangePass({ datosContacto }) {
   if (loading) return <Loader />;
 
   return (
-    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
-      {isInactive && <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 999, pointerEvents: 'none' }} />}
-      <div className="card border-light mb-3" style={{ width: '33rem' }}>
-        <img src={imgLogoDinamica} className="card-img-top" alt="..." />
-        <div className="card-body text-bg-light text-center">
-          <form onSubmit={handleSubmit}>
-            <h5 className="card-title mt-5">Restablecer la contraseña</h5>
-            <div className="col-md-12">
-              <span> Se envio el codigo al correo: </span>
+    <div className="flex justify-center items-center min-h-screen relative">
+      {isInactive && (
+        <div className="absolute inset-0 bg-black/50 z-[999] pointer-events-none" />
+      )}
+      <div className="bg-white shadow-lg rounded-xl w-[33rem]">
+        <img src={imgLogoDinamica} alt="Logo" className="w-full rounded-t-xl" />
+        <div className="text-center p-6 bg-gray-50 rounded-b-xl">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <h5 className="text-xl font-semibold mt-5">Restablecer la contraseña</h5>
+            <div>
+              <span className="text-gray-700">Se envió el código al correo:</span>
             </div>
-            {tamano && tamano.message && <span className="link-danger">{tamano.message}</span>}
-            <div className="col-md-6 offset-md-3">
-              <input className="form-control mt-3 " type="text" placeholder="Ingrese código de verificación" id="code" name="code" required={true} onChange={handleChange} />
+            {tamano?.message && (<span className="text-red-600 text-sm">{tamano.message}</span>)}
+            <div className="w-1/2 mx-auto">
+              <input type="text" placeholder="Ingrese código de verificación" id="code" name="code" required onChange={handleChange} className="w-full mt-3 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
-            <div className="col-md-6 offset-md-3">
-              <input className="form-control mt-2 " type="password" placeholder="Ingrese nueva contraseña" id="password" name="password" required={true} onChange={handleChange} />
+            <div className="w-1/2 mx-auto">
+              <input type="password" placeholder="Ingrese nueva contraseña" id="password" name="password" required onChange={handleChange} className="w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
-            <div className="col-md-6 offset-md-3">
-              <input className="form-control mt-2 " type="password" placeholder="confirme la contraseña" id="confirmPassword" name="confirmPassword" required={true} onChange={handleChange} />
-              {coincidencia && coincidencia.message && <span className="link-danger">{coincidencia.message}</span>}
+            <div className="w-1/2 mx-auto">
+              <input type="password" placeholder="Confirme la contraseña" id="confirmPassword" name="confirmPassword" required onChange={handleChange} className="w-full mt-2 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              {coincidencia?.message && (
+                <span className="text-red-600 text-sm">
+                  {coincidencia.message}
+                </span>
+              )}
             </div>
-            <div className="row justify-content-around mt-4 mb-4">
-              <div className="col-6">
-                <button type="submit" className="btn btn-primary" disabled={disable}>
-                  cambio
-                </button>
-              </div>
+            <div className="flex justify-center mt-6 mb-4">
+              <button type="submit" disabled={disable} className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                Cambio
+              </button>
             </div>
           </form>
         </div>
       </div>
     </div>
+
   );
 }
