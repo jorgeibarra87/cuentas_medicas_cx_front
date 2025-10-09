@@ -1,10 +1,9 @@
 const Loader = () => {
   return (
-    <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-opacity-50" style={{ zIndex: 1050 }}>
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
-    </div>
+    <div className="fixed inset-0 flex justify-center items-center bg-transparent z-[1050] pointer-events-none">
+  <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent pointer-events-auto"></div>
+</div>
+
   );
 };
 
