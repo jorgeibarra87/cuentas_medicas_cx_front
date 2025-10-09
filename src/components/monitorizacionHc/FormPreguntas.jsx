@@ -17,15 +17,20 @@ function FormPreguntas() {
   const { tipo: tipoPregunta } = useParams(); // Medico, Enfermeria
   const [respuestas, setRespuestas] = useState([]);
   const [servicio, setServicio] = useState(null);
+  const [fechaEvaluacion, setFechaEvaluacion] = useState("");
   const todasRespondidas =
     grupoPreguntas.reduce((sum, grupo) => {
       return sum + grupo.preguntas.length;
     }, 0) === respuestas.length;
 
   const handleChange = (id, preguntaTexto, respuesta) => {
+    if(fechaEvaluacion === "") {
+      toast.warning("Debe seleccionar la fecha de evaluación");
+      return;
+    }
     setRespuestas((prev) => {
       const respuestasActualizadas = prev.filter((r) => r.pregunta.id !== id); // Eliminamos la respuesta previa de la misma pregunta (si existía)
-      return [...respuestasActualizadas, { pregunta: { id, pregunta: preguntaTexto }, respuesta }]; // Agregamos la nueva respuesta
+      return [...respuestasActualizadas, { pregunta: { id, pregunta: preguntaTexto }, respuesta, fechaEvaluacion: `${fechaEvaluacion}-01`}]; // Agregamos la nueva respuesta
     });
   };
 
@@ -74,7 +79,7 @@ function FormPreguntas() {
 
       <div className="flex flex-col gap-4">
         {/* <SearchIngreso fetchAdnIngreso={fetchAdnIngreso} setAdnIngreso={setAdnIngreso} fetchPreguntas={fetchPreguntas} adnIngreso={adnIngreso} fetchRespuestasByIngreso={fetchRespuestasByIngreso} setServicio={setServicio}/> */}
-        <SearchIngreso {...{ fetchAdnIngreso, setAdnIngreso, fetchPreguntas, adnIngreso, setServicio, setRespuestas }} />
+        <SearchIngreso {...{ fetchAdnIngreso, setAdnIngreso, fetchPreguntas, adnIngreso, setServicio, setRespuestas, fechaEvaluacion, setFechaEvaluacion }} />
 
         {grupoPreguntas.length === 0 ? (
           adnIngreso.id ? (
@@ -132,8 +137,7 @@ function FormPreguntas() {
                 </tbody>
               </table>
 
-              <button className={`mt-6 px-4 py-2 rounded text-white transition-colors ${todasRespondidas ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
-                disabled={!todasRespondidas} onClick={handleSubmit}> 
+              <button disabled={!todasRespondidas} onClick={handleSubmit} className={`mt-6 px-4 py-2 rounded text-white transition-colors ${todasRespondidas ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}> 
                 Enviar
               </button>
             </div>
