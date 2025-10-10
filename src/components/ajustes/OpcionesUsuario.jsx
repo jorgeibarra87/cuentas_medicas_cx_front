@@ -4,25 +4,15 @@ import useFetchUsuario from '../../hooks/authService/useFetchUsuario';
 import Loader from '../Loader';
 import useFetchRol from '../../hooks/authService/useFetchRol';
 import SincronizarUsuario from '../SincronizarUsuario';
+import useUpdateUsuarioRoles from '../../hooks/authService/useUpdateUsuarioRoles';
 
 function OpcionesUsuario() {
-  const { usuarios, loading: loadingU, error: errorU, fetchUsuarios } = useFetchUsuario();
-  const { roles, loading: loadingRoles, error: errorRoles, fetchRol } = useFetchRol();
+  const { usuarios, loading: loadingU, error: errorU } = useFetchUsuario();
+  const { roles, loading: loadingRoles, error: errorRoles } = useFetchRol();
+  const { data: dataUpdateU, loading: loadingUpdateU, error: errorUpdateU, updateUsuarioRoles } = useUpdateUsuarioRoles();
   const [showSincronizar, setShowSincronizar] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [inputFind, setInputFind] = useState('');
-
-  // obtener usuarios
-  useEffect(() => {
-    if (usuarios.length > 0) return;
-    fetchUsuarios();
-  }, []);
-
-  // obtener roles
-  useEffect(() => {
-    if (roles.length > 0) return;
-    fetchRol();
-  }, []);
 
   useEffect(() => {
     if (usuarios.length == 0) return;
@@ -38,9 +28,25 @@ function OpcionesUsuario() {
 
   const opcionesRoles = roles.map((rol) => ({ value: rol.id, label: rol.rol }));
 
+  const handleRolesChange = (selectOption, usuario) => {
+    const rolesseleccionados = selectOption.map((option) => ({ id: option.value, rol: option.label}));
+    const rolesActuales = tableData.find((u) => u.username === usuario).roles;
+    const rolesQuitados = rolesActuales.filter((r) => !rolesseleccionados.some((r2) => r2.id === r.value));
+    const rolesAgregados = rolesseleccionados.filter((r) => !rolesActuales.some((r2) => r2.value === r.id));
+    if (rolesQuitados.length > 0) {
+      const rolesfinales = rolesQuitados.map((r) => ({ id: r.value, rol: r.label }));
+      updateUsuarioRoles(usuario, rolesfinales, 'eliminar');
+    }if (rolesAgregados.length > 0){
+      const rolesfinales = rolesAgregados.map((r) => ({ id: r.value, rol: r.label }));
+      updateUsuarioRoles(usuario, rolesfinales, 'agregar');
+    }
+
+  };
+
   if (loadingU || loadingRoles) return <Loader />;
   if (errorU || errorRoles)return ( <div> Error al cargar los {errorU ? 'usuarios' : 'roles'} {errorU?.message || errorRoles?.message} </div> );
 
+  
   return (
     <>
       <SincronizarUsuario show={showSincronizar} handleClose={() => setShowSincronizar(false)} />
@@ -64,14 +70,17 @@ function OpcionesUsuario() {
         <tbody>
           {tableData.length > 0 &&
             tableData
-              .filter((usuario) => usuario.username.includes(inputFind) || usuario.nombreCompleto.includes(inputFind.toLocaleUpperCase()))
-              .map((usuario) => {
+              .filter((u) => u.username.includes(inputFind) || u.nombreCompleto.includes(inputFind.toLocaleUpperCase()))
+              .map((u) => {
                 return (
-                  <tr key={usuario.username} className="hover:bg-gray-100">
-                    <td className="border border-gray-300 px-4 py-2">{usuario.username}</td>
-                    <td className="border border-gray-300 px-4 py-2">{usuario.nombreCompleto}</td>
+                  <tr key={u.username} className="hover:bg-gray-100">
+                    <td className="border border-gray-300 px-4 py-2">{u.username}</td>
+                    <td className="border border-gray-300 px-4 py-2">{u.nombreCompleto}</td>
                     <td className="border border-gray-300 px-4 py-2">
-                      <Select isMulti options={opcionesRoles} className="w-full" value={usuario.roles} classNamePrefix="select" />
+                      <Select isMulti options={opcionesRoles} className="w-full" 
+                      value={u.roles} 
+                      onChange={(selectOpci) => handleRolesChange(selectOpci, u.username)}
+                      classNamePrefix="select" />
                     </td>
                   </tr>
                 );
