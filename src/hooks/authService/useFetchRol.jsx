@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { obtenerTodosLosRoles } from "../../api/authservice/rolesServiceApiAuth";
 
 const useFetchRol = () => {
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchRol();
+  },[])
 
   const fetchRol = async () => {
     setLoading(true);
@@ -19,7 +23,7 @@ const useFetchRol = () => {
       }
     };
 
-  return { roles, loading, error , fetchRol };
+  return { roles, loading, error };
 };
 
 export default useFetchRol
