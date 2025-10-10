@@ -18,16 +18,31 @@ function OpcionesUsuario() {
     if (usuarios.length == 0) return;
     const data = usuarios.map((entry) => ({
       ...entry,
-      roles: entry.roles.map((role) => ({
-        value: role.id,
-        label: role.rol,
-      })),
+      roles: entry.roles.map((role) => ({value: role.id,label: role.rol,})),
     }));
     setTableData(data);
   }, [usuarios]);
 
+  // actualizar los roles en la tabla despues de actualizar
+  useEffect(() => {
+    if (dataUpdateU) {
+      const nuevosUsuario = tableData.map((u => {
+        if (u.username == dataUpdateU.username) {
+          return {
+            ...u,
+            roles: dataUpdateU.roles.map((role) => ({value: role.id,label: role.rol,})),
+          };
+        } else {
+          return u;
+        }
+      }))
+      setTableData(nuevosUsuario);
+    }
+  }, [dataUpdateU]);
+
   const opcionesRoles = roles.map((rol) => ({ value: rol.id, label: rol.rol }));
 
+  // manejo el select roles, elimina o agrega los roles
   const handleRolesChange = (selectOption, usuario) => {
     const rolesseleccionados = selectOption.map((option) => ({ id: option.value, rol: option.label}));
     const rolesActuales = tableData.find((u) => u.username === usuario).roles;
@@ -37,10 +52,8 @@ function OpcionesUsuario() {
       const rolesfinales = rolesQuitados.map((r) => ({ id: r.value, rol: r.label }));
       updateUsuarioRoles(usuario, rolesfinales, 'eliminar');
     }if (rolesAgregados.length > 0){
-      const rolesfinales = rolesAgregados.map((r) => ({ id: r.value, rol: r.label }));
-      updateUsuarioRoles(usuario, rolesfinales, 'agregar');
+      updateUsuarioRoles(usuario, rolesAgregados, 'agregar');
     }
-
   };
 
   if (loadingU || loadingRoles) return <Loader />;
@@ -77,10 +90,7 @@ function OpcionesUsuario() {
                     <td className="border border-gray-300 px-4 py-2">{u.username}</td>
                     <td className="border border-gray-300 px-4 py-2">{u.nombreCompleto}</td>
                     <td className="border border-gray-300 px-4 py-2">
-                      <Select isMulti options={opcionesRoles} className="w-full" 
-                      value={u.roles} 
-                      onChange={(selectOpci) => handleRolesChange(selectOpci, u.username)}
-                      classNamePrefix="select" />
+                      <Select isMulti options={opcionesRoles} value={u.roles} onChange={(selectOpci) => handleRolesChange(selectOpci, u.username)} classNamePrefix="select" className="w-full" />
                     </td>
                   </tr>
                 );
