@@ -10,6 +10,7 @@ import usePostObservacionTriageRefContraRef from "../../../hooks/referenciaContr
 import { toast } from "react-toastify";
 import * as XLSX from 'xlsx';
 import { useSelector } from "react-redux";
+import TextoColapsable from "../../utilities/TextoColapsable";
 
 export default function ReferenciaTable() {
 
@@ -136,9 +137,36 @@ export default function ReferenciaTable() {
         ? dato.ingresos.map(ingreso => ingreso.fechaIngreso).join(', ') : 'No hay ingresos';
 
       return {
-        ...dato,
-        hospital: hospitalPlano,
-        ingresos: ingresosPlanos,
+        "Número Referencia": dato.id,
+        "Fecha Comentario": dato.fechaComentario,
+        "Fecha y Hora Actualización": new Date(dato.fecha).toLocaleString(),
+        "Nombres": dato.nombres,
+        "Apellidos": dato.apellidos,
+        "Identificación": dato.identificacion,
+        "Edad": dato.edad,
+        "Sexo": dato.sexo,
+        "Entidad Social": dato.entidadSocial,
+        "Hospital": hospitalPlano,
+        "Médico que Solicita Remisión": dato.medicoSolicitanteRemision,
+        "Especialidad Solicitante": dato.especialidadSolicitanteRemision,
+        "Diagnóstico": dato.diagnosticoRemision,
+        "Persona que Recibe Comentario": dato.nombrePersonaRecibeComentario,
+        "Observaciones": dato.observaciones,
+        "FC": dato.fc,
+        "FR": dato.fr,
+        "TA": dato.ta,
+        "Temperatura": dato.temperatura,
+        "SO2": dato.sodos,
+        "Glasgow": dato.glasgow,
+        "Escala Dolor /10": dato.escalaDolorVisual,
+        "Requiere Aislamiento": dato.requiereAislamiento ? "Sí" : "No",
+        "Urgencia Vital": dato.enviadaUrgenciaVital ? "Sí" : "No",
+        "Estado": dato.estado ? "ACEPTADA" : "RECHAZADA",
+        "Causa Remisión Nivel III": dato.causaRemisionNivelLLL,
+        "Causa Rechazo": dato.causaRechazo,
+        "Médico que Registra Decisión": dato.nombreMedicoRegistraDecision,
+        "Ingresos": ingresosPlanos,
+        "Observación Triage": dato.observacionTriage || "Sin observación",
       };
     });
   };
@@ -254,14 +282,6 @@ export default function ReferenciaTable() {
             </thead>
             <tbody>
               {filasProcesadas.map((d, index) => {
-                // Comprobación si el texto es largo
-                const esLargo = d.observaciones && d.observaciones.length > limite;
-
-                // Comprobación si este elemento está actualmente en hover
-                const estaExpandido = hoveredId === d.id;
-                const textoAMostrar = esLargo && !estaExpandido
-                  ? d.observaciones.substring(0, limite) + ' ... ver más'
-                  : d.observaciones;
                 return (
                   <tr key={index} className="bg-white border-b hover:bg-gray-50">
                     <th className="px-6 py-2 text-xs font-medium text-gray-900 whitespace-nowrap">{d.id}</th>
@@ -276,10 +296,12 @@ export default function ReferenciaTable() {
                     <td className="px-6 py-2 text-xs">{d.hospital.nombre}</td>
                     <td className="px-6 py-2 text-xs">{d.medicoSolicitanteRemision}</td>
                     <td className="px-6 py-2 text-xs">{d.especialidadSolicitanteRemision}</td>
-                    <td className="px-6 py-2 text-xs">{d.diagnosticoRemision}</td>
+                    <td className="px-6 py-2 text-xs">
+                      <TextoColapsable texto={d.diagnosticoRemision} limite={100} />
+                    </td>
                     <td className="px-6 py-2 text-xs">{d.nombrePersonaRecibeComentario}</td>
-                    <td className="px-6 py-2 text-xs whitespace-pre-wrap" onMouseEnter={() => setHoveredId(d.id)} onMouseLeave={() => setHoveredId(null)}>
-                      {textoAMostrar} {esLargo && !estaExpandido && (<span className="text-gray-500"></span>)}
+                    <td className="px-6 py-2 text-xs whitespace-pre-wrap">
+                      <TextoColapsable texto={d.observaciones} limite={100} />
                     </td>
                     <td className="text-center py-2 text-xs">{d.fc}</td>
                     <td className="text-center py-2 text-xs">{d.fr}</td>
