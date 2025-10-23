@@ -18,3 +18,15 @@ export const obtenerIngresosPorDocumentos = async (documentos) => {
         throw error;
     }
 };
+
+
+export const obtenerInformacionGeneralPaciente = async (documento) => {
+    try {
+        const response = await apiClienteDinamica.get(`genPacien/informacion-basica/${documento}`);
+        return response.data;
+    }
+    catch (error) {
+        console.error('Error al obtener información general del paciente:', error);
+        throw error;
+    }
+};
