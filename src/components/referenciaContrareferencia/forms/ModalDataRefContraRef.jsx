@@ -1,3 +1,4 @@
+import ListaColapsable from "../../utilities/ListaColapsable";
 import TextoColapsable from "../../utilities/TextoColapsable"
 
 export default function ModalDataRefContraRef({ handleClose, data }) {
@@ -90,23 +91,21 @@ export default function ModalDataRefContraRef({ handleClose, data }) {
                                             <td className="text-center py-2 text-xs">{d.causaRechazo}</td>
                                             <td className="text-center py-2 text-xs">{d.nombreMedicoRegistraDecision}</td>
                                             <td className="py-2 text-xs text-center">
-                                                {d.ingresos.length > 0 ? (
-                                                    <ul>
-                                                        {d.ingresos.map((ingreso, idx) => {
-                                                            const fechaComentario = new Date(d.fechaComentario);
-                                                            const fechaIngreso = new Date(ingreso.fechaIngreso);
-                                                            // Condición para estilos
-                                                            const isAfter = fechaIngreso >= fechaComentario;
-                                                            return (
-                                                                <li key={idx} className={`px-2 py-1 rounded-md ${isAfter ? "border bg-green-100 text-green-800" : "border bg-red-100 text-red-800"}`} >
-                                                                    {ingreso.fechaIngreso}
-                                                                </li>
-                                                            );
-                                                        })}
-                                                    </ul>
-                                                ) : (
-                                                    "No hay ingresos"
-                                                )}
+                                                <ListaColapsable items={d.ingresos.map(ingreso => (ingreso.fechaIngreso))} limite={3} 
+                                                    renderItem={(fecha, idx) => {
+                                                    const fechaComentario = new Date(d.fechaComentario);
+                                                    const fechaIngreso = new Date(fecha);
+                                                    const isAfter = fechaIngreso >= fechaComentario;
+
+                                                    return (
+                                                        <span key={idx}
+                                                        className={`px-2 py-1 rounded-md text-xs border ${
+                                                            isAfter ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800" }`} >
+                                                        {fecha}
+                                                        </span>
+                                                    );
+                                                    }}
+                                                />
                                             </td>
                                             <td className="px-6 py-2 text-xs">
                                                 {d.observacionTriage == null || d.observacionTriage === '' ? (<span className="text-gray-500 italic">Sin observación registrada</span>

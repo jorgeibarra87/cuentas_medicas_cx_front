@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import ModalDataRefContraRef from "./ModalDataRefContraRef";
 import { buscarDatosPorIdODocumento } from "../../../api/referenciaContrareferencia/datosReferenciaService";
+import useFetchInfoPacienteRef from "../../../hooks/referenciaContrareferencia/useFetchInfoPacienteRef";
 
 export default function FormDatos() {
 
@@ -18,6 +19,9 @@ export default function FormDatos() {
   const { hospitales, loading: loadingHosp, error: errorHosp } = useFetchHospitalesRefContraRef();
   const { data: dataAdnIngresos, loading: loadingAdnIngresos, error: errorAdnIngresos, fetchAdnIngresosTodos } = useFetchAdnIngresoTodos();
   const { data: dataReferencia, loading: loadingRef, error: errorRef, postDatosRefContraRef } = usePostDatosRefContraRef();
+  const {infoPaciente, fetchInformacionPaciente} = useFetchInfoPacienteRef();
+  // Clave para forzar la re-renderización del select de sexo cuando cambia infoPaciente
+  const formKey = infoPaciente?.id || 'default';
 
   useEffect(() => {
     if (!dataReferencia) return;
@@ -82,6 +86,7 @@ export default function FormDatos() {
   }
 
   const handleSearchDocumento = async () => {
+    fetchInformacionPaciente(document.getElementById("ident").value);
     const response = await buscarDatosPorIdODocumento(document.getElementById("ident").value);
     if (response && response.length > 0) {
       setDocumentData(response);
@@ -92,6 +97,7 @@ export default function FormDatos() {
   }
 
 
+  console.log('infoPaciente', infoPaciente);
   return (
     <>
       {showModal && <ModalDataRefContraRef handleClose={() => setShowModal(false)} data={documentData} />}
@@ -144,19 +150,19 @@ export default function FormDatos() {
 
                 <div className="w-full md:w-1/3 px-3 mb-6">
                   <label className="block text-gray-700 text-sm font-bold mb-2">Nombres:</label>
-                  <input name="nombres" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" type="text" required />
+                  <input name="nombres" defaultValue={infoPaciente?.nombres || ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" type="text" required />
                   <label className="block text-gray-700 text-sm font-bold mt-4 mb-2">Apellidos:</label>
-                  <input name="apellidos" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" type="text" required />
+                  <input name="apellidos" defaultValue={infoPaciente?.apellidos || ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" type="text" required />
                   <label className="block text-gray-700 text-sm font-bold mt-4 mb-2">Nombre médico que solicita la remisión</label>
                   <input name="medicoSolicitanteRemision" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" type="text" required />
                 </div>
 
                 <div className="w-full md:w-1/3 px-3 mb-6">
                   <label className="block text-gray-700 text-sm font-bold mb-2">Edad:</label>
-                  <input name="edad" min={0} max={120} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" type="number" required />
+                  <input name="edad" min={0} max={120} defaultValue={infoPaciente?.edad || ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" type="number" required />
                   <label className="block text-gray-700 text-sm font-bold mt-4 mb-2">Sexo:</label>
-                  <select name="sexo" className="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
-                    <option value={null}>Elija una opción</option>
+                  <select name="sexo" key={formKey} defaultValue={infoPaciente?.genero || ''} className="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                    <option value="">Elija una opción</option>
                     <option value="MASCULINO">MASCULINO</option>
                     <option value="FEMENINO">FEMENINO</option>
                   </select>
