@@ -15,12 +15,12 @@ function IndexRehabilitacion() {
   });
   
   const handleExport = () => {
-    if (!dataI || dataI.length === 0) return;
+    if (!dataI || dataI.items.length === 0) return;
 
-    const worksheet = XLSX.utils.json_to_sheet(dataI);
+    const worksheet = XLSX.utils.json_to_sheet(dataI.items);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-    XLSX.writeFile(workbook, 'reporte_rehabilitacion.xlsx');
+    XLSX.writeFile(workbook, 'reporte_rehabilitacion_' + new Date().toISOString().replace(/[:.-]/g, '') + '.xlsx');
   };
 
   const handleChange = (e) => {
@@ -52,8 +52,7 @@ function IndexRehabilitacion() {
               Fecha de Inicio
             </label>
             <input type="date" id="fechaInicio" name="fechaInicio" value={form.fechaInicio} onChange={(e) => handleChange(e)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" required
-            />
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" required />
           </div>
 
           {/* Campo Fecha de Fin */}
@@ -97,7 +96,7 @@ function IndexRehabilitacion() {
       {loadingI && <Loader />}
       {errorI && <p className="text-center text-lg text-red-500 mt-8">Error: {errorI}</p>}
 
-      {dataI && (
+      {dataI.items && (
         <div className="bg-white p-3 rounded-lg shadow-md flex flex-col h-full">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-gray-800">Resultados de la búsqueda</h2>
@@ -117,6 +116,7 @@ function IndexRehabilitacion() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Especialidad</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profesional</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Agendada</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Agendada</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora llegada</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inicio Atención</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Finalización Atención</th>
@@ -125,15 +125,16 @@ function IndexRehabilitacion() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dataI.map((item) => (
+                {dataI?.items.map((item) => (
                   <tr key={item.id}>
                     <td className="px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{item.id}</td>
                     <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{item.especialidad}</td>
-                    <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{item.nombreProfesional}</td>
-                    <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{new Date(item.fechaHoraAgendada).toLocaleString()}</td>
+                    <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{item.profesional}</td>
+                    <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{item.fechaProgramada}</td>
+                    <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{item.horaProgramada}</td>
                     <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{item.tiempoLlegada}</td>
                     <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{item.inicioAtencion}</td>
-                    <td className='px-6 py-2 whitespace-nowrap text-sm text-gray-500'>{item.finalizacionAtencion}</td>
+                    <td className='px-6 py-2 whitespace-nowrap text-sm text-gray-500'>{item.finAtencion}</td>
                     <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{item.duracionAtencion}</td>
                     <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{item.tiempoEsperaAtencion}</td>
                   </tr>
@@ -141,6 +142,23 @@ function IndexRehabilitacion() {
               </tbody>
             </table>
           </div>
+        
+        <table className="min-w-full divide-y divide-gray-200 mt-4">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Duración Atención</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Promedio Duración Atención</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Registros</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            <tr>
+              <td className="px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{dataI.resumen.totalDuracionAtencion}</td>
+              <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{dataI.resumen.promedioDuracionAtencion}</td>
+              <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500">{dataI.resumen.cantidad}</td>
+            </tr>
+          </tbody>
+        </table>
         </div>
       )}
     </div>
