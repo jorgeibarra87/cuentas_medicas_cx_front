@@ -36,9 +36,10 @@ export default function Sidebar({ componente: Componente }) {
         },
         {
           nombre: 'Rehabilitación y Terapias',
-          roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION'],
+          roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION', 'ROLE_FISIOTERAPEUTA_REHABILITACION'],
           submenu: [
-            { nombre: 'Indicadores', ruta: '/rehabilitacion/indicadores', roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION'] }
+            { nombre: 'Indicadores', ruta: '/rehabilitacion/indicadores', roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION'] },
+            { nombre: 'Registro fases de atención consulta ambulatoria', ruta: '/rehabilitacion/tomaAsistencias', roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION', 'ROLE_FISIOTERAPEUTA_REHABILITACION'] }
           ]
         },
         {
