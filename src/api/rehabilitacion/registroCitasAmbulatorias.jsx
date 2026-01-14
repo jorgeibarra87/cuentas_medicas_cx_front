@@ -69,6 +69,7 @@ export const obtenerCitasConsolidadas = async (verTodo = false) => {
       return {
         ...cita,
         // Prioridad: Estado de la 2da petición > "PENDIENTE_DE_LLEGADA"
+        id: datosAmbulatorios ? datosAmbulatorios.id : cita.id,
         estadoSesion: estadoEncontrado || 'PENDIENTE_DE_LLEGADA'
       };
     });
