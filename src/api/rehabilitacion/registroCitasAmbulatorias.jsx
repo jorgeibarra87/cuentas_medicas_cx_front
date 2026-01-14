@@ -43,39 +43,38 @@ export const obtenerCitasAmbulatoriasHoy = async () => {
 
 export const obtenerCitasConsolidadas = async (verTodo = false) => {
   try {
-    // 1. Llamada en paralelo a ambas fuentes
     const [citasRehab, citasAmbulatorias] = await Promise.all([
       obtenerCitasRehabilitacionPorMedico(verTodo),
       obtenerCitasAmbulatoriasHoy()
     ]);
 
-    // 2. Creamos un Mapa de estados usando el documento como clave
-    // NOTA: Si el campo en la segunda API no se llama 'documentoPaciente', cámbialo aquí.
     const mapaAmbulatorias = new Map();
     
     if (citasAmbulatorias && citasAmbulatorias.length > 0) {
       citasAmbulatorias.forEach(amb => {
-        // Guardamos el estado asociado al documento
-        // Si un paciente tiene varias citas, aquí se guardaría la última procesada
-        mapaAmbulatorias.set(amb.documentoPaciente, amb);
+        // Creamos una llave única: "DOCUMENTO_HORA" (ej: "123456_14:30:00")
+        // Usamos horaProgramada que viene en la segunda petición
+        const llave = `${amb.documentoPaciente}_${amb.horaProgramada}`;
+        mapaAmbulatorias.set(llave, amb);
       });
     }
 
-    // 3. Cruzamos los datos con la petición principal
     const resultadoFinal = citasRehab.map(cita => {
-      // Buscamos si el paciente (patientId) existe en nuestro mapa de estados
-      const datosAmbulatorios = mapaAmbulatorias.get(cita.patientId);
+      // Extraemos la hora de la fecha ISO de citasRehab (2026-01-14T03:52:28.425Z)
+      // Necesitamos que el formato coincida con 'HH:mm:ss' de la segunda petición
+      const horaCitaRehab = cita.appoinmentDate.split('T')[1].substring(0, 8);
+      
+      const llaveBusqueda = `${cita.patientId}_${horaCitaRehab}`;
+      const datosAmbulatorios = mapaAmbulatorias.get(llaveBusqueda);
 
       return {
         ...cita,
-        // Prioridad: Estado de la 2da petición > "PENDIENTE_DE_LLEGADA"
         id: datosAmbulatorios ? datosAmbulatorios.id : cita.id,
         estadoSesion: datosAmbulatorios?.estadoSesion || 'PENDIENTE_DE_LLEGADA'
       };
     });
 
     return resultadoFinal;
-
   } catch (error) {
     console.error("Error al cruzar las citas:", error);
     throw error;
