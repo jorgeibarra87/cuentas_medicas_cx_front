@@ -26,6 +26,7 @@ import ReportesIndex from '../monitorizacionHc/ReportesIndex';
 import FormDatos from '../referenciaContrareferencia/forms/FormDatos';
 import ReferenciaTable from '../referenciaContrareferencia/tables/ReferenciaTable';
 import HospitalTableRefContraRef from '../referenciaContrareferencia/tables/HospitalTableRefContraRef';
+import RegistroAsistenciaAmbulatoria from '../rehabilitacion/RegistroAsistenciaAmbulatoria';
 
 export default function RutasConfig() {
 
@@ -111,6 +112,13 @@ export default function RutasConfig() {
                         <RequireAuth isLogged={isLogged} loading={loading}>
                             <ProtectedWithIdle>
                                 <Sidebar componente={indexRehabilitacion} />
+                            </ProtectedWithIdle>
+                        </RequireAuth>
+                    }/>
+                    <Route path='tomaAsistencias' element={
+                        <RequireAuth isLogged={isLogged} loading={loading}>
+                            <ProtectedWithIdle>
+                                <Sidebar componente={RegistroAsistenciaAmbulatoria} />
                             </ProtectedWithIdle>
                         </RequireAuth>
                     }/>
