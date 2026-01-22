@@ -27,6 +27,7 @@ import FormDatos from '../referenciaContrareferencia/forms/FormDatos';
 import ReferenciaTable from '../referenciaContrareferencia/tables/ReferenciaTable';
 import HospitalTableRefContraRef from '../referenciaContrareferencia/tables/HospitalTableRefContraRef';
 import RegistroAsistenciaAmbulatoria from '../rehabilitacion/RegistroAsistenciaAmbulatoria';
+import GenSerRipsCambioSipEstado from '../facturacion/GenSerRipsCambioSipEstado';
 
 export default function RutasConfig() {
 
@@ -132,6 +133,13 @@ export default function RutasConfig() {
                     <Route path='ajustes' element={<RequireAuth isLogged={isLogged} loading={loading}>
                         <ProtectedWithIdle>
                             <Sidebar componente={AjustesSistemas} />
+                        </ProtectedWithIdle>
+                    </RequireAuth>} />
+                </Route>
+                <Route path='/facturacion'>
+                    <Route path='cambioestadoips' element={<RequireAuth isLogged={isLogged} loading={loading}>
+                        <ProtectedWithIdle>
+                            <Sidebar componente={GenSerRipsCambioSipEstado} />
                         </ProtectedWithIdle>
                     </RequireAuth>} />
                 </Route>

@@ -66,6 +66,13 @@ export default function Sidebar({ componente: Componente }) {
             { nombre: 'Tabla de referencias', ruta: '/referenciacontrareferencia/datos', roles: ['ROLE_ADMINISTRADOR','ROLE_REFERENCIA_EXPORTAR_DATA','ROLE_REFERENCIA_MODIFICAR_DATA', 'ROLE_REFERENCIA_COMENTARIO_TRIAGE'] }
           ]
         },
+        {
+          nombre: 'Facturacion',
+          roles: ['ROLE_ADMINISTRADOR','ROLE_FACTURACION'],
+          submenu: [
+            { nombre: 'Cambio estado servicio', ruta: '/facturacion/cambioestadoips', roles: ['ROLE_ADMINISTRADOR','ROLE_FACTURACION'] }
+          ]
+        },
         // {
         //     nombre: 'Asignación_de_camas',
         //     roles: ['ROLE_ADMINISTRADOR','ROLE_ADMINISTRADOR','ROLE_CAMAS_COORD_INTERNACION','ROLE_CAMAS_MEDICO_ESPECIALISTA','ROLE_CAMAS_ENFERMERO_INTERNACION','ROLE_CAMAS_FACTURACION','ROLE_CAMAS_ENFERMERO_URGENCIAS'],
