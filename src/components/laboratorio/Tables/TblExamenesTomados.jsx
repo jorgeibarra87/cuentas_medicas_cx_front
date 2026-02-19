@@ -1,6 +1,8 @@
 import { useState } from "react";
 import useFetchExamenesTomados from "../../../hooks/laboratorio/useFetchExamenesTomados";
+import { actualizarExamenesTomados } from '../../../api/laboratorio/examenesService';
 import Pagination from "../../Pagination";
+import { toast } from 'react-toastify';
 
 function TblExamenesTomados() {
 
@@ -9,6 +11,54 @@ function TblExamenesTomados() {
     const [fontSize, setFontSize] = useState(10); // por defecto pequeño
     const aumentarTexto = () => setFontSize((prev) => Math.min(prev + 1, 16));
     const reducirTexto = () => setFontSize((prev) => Math.max(prev - 1, 8));
+    const [checkedItemsTomados, setCheckedItemsTomados] = useState({});
+    const [seleccionadosPendientes, setSeleccionadosPendientes] = useState([]);
+
+    const marcarTomadosPendientes = async (seleccionados) => {
+        try {
+            const response = await actualizarExamenesTomados(seleccionados);
+            toast.success(`${seleccionados.length} exámenes marcados como tomados`);
+            setCheckedItemsTomados({});
+            fetchExamenesTomados();
+        } catch (error) {
+            console.error('❌ Error:', error);
+            toast.error("Error al marcar tomados");
+        }
+    };
+
+    const toggleCheckTomado = (examen) => {
+        setCheckedItemsTomados(prev => {
+            const key = `${examen.documento}-${examen.folio}`;
+            const updated = { ...prev };
+            updated[key] = !updated[key];
+            return updated;
+        });
+    };
+
+    const handleMarcarTomados = async () => {
+        const seleccionados = Object.keys(checkedItemsTomados)
+            .filter(key => checkedItemsTomados[key])
+            .map(key => {
+                const [doc, folio] = key.split('-');
+                return data.content.find(p => p.documento === doc && p.folio === folio);
+            })
+            .filter(Boolean)
+            .map(p => ({
+                historia: p.documento,
+                numeroFolio: p.folio,
+                descCups: p.descCups,
+                nomPaciente: p.nomPaciente,
+                numeroIngreso: p.ingreso
+            }));
+
+        if (seleccionados.length === 0) {
+            toast.warning("Selecciona exámenes pendientes");
+            return;
+        }
+        await marcarTomadosPendientes(seleccionados);
+    };
+
+    const totalSeleccionadosPendientes = Object.values(checkedItemsTomados).filter(Boolean).length;
 
     return (
         <div>
@@ -16,6 +66,14 @@ function TblExamenesTomados() {
                 <span>Tamaño texto:</span>
                 <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
                 <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+                <span className="ml-4">Seleccionados: <b>{totalSeleccionadosPendientes}</b></span>
+                <button
+                    onClick={handleMarcarTomados}
+                    disabled={totalSeleccionadosPendientes === 0}  // ✅ Sin updateLoading
+                    className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                >
+                    {totalSeleccionadosPendientes === 0 ? 'Marcar Tomados' : `Marcar ${totalSeleccionadosPendientes}`}
+                </button>
             </div>
 
             <div className="relative mb-8 border border-gray-300 rounded-lg shadow-md bg-white flex flex-col" style={{ minHeight: "400px", maxHeight: "900px" }} >
@@ -24,6 +82,7 @@ function TblExamenesTomados() {
                     <table className="min-w-full text-gray-700" style={{ fontSize: `${fontSize}px` }}>
                         <thead>
                             <tr className="bg-gray-800 text-white">
+                                <th className="px-1 py-0.5 w-8 text-center font-semibold"></th>
                                 <th className="px-2 py-0.5 font-semibold">Historia</th>
                                 <th className="px-2 py-0.5 font-semibold">Ingreso</th>
                                 <th className="px-2 py-0.5 font-semibold">Paciente</th>
@@ -55,6 +114,16 @@ function TblExamenesTomados() {
                             ) : (
                                 data.content.map((p) => (
                                     <tr key={p.id ?? `${p.folio}-${p.ingreso}`} className="border-b hover:bg-gray-200">
+                                        <td className="px-1 py-0.5 w-8 text-center">
+                                            {p.fechaTomado === null && (
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checkedItemsTomados[`${p.documento}-${p.folio}`] || false}
+                                                    onChange={() => toggleCheckTomado(p)}
+                                                    className="w-4 h-4"
+                                                />
+                                            )}
+                                        </td>
                                         <td className="border-r px-1 py-0.5">{p.documento}</td>
                                         <td className="border-r px-1 py-0.5">{p.ingreso}</td>
                                         <td className="border-r px-1 py-0.5">{p.nomPaciente}</td>
@@ -78,7 +147,12 @@ function TblExamenesTomados() {
                                                 'N/A'
                                             }
                                         </td>
-                                        <td className="border-r px-1 py-0.5">{new Date(p.fechaTomado).toLocaleString()}</td>
+                                        <td className="border-r px-1 py-0.5">
+                                            {p.fechaTomado ?
+                                                new Date(p.fechaTomado).toLocaleString() :
+                                                <span className="text-orange-600 font-medium">Pendiente</span>
+                                            }
+                                        </td>
                                         {/* <td className="border-r px-1 py-0.5">{p.tomadoPor}</td> */}
                                     </tr>
                                 ))

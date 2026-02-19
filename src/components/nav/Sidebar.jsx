@@ -122,14 +122,15 @@ export default function Sidebar({ componente: Componente }) {
     //         }
     //     ]
     // },
-    // {
-    //   nombre: 'Referencia Contrareferencia',
-    //   roles: ['ROLE_ADMINISTRADOR','ROLE_REFERENCIA_FORMULARIO','ROLE_REFERENCIA_EXPORTAR_DATA','ROLE_REFERENCIA_MODIFICAR_DATA', 'ROLE_REFERENCIA_COMENTARIO_TRIAGE'],
-    //   submenu: [
-    //     { nombre: 'Formulario de datos', ruta: '/referenciacontrareferencia/formulario', roles: ['ROLE_ADMINISTRADOR','ROLE_REFERENCIA_FORMULARIO'] },
-    //     { nombre: 'Tabla de referencias', ruta: '/referenciacontrareferencia/datos', roles: ['ROLE_ADMINISTRADOR','ROLE_REFERENCIA_EXPORTAR_DATA','ROLE_REFERENCIA_MODIFICAR_DATA', 'ROLE_REFERENCIA_COMENTARIO_TRIAGE'] }
-    //   ]
-    // },
+    {
+      nombre: 'Referencia Contrareferencia',
+      roles: ['ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_FORMULARIO', 'ROLE_REFERENCIA_EXPORTAR_DATA', 'ROLE_REFERENCIA_MODIFICAR_DATA', 'ROLE_REFERENCIA_COMENTARIO_TRIAGE'],
+      submenu: [
+        { nombre: 'Formulario de datos', ruta: '/referenciacontrareferencia/formulario', roles: ['ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_FORMULARIO'] },
+        { nombre: 'Tabla de referencias', ruta: '/referenciacontrareferencia/datos', roles: ['ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_EXPORTAR_DATA', 'ROLE_REFERENCIA_MODIFICAR_DATA', 'ROLE_REFERENCIA_COMENTARIO_TRIAGE'] },
+        { nombre: 'Traslados de ambulancia', ruta: '/referenciacontrareferencia/traslados', roles: ['ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_FORMULARIO'] },
+      ]
+    },
     {
       nombre: 'Asignación_de_camas',
       roles: ['ROLE_ADMINISTRADOR', 'ROLE_ADMINISTRADOR', 'ROLE_CAMAS_COORD_INTERNACION', 'ROLE_CAMAS_MEDICO_ESPECIALISTA', 'ROLE_CAMAS_ENFERMERO_INTERNACION', 'ROLE_CAMAS_FACTURACION', 'ROLE_CAMAS_ENFERMERO_URGENCIAS'],

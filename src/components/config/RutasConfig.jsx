@@ -24,6 +24,7 @@ import indexRehabilitacion from '../rehabilitacion/IndexRehabilitacion';
 import ReportesIndex from '../monitorizacionHc/ReportesIndex';
 import FormDatos from '../referenciaContrareferencia/forms/FormDatos';
 import ReferenciaTable from '../referenciaContrareferencia/tables/ReferenciaTable';
+import TrasladosTable from '../referenciaContrareferencia/tables/TrasladosTable';
 import HospitalTableRefContraRef from '../referenciaContrareferencia/tables/HospitalTableRefContraRef';
 import TurnosMainLayout from '../TurnosApp/TurnosMainLayout';
 import ResumenExamenesPacientes from '../laboratorio/ResumenExamenesPacientes';
@@ -156,6 +157,7 @@ export default function RutasConfig() {
                     <Route path='formulario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormDatos} /></RequireAuth>} />
                     <Route path='datos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReferenciaTable} /></RequireAuth>} />
                     <Route path='hospitales' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HospitalTableRefContraRef} /></RequireAuth>} />
+                    <Route path='traslados' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={TrasladosTable} /></RequireAuth>} />
                 </Route>
                 <Route path='*' element={
                     <RequireAuth isLogged={isLogged} loading={loading}>
