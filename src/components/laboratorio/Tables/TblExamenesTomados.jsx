@@ -69,7 +69,7 @@ function TblExamenesTomados() {
                 <span className="ml-4">Seleccionados: <b>{totalSeleccionadosPendientes}</b></span>
                 <button
                     onClick={handleMarcarTomados}
-                    disabled={totalSeleccionadosPendientes === 0}  // ✅ Sin updateLoading
+                    disabled={totalSeleccionadosPendientes === 0}
                     className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
                 >
                     {totalSeleccionadosPendientes === 0 ? 'Marcar Tomados' : `Marcar ${totalSeleccionadosPendientes}`}
