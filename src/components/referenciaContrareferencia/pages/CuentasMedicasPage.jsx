@@ -33,13 +33,13 @@ export default function CuentasMedicasPage() {
     // ✅ Modo formulario (crear / editar)
     if (modo === 'editar' || modo === 'crear') {
         return (
-            <div className="min-h-screen bg-blue-50 py-2 px-2">
+            <div className="min-h-screen bg-white">
                 <div className="mx-auto">
                     <div className="bg-white shadow-2xl rounded-2xl p-4 border border-gray-100">
                         <div className="flex items-center justify-between mb-8">
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                                    {modo === 'editar' ? <><FontAwesomeIcon icon={faFileEdit} className="w-5 h-5 text-blue-600 mr-2" /> Editar Cuentas Médicas</> : <><FontAwesomeIcon icon={faFile} className="w-5 h-5 text-green-600 mr-2" /> Nueva Cuentas Médicas</>}
+                                    {modo === 'editar' ? <><FontAwesomeIcon icon={faFileEdit} className="w-5 h-5 text-blue-600 mr-2" /> Editar Cuenta Médica</> : <><FontAwesomeIcon icon={faFile} className="w-5 h-5 text-green-600 mr-2" /> Nueva Cuenta Médica</>}
                                 </h1>
                                 {modo === 'editar' && selectedCuentas && (
                                     <p className="text-gray-600 text-sm">
@@ -90,7 +90,7 @@ export default function CuentasMedicasPage() {
                         </button>
                     </div>
 
-                    {/* ✅ Props correctas: onEdit y reloadFlag */}
+                    {/* ✅ Props: onEdit y reloadFlag */}
                     <CuentasMedicasTable
                         onEdit={handleEdit}
                         reloadFlag={reloadFlag}

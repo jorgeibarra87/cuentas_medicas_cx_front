@@ -32,7 +32,7 @@ export default function TrasladosPage() {
 
     if (modo === 'editar' || modo === 'crear') {
         return (
-            <div className="min-h-screen bg-blue-50 py-2 px-2">
+            <div className="min-h-screen bg-white">
                 <div className=" mx-auto">
                     <div className="bg-white shadow-2xl rounded-2xl p-4 border border-gray-100">
                         <div className="flex items-center justify-between mb-8">

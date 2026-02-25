@@ -6,17 +6,14 @@ const API_BASE = 'http://localhost:8082';
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";
 
-export default function CuentasMedicasForm({ facturacion, onSaved }) {
+export default function CuentasMedicasForm({ cuentas, onSaved }) {
 
     const [formData, setFormData] = useState({
         trasladoId: '',
-        fechaPrefactura: '',
-        prefactura: '',
-        produccion: '',
-        fechaFactura: '',
-        factura: '',
-        valor: '',
-        nombreFacturador: ''
+        fechaCuenta: '',
+        servicioEgreso: '',
+        responsableAuditoria: '',
+        observaciones: '',
     });
 
     // Datos del traslado (solo lectura, para referencia visual)
@@ -101,10 +98,10 @@ export default function CuentasMedicasForm({ facturacion, onSaved }) {
                 valor: Number(formData.valor)
             };
 
-            const url = facturacion
-                ? `${API_BASE}/facturaciones/${facturacion.id}`
-                : `${API_BASE}/facturaciones`;
-            const method = facturacion ? 'PUT' : 'POST';
+            const url = cuentas
+                ? `${API_BASE}/cuentas-medicas/${cuentas.id}`
+                : `${API_BASE}/cuentas-medicas`;
+            const method = cuentas ? 'PUT' : 'POST';
 
             const res = await fetch(url, {
                 method,
@@ -126,35 +123,29 @@ export default function CuentasMedicasForm({ facturacion, onSaved }) {
     };
 
     useEffect(() => {
-        if (facturacion) {
+        if (cuentas) {
             setFormData({
-                trasladoId: facturacion.trasladoId || '',
-                fechaPrefactura: facturacion.fechaPrefactura?.slice(0, 16) || '',
-                prefactura: facturacion.prefactura || '',
-                produccion: facturacion.produccion || '',
-                fechaFactura: facturacion.fechaFactura?.slice(0, 16) || '',
-                factura: facturacion.factura || '',
-                valor: facturacion.valor || '',
-                nombreFacturador: facturacion.nombreFacturador || ''
+                trasladoId: cuentas.trasladoId || '',
+                fechaCuenta: cuentas.fechaCuenta?.slice(0, 16) || '',
+                servicioEgreso: cuentas.servicioEgreso || '',
+                responsableAuditoria: cuentas.responsableAuditoria || '',
+                observaciones: cuentas.observaciones || '',
             });
             // ✅ Carga automática de datos del traslado al editar
-            buscarPorTrasladoId(facturacion.trasladoId);
+            buscarPorTrasladoId(cuentas.trasladoId);
         } else {
             const now = new Date().toISOString().slice(0, 16);
             setFormData({
                 trasladoId: '',
-                fechaPrefactura: now,
-                prefactura: '',
-                produccion: '',
-                fechaFactura: now,
-                factura: '',
-                valor: '',
-                nombreFacturador: ''
+                fechaCuenta: now,
+                servicioEgreso: '',
+                responsableAuditoria: '',
+                observaciones: '',
             });
             setInfoTraslado({ nomPaciente: '', ingreso: '', eps: '' });
             setDocumento('');
         }
-    }, [facturacion]);
+    }, [cuentas]);
 
 
 
@@ -187,8 +178,8 @@ export default function CuentasMedicasForm({ facturacion, onSaved }) {
                         onBlur={e => buscarPorDocumento(e.target.value)}
                         placeholder="Ej: 1061234567"
                         // Solo editable al crear, bloqueado al editar
-                        readOnly={!!facturacion}
-                        className={facturacion ? INPUT_READONLY : INPUT_CLASS}
+                        readOnly={!!cuentas}
+                        className={cuentas ? INPUT_READONLY : INPUT_CLASS}
                     />
                     {buscando && <p className="text-xs text-blue-500 mt-1">Buscando...</p>}
                 </div>
@@ -242,96 +233,59 @@ export default function CuentasMedicasForm({ facturacion, onSaved }) {
                     />
                 </div>
 
-                {/* ── SECCIÓN: Datos de facturación ── */}
+                {/* ── SECCIÓN: Datos de Cuentas Médicas ── */}
+
                 <div className="col-span-2 mt-2">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
-                        <FontAwesomeIcon icon={faFile} className="text-sm w-4 h-4 " /> Datos de facturación
+                        <FontAwesomeIcon icon={faFile} className="text-sm w-4 h-4 " /> Datos de Cuentas Médicas
                     </p>
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Fecha prefactura
+                        Fecha Cuenta
                     </label>
                     <input
                         type="datetime-local"
-                        value={formData.fechaPrefactura}
-                        onChange={e => handleChange('fechaPrefactura', e.target.value)}
+                        value={formData.fechaCuenta}
+                        onChange={e => handleChange('fechaCuenta', e.target.value)}
                         className={INPUT_CLASS}
                     />
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Prefactura
+                        Servicio Egreso
                     </label>
                     <input
                         type="text"
-                        value={formData.prefactura}
-                        onChange={e => handleChange('prefactura', e.target.value)}
+                        value={formData.servicioEgreso}
+                        onChange={e => handleChange('servicioEgreso', e.target.value)}
                         className={INPUT_CLASS}
                     />
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Producción
+                        Responsable Auditoria
                     </label>
                     <input
                         type="text"
-                        value={formData.produccion}
-                        onChange={e => handleChange('produccion', e.target.value)}
+                        value={formData.responsableAuditoria}
+                        onChange={e => handleChange('responsableAuditoria', e.target.value)}
                         className={INPUT_CLASS}
                     />
                 </div>
 
-                <div>
+                <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Fecha factura
+                        Observación
                     </label>
-                    <input
-                        type="datetime-local"
-                        value={formData.fechaFactura}
-                        onChange={e => handleChange('fechaFactura', e.target.value)}
-                        className={INPUT_CLASS}
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Factura
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.factura}
-                        onChange={e => handleChange('factura', e.target.value)}
-                        className={INPUT_CLASS}
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Valor
-                    </label>
-                    <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={formData.valor}
-                        onChange={e => handleChange('valor', e.target.value)}
-                        className={INPUT_CLASS}
-                    />
-                </div>
-
-                <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Nombre facturador
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.nombreFacturador}
-                        onChange={e => handleChange('nombreFacturador', e.target.value)}
-                        className={INPUT_CLASS}
+                    <textarea
+                        rows={2}
+                        value={formData.observaciones}
+                        onChange={e => handleChange('observaciones', e.target.value)}
+                        className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                 </div>
 
@@ -342,7 +296,7 @@ export default function CuentasMedicasForm({ facturacion, onSaved }) {
                         className="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
                     >
                         {loading ? 'Guardando...' : (
-                            facturacion
+                            cuentas
                                 ? <span><FontAwesomeIcon icon={faArrowsRotate} className="mr-2" />Actualizar</span>
                                 : <span><FontAwesomeIcon icon={faPlus} className="mr-2" />Crear</span>
                         )}

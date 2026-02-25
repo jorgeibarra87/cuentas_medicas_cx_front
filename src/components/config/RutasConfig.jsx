@@ -24,6 +24,7 @@ import indexRehabilitacion from '../rehabilitacion/IndexRehabilitacion';
 import ReportesIndex from '../monitorizacionHc/ReportesIndex';
 import FormDatos from '../referenciaContrareferencia/forms/FormDatos';
 import ReferenciaTable from '../referenciaContrareferencia/tables/ReferenciaTable';
+import TrasladosTotalPage from '../referenciaContrareferencia/pages/TrasladosTotalPage';
 import TrasladosPage from '../referenciaContrareferencia/pages/TrasladosPage';
 import FacturacionPage from '../referenciaContrareferencia/pages/FacturacionPage';
 import CuentasMedicasPage from '../referenciaContrareferencia/pages/CuentasMedicasPage';
@@ -159,6 +160,7 @@ export default function RutasConfig() {
                     <Route path='formulario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormDatos} /></RequireAuth>} />
                     <Route path='datos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReferenciaTable} /></RequireAuth>} />
                     <Route path='hospitales' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HospitalTableRefContraRef} /></RequireAuth>} />
+                    <Route path='totaltraslados' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={TrasladosTotalPage} /></RequireAuth>} />
                     <Route path='traslados' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={TrasladosPage} /></RequireAuth>} />
                     <Route path='facturaciones' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FacturacionPage} /></RequireAuth>} />
                     <Route path='cuentas-medicas' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={CuentasMedicasPage} /></RequireAuth>} />
