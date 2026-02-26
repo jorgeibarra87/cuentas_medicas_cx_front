@@ -52,7 +52,7 @@ export default function CuentasMedicasPage() {
                             </div>
                             <button
                                 onClick={handleCancelar}
-                                className="px-4 py-2 bg-gray-500 text-white font-semibold rounded-xl hover:bg-gray-600 transition-all duration-200 shadow-md"
+                                className="px-4 py-2 bg-gray-500 text-white font-semibold rounded hover:bg-gray-600 transition-all duration-200 shadow-md"
                             >
                                 ← Volver a Lista
                             </button>

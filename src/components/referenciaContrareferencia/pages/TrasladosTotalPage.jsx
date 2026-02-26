@@ -78,9 +78,7 @@ export default function TrasladosTotalPage() {
                 <FontAwesomeIcon icon={faBookMedical} className="w-4 h-4 text-white pr-2" />Cuentas Medicas
             </button>
 
-            {/* ✅ Buscador + Control tamaño texto */}
             <div className="flex justify-between items-center mb-2 text-xs text-gray-600">
-
                 {/* Buscador */}
                 <div className="flex items-center space-x-2">
                     <span className="font-medium"><FontAwesomeIcon icon={faSearch} className="w-4 h-4" />Buscar:</span>
@@ -134,6 +132,8 @@ export default function TrasladosTotalPage() {
                                 <th className="px-2 py-2 text-left">Ciudad</th>
                                 <th className="px-2 py-2 text-left">A. Referencia</th>
                                 <th className="px-2 py-2 text-left">A. Ambulancia</th>
+                                <th className="px-2 py-2 text-left">Archivo</th>
+                                <th className="px-2 py-2 text-left">Estado</th>
                                 <th className="px-2 py-2 text-left">Facturaciones</th>
                                 <th className="px-2 py-2 text-left">Cuentas Médicas</th>
                             </tr>
@@ -147,27 +147,32 @@ export default function TrasladosTotalPage() {
                                         className="border-t hover:bg-blue-50 cursor-pointer"
                                         onClick={() => toggleFila(traslado.id)}
                                     >
-                                        <td className="px-2 py-2 text-gray-400">
+                                        <td className="border-r border-b px-2 py-2 text-gray-400">
                                             <FontAwesomeIcon icon={expandido[traslado.id] ? faChevronDown : faChevronRight} />
                                         </td>
                                         {/* <td className="px-2 py-2 font-semibold text-blue-700">{traslado.id}</td> */}
-                                        <td className="px-2 py-2 font-semibold text-blue-700">{traslado.documento}</td>
-                                        <td className="px-2 py-2">{traslado.nomPaciente}</td>
-                                        <td className="px-2 py-2">{traslado.eps}</td>
-                                        <td className="px-2 py-2">{traslado.ingreso}</td>
-                                        <td className="px-2 py-2">{traslado.fechaTraslado?.slice(0, 10)}</td>
-                                        <td className="px-2 py-2">{traslado.tipoTraslado}</td>
-                                        <td className="px-2 py-2">{traslado.servicio}</td>
-                                        <td className="px-2 py-2">{traslado.destino}</td>
-                                        <td className="px-2 py-2">{traslado.ciudad}</td>
-                                        <td className="px-2 py-2">{traslado.auxiliarReferencia}</td>
-                                        <td className="px-2 py-2">{traslado.auxiliarAmbulancia}</td>
-                                        <td className="px-2 py-2">
+                                        <td className="border-r border-b px-2 py-2 font-semibold text-blue-700">{traslado.documento}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.nomPaciente}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.eps}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.ingreso}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.fechaTraslado?.slice(0, 10)}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.tipoTraslado}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.servicio}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.destino}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.ciudad}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.auxiliarReferencia}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.auxiliarAmbulancia}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.archivo}</td>
+                                        <td className={`border-r border-b px-2 py-2 ${traslado.estado === "PENDIENTE" ? "bg-yellow-300" : ""} ${traslado.estado === "VALIDADO" ? "bg-green-400" : ""}`}
+                                        >
+                                            {traslado.estado}
+                                        </td>
+                                        <td className="border-r border-b px-2 py-2">
                                             <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${facturaciones.length > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
                                                 {facturaciones.length}
                                             </span>
                                         </td>
-                                        <td className="px-2 py-2">
+                                        <td className="border-r border-b px-2 py-2">
                                             <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${cuentasMedicas.length > 0 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400'}`}>
                                                 {cuentasMedicas.length}
                                             </span>
@@ -188,21 +193,21 @@ export default function TrasladosTotalPage() {
                                                         <thead className="bg-green-50 text-green-800">
                                                             <tr>
                                                                 {/* <th className="px-2 py-1 text-left">ID</th> */}
-                                                                <th className="px-2 py-1 text-left">Prefactura</th>
-                                                                <th className="px-2 py-1 text-left">Factura</th>
-                                                                <th className="px-2 py-1 text-left">Valor</th>
-                                                                <th className="px-2 py-1 text-left">Facturador</th>
-                                                                <th className="px-2 py-1 text-left">F. Factura</th>
+                                                                <th className="border-r px-2 py-1 text-left">Prefactura</th>
+                                                                <th className="border-r px-2 py-1 text-left">Factura</th>
+                                                                <th className="border-r px-2 py-1 text-left">Valor</th>
+                                                                <th className="border-r px-2 py-1 text-left">Facturador</th>
+                                                                <th className="border-r px-2 py-1 text-left">F. Factura</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {facturaciones.map(f => (
                                                                 <tr key={f.id} className="border-t">
                                                                     {/* <td className="px-2 py-1">{f.id}</td> */}
-                                                                    <td className="px-2 py-1">{f.prefactura}</td>
-                                                                    <td className="px-2 py-1">{f.factura}</td>
-                                                                    <td className="px-2 py-1">${f.valor?.toLocaleString()}</td>
-                                                                    <td className="px-2 py-1">{f.nombreFacturador}</td>
+                                                                    <td className="border-r  px-2 py-1">{f.prefactura}</td>
+                                                                    <td className="border-r px-2 py-1">{f.factura}</td>
+                                                                    <td className="border-r px-2 py-1">${f.valor?.toLocaleString()}</td>
+                                                                    <td className="border-r px-2 py-1">{f.nombreFacturador}</td>
                                                                     <td className="px-2 py-1">{f.fechaFactura?.slice(0, 10)}</td>
                                                                 </tr>
                                                             ))}
@@ -240,10 +245,10 @@ export default function TrasladosTotalPage() {
                                                             {cuentasMedicas.map(c => (
                                                                 <tr key={c.id} className="border-t">
                                                                     {/* <td className="px-2 py-1">{c.id}</td> */}
-                                                                    <td className="px-2 py-1">{c.fechaCuenta?.slice(0, 10)}</td>
-                                                                    <td className="px-2 py-1">{c.servicioEgreso}</td>
-                                                                    <td className="px-2 py-1">{c.responsableAuditoria}</td>
-                                                                    <td className="px-2 py-1">{c.observaciones}</td>
+                                                                    <td className="border-r px-2 py-1">{c.fechaCuenta?.slice(0, 10)}</td>
+                                                                    <td className="border-r px-2 py-1">{c.servicioEgreso}</td>
+                                                                    <td className="border-r px-2 py-1">{c.responsableAuditoria}</td>
+                                                                    <td className="border-r px-2 py-1">{c.observaciones}</td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>
@@ -258,7 +263,7 @@ export default function TrasladosTotalPage() {
                     </table>
                 </div>
                 {/* ✅ Paginación al fondo */}
-                <div className="flex-shrink-0 p-2 border-t bg-gray-50">
+                <div className="flex-shrink-0 p-2 bg-gray-50">
                     <Pagination
                         currentPage={page}
                         totalPages={totalPages}
