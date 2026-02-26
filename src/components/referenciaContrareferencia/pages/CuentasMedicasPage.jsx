@@ -2,7 +2,7 @@ import { useState } from 'react';
 import CuentasMedicasForm from '../forms/CuentasMedicasForm';
 import CuentasMedicasTable from '../tables/CuentasMedicasTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faDollar, faFileEdit, faFile } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faBookMedical, faFileEdit, faFile } from '@fortawesome/free-solid-svg-icons';
 
 export default function CuentasMedicasPage() {
     const [modo, setModo] = useState('lista');
@@ -77,7 +77,7 @@ export default function CuentasMedicasPage() {
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-2">
                         <div>
                             <h1 className="text-4xl font-bold text-gray-800 mb-1">
-                                <FontAwesomeIcon icon={faDollar} className="w-8 h-8 text-gray-700 pr-2" />
+                                <FontAwesomeIcon icon={faBookMedical} className="w-6 h-6 text-gray-700 pr-2" />
                                 Gestión Cuentas Médicas
                             </h1>
                         </div>

@@ -1,17 +1,19 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookMedical, faDollar, faFileEdit, faPencilAlt, faTruckMedical } from '@fortawesome/free-solid-svg-icons';
+import { faBookMedical, faDollar, faFileEdit, faPencilAlt, faTruckMedical, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
 
 const API_BASE = 'http://localhost:8082';
-const PAGE_SIZE = 1; // máximo por página
+const PAGE_SIZE = 2; // máximo por página
 
 export default function FacturacionTable({ onEdit = () => { }, reloadFlag }) {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [seleccionados, setSeleccionados] = useState(new Set());
+    // Estado de busqueda
+    const [busqueda, setBusqueda] = useState('');
 
     //estados paginacion y tamaño texto
     const [page, setPage] = useState(0);
@@ -37,8 +39,15 @@ export default function FacturacionTable({ onEdit = () => { }, reloadFlag }) {
 
     useEffect(() => { loadData(); }, [reloadFlag]);
 
-    const totalPages = Math.ceil(data.length / PAGE_SIZE);
-    const paginatedData = data.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+    const dataFiltrada = busqueda.trim() === ''
+        ? data
+        : data.filter(t =>
+            t.documento?.toLowerCase().includes(busqueda.toLowerCase()) ||
+            t.nomPaciente?.toLowerCase().includes(busqueda.toLowerCase())
+        );
+
+    const totalPages = Math.ceil(dataFiltrada.length / PAGE_SIZE);
+    const paginatedData = dataFiltrada.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
     if (loading) return <p>Cargando facturas...</p>;
     if (error) return <p className="text-red-600">Error: {error}</p>;
@@ -72,11 +81,37 @@ export default function FacturacionTable({ onEdit = () => { }, reloadFlag }) {
                 <FontAwesomeIcon icon={faBookMedical} className="w-4 h-4 text-white pr-2" />Cuentas Medicas
             </button>
 
-            {/* ✅ Control tamaño texto */}
-            <div className="flex justify-end items-center mb-2 space-x-2 text-xs text-gray-600">
-                <span>Tamaño texto:</span>
-                <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
-                <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+            <div className="flex justify-between items-center mb-2 text-xs text-gray-600">
+                {/* Buscador */}
+                <div className="flex items-center space-x-2">
+                    <span className="font-medium"><FontAwesomeIcon icon={faSearch} className="w-4 h-4" /> Buscar:</span>
+                    <input
+                        type="text"
+                        value={busqueda}
+                        onChange={e => {
+                            setBusqueda(e.target.value);
+                            setPage(0); // resetea a página 1 al buscar
+                        }}
+                        placeholder="Documento o paciente..."
+                        className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        style={{ width: '200px' }}
+                    />
+                    {busqueda && (
+                        <button
+                            onClick={() => { setBusqueda(''); setPage(0); }}
+                            className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs"
+                        >
+                            ✕ Limpiar
+                        </button>
+                    )}
+                </div>
+
+                {/* ✅ Control tamaño texto */}
+                <div className="flex justify-end items-center mb-2 space-x-2 text-xs text-gray-600">
+                    <span>Tamaño texto:</span>
+                    <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
+                    <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+                </div>
             </div>
 
             {/* ✅ Contenedor con scroll */}

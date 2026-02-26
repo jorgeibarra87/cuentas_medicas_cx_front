@@ -189,6 +189,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                         // Solo editable al crear, bloqueado al editar
                         readOnly={!!facturacion}
                         className={facturacion ? INPUT_READONLY : INPUT_CLASS}
+                        required
                     />
                     {buscando && <p className="text-xs text-blue-500 mt-1">Buscando...</p>}
                 </div>
@@ -215,6 +216,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                         value={infoTraslado.nomPaciente}
                         readOnly
                         className={INPUT_READONLY}
+                        required
                     />
                 </div>
 
@@ -227,6 +229,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                         value={infoTraslado.ingreso}
                         readOnly
                         className={INPUT_READONLY}
+                        required
                     />
                 </div>
 
@@ -239,6 +242,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                         value={infoTraslado.eps}
                         readOnly
                         className={INPUT_READONLY}
+                        required
                     />
                 </div>
 
@@ -258,6 +262,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                         value={formData.fechaPrefactura}
                         onChange={e => handleChange('fechaPrefactura', e.target.value)}
                         className={INPUT_CLASS}
+                        required
                     />
                 </div>
 
@@ -320,6 +325,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                         value={formData.valor}
                         onChange={e => handleChange('valor', e.target.value)}
                         className={INPUT_CLASS}
+                        required
                     />
                 </div>
 
@@ -332,6 +338,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                         value={formData.nombreFacturador}
                         onChange={e => handleChange('nombreFacturador', e.target.value)}
                         className={INPUT_CLASS}
+                        required
                     />
                 </div>
 

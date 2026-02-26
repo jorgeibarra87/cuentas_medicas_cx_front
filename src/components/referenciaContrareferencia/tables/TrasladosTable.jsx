@@ -1,11 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookMedical, faCheck, faDollar, faEdit, faFileEdit, faPencilAlt, faTruckMedical, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBookMedical, faCheck, faDollar, faEdit, faFileEdit, faPencilAlt, faTruckMedical, faXmark, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
 
 const API_BASE = 'http://localhost:8082';
-const PAGE_SIZE = 1; // máximo por página
+const PAGE_SIZE = 2; // máximo por página
 
 export default function TrasladosTable({ onEdit = () => { }, reloadFlag }) {
     const [data, setData] = useState([]);
@@ -13,6 +13,8 @@ export default function TrasladosTable({ onEdit = () => { }, reloadFlag }) {
     const [error, setError] = useState('');
     const [seleccionados, setSeleccionados] = useState(new Set());
     const [procesando, setProcesando] = useState(false);
+    // Estado de busqueda
+    const [busqueda, setBusqueda] = useState('');
 
     //estados paginacion y tamaño texto
     const [page, setPage] = useState(0);
@@ -85,8 +87,15 @@ ${seleccionados.size} traslado(s)?`
         loadData();
     }, [reloadFlag]);
 
-    const totalPages = Math.ceil(data.length / PAGE_SIZE);
-    const paginatedData = data.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+    const dataFiltrada = busqueda.trim() === ''
+        ? data
+        : data.filter(t =>
+            t.documento?.toLowerCase().includes(busqueda.toLowerCase()) ||
+            t.nomPaciente?.toLowerCase().includes(busqueda.toLowerCase())
+        );
+
+    const totalPages = Math.ceil(dataFiltrada.length / PAGE_SIZE);
+    const paginatedData = dataFiltrada.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
     if (loading) return <p>Cargando traslados...</p>;
     if (error) return <p className="text-red-600">Error: {error}</p>;
@@ -120,11 +129,37 @@ ${seleccionados.size} traslado(s)?`
             </button>
 
 
-            {/* ✅ Control tamaño texto */}
-            <div className="flex justify-end items-center mb-2 space-x-2 text-xs text-gray-600">
-                <span>Tamaño texto:</span>
-                <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
-                <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+            <div className="flex justify-between items-center mb-2 text-xs text-gray-600">
+                {/* Buscador */}
+                <div className="flex items-center space-x-2">
+                    <span className="font-medium"><FontAwesomeIcon icon={faSearch} className="w-4 h-4" /> Buscar:</span>
+                    <input
+                        type="text"
+                        value={busqueda}
+                        onChange={e => {
+                            setBusqueda(e.target.value);
+                            setPage(0); // resetea a página 1 al buscar
+                        }}
+                        placeholder="Documento o paciente..."
+                        className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        style={{ width: '200px' }}
+                    />
+                    {busqueda && (
+                        <button
+                            onClick={() => { setBusqueda(''); setPage(0); }}
+                            className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs"
+                        >
+                            ✕ Limpiar
+                        </button>
+                    )}
+                </div>
+
+                {/* ✅ Control tamaño texto */}
+                <div className="flex justify-end items-center mb-2 space-x-2 text-xs text-gray-600">
+                    <span>Tamaño texto:</span>
+                    <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
+                    <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+                </div>
             </div>
 
             {/* ✅ Contenedor con scroll */}
@@ -166,7 +201,7 @@ ${seleccionados.size} traslado(s)?`
                                         checked={seleccionados.size === data.length && data.length > 0}
                                     />
                                 </th>
-                                <th className="px-2 py-0.5 font-semibold">Fecha</th>
+                                <th className="px-8 py-0.5 font-semibold">Fecha</th>
                                 <th className="px-2 py-0.5 font-semibold">Paciente</th>
                                 <th className="px-2 py-0.5 font-semibold">Documento</th>
                                 <th className="px-2 py-0.5 font-semibold">Ingreso</th>
@@ -198,7 +233,7 @@ ${seleccionados.size} traslado(s)?`
                                             className="hover:cursor-pointer"
                                         />
                                     </td>
-                                    <td className="border-r px-1 py-0.5">{t.fechaTraslado?.replace('T', ' ').slice(0, 16)}</td>
+                                    <td className="border-r px-0 py-0.5">{t.fechaTraslado?.replace('T', ' ').slice(0, 16)}</td>
                                     <td className="border-r px-1 py-0.5">{t.nomPaciente}</td>
                                     <td className="border-r px-1 py-0.5">{t.documento}</td>
                                     <td className="border-r px-1 py-0.5">{t.ingreso}</td>

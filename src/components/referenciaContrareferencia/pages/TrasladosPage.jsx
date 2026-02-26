@@ -2,7 +2,7 @@ import { useState } from 'react';
 import TrasladosForm from '../forms/TrasladosForm';
 import TrasladosTable from '../tables/TrasladosTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTruckMedical, } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTruckMedical, faFileEdit } from '@fortawesome/free-solid-svg-icons';
 
 export default function TrasladosPage() {
     const [modo, setModo] = useState('lista'); // 'lista', 'editar', 'crear'
@@ -38,7 +38,7 @@ export default function TrasladosPage() {
                         <div className="flex items-center justify-between mb-8">
                             <div>
                                 <h1 className="text-4xl font-bold bg-black bg-clip-text text-transparent mb-2">
-                                    {modo === 'editar' ? 'Editar Traslado Referencia' : 'Nuevo Traslado Referencia'}
+                                    {modo === 'editar' ? <><FontAwesomeIcon icon={faFileEdit} className="w-8 h-8 text-blue-700 pr-2" />Editar Traslado Referencia</> : <><FontAwesomeIcon icon={faFileEdit} className="w-8 h-8 text-black pr-2" />Nuevo Traslado Referencia</>}
                                 </h1>
                                 {modo === 'editar' && selectedTraslado && (
                                     <p className="text-gray-600 text-lg">
@@ -50,7 +50,7 @@ export default function TrasladosPage() {
                                 onClick={handleCancelar}
                                 className="mr-10 px-2 py-2 bg-gray-500 text-white font-semibold rounded hover:bg-gray-600 transition-all duration-200 shadow-md hover:shadow-lg"
                             >
-                                ← Volver
+                                ← Volver a Lista
                             </button>
                         </div>
 
@@ -72,7 +72,7 @@ export default function TrasladosPage() {
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-2">
                         <div>
                             <h1 className="text-4xl font-bold bg-black bg-clip-text text-transparent m-2 mb-2">
-                                <FontAwesomeIcon icon={faTruckMedical} className="w-10 h-10 text-black pr-2" />Gestión Traslados Referencia
+                                <FontAwesomeIcon icon={faFileEdit} className="w-8 h-8 text-black pr-2" />Gestión Traslados Referencia
                             </h1>
                         </div>
                         <button

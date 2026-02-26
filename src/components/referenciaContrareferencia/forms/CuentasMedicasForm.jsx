@@ -180,6 +180,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                         // Solo editable al crear, bloqueado al editar
                         readOnly={!!cuentas}
                         className={cuentas ? INPUT_READONLY : INPUT_CLASS}
+                        required
                     />
                     {buscando && <p className="text-xs text-blue-500 mt-1">Buscando...</p>}
                 </div>
@@ -193,6 +194,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                         value={formData.trasladoId}
                         readOnly
                         className={INPUT_READONLY}
+                        required
                     />
                 </div>
 
@@ -206,6 +208,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                         value={infoTraslado.nomPaciente}
                         readOnly
                         className={INPUT_READONLY}
+                        required
                     />
                 </div>
 
@@ -218,6 +221,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                         value={infoTraslado.ingreso}
                         readOnly
                         className={INPUT_READONLY}
+                        required
                     />
                 </div>
 
@@ -230,6 +234,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                         value={infoTraslado.eps}
                         readOnly
                         className={INPUT_READONLY}
+                        required
                     />
                 </div>
 
@@ -250,6 +255,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                         value={formData.fechaCuenta}
                         onChange={e => handleChange('fechaCuenta', e.target.value)}
                         className={INPUT_CLASS}
+                        required
                     />
                 </div>
 
