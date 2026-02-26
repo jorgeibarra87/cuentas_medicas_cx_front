@@ -13,6 +13,16 @@ export default function TrasladosTable({ onEdit = () => { }, reloadFlag }) {
     const [error, setError] = useState('');
     const [seleccionados, setSeleccionados] = useState(new Set());
     const [procesando, setProcesando] = useState(false);
+
+    // Lee los roles del token directamente
+    const token = localStorage.getItem('tokenhusjp');
+    const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+    // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
+    const roles = Array.isArray(payload.authorities)
+        ? payload.authorities
+        : payload.authorities?.split(',').map(r => r.trim()) || [];
+
+    const tieneRol = (...rolesRequeridos) => rolesRequeridos.some(rol => roles.includes(rol));
     // Estado de busqueda
     const [busqueda, setBusqueda] = useState('');
 
@@ -109,24 +119,24 @@ ${seleccionados.size} traslado(s)?`
             >
                 <FontAwesomeIcon icon={faTruckMedical} className="w-4 h-4 text-white pr-2" />Traslados
             </button>
-            <button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/traslados')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
                 <FontAwesomeIcon icon={faFileEdit} className="w-4 h-4 text-white pr-2" />Referencia
-            </button>
-            <button
+            </button>)}
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_FACTURA') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/facturaciones')}
-                className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+                className="font-bold mx-2 my-6 px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faDollar} className="w-4 h-4 text-white pr-2" />Facturación
-            </button>
-            <button
+            </button>)}
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_CUENTAS') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/cuentas-medicas')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faBookMedical} className="w-4 h-4 text-white pr-2" />Cuentas Medicas
-            </button>
+            </button>)}
 
 
             <div className="flex justify-between items-center mb-2 text-xs text-gray-600">
@@ -169,27 +179,27 @@ ${seleccionados.size} traslado(s)?`
                     <span className="text-sm text-gray-500 my-auto mr-2">
                         {seleccionados.size > 0 && `${seleccionados.size} seleccionado(s)`}
                     </span>
-                    <button
+                    {tieneRol('ROLE_ADMINISTRADOR') && (<button
                         onClick={() => cambiarEstado('VALIDADO')}
                         disabled={procesando || seleccionados.size === 0}
                         className="hover:cursor-pointer text-xs font-semibold mx-1 my-2 px-1 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
                     >
                         <FontAwesomeIcon icon={faCheck} className="w-4 h-4 text-white" /> Validar
-                    </button>
-                    <button
+                    </button>)}
+                    {tieneRol('ROLE_ADMINISTRADOR') && (<button
                         onClick={() => cambiarEstado('PENDIENTE')}
                         disabled={procesando || seleccionados.size === 0}
                         className="hover:cursor-pointer text-xs font-semibold mx-1 my-2 px-1 py-1 bg-red-500 text-white rounded hover:bg-red-700 disabled:opacity-50"
                     >
                         <FontAwesomeIcon icon={faXmark} className="w-4 h-4 text-white font-bold" /> Invalidar
-                    </button>
+                    </button>)}
                 </div>
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-gray-700" style={{ fontSize: `${fontSize}px` }}>
                         <thead>
                             <tr className="bg-gray-800 text-white">
                                 {/* <th className="px-2 py-0.5 font-semibold">ID</th> */}
-                                <th className="hover:cursor-pointer px-2 py-0.5">
+                                {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<th className="hover:cursor-pointer px-2 py-0.5">
                                     {/* Seleccionar todos */}
                                     <input
                                         type="checkbox"
@@ -200,7 +210,7 @@ ${seleccionados.size} traslado(s)?`
                                         }}
                                         checked={seleccionados.size === data.length && data.length > 0}
                                     />
-                                </th>
+                                </th>)}
                                 <th className="px-8 py-0.5 font-semibold">Fecha</th>
                                 <th className="px-2 py-0.5 font-semibold">Paciente</th>
                                 <th className="px-2 py-0.5 font-semibold">Documento</th>
@@ -217,7 +227,7 @@ ${seleccionados.size} traslado(s)?`
                                 <th className="px-2 py-0.5 font-semibold">Archivo</th>
                                 <th className="px-2 py-0.5 font-semibold">Observación</th>
                                 <th className="px-2 py-0.5 font-semibold">Estado</th>
-                                <th className="px-2 py-0.5 font-semibold">Acciones</th>
+                                {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<th className="px-2 py-0.5 font-semibold">Acciones</th>)}
                             </tr>
                         </thead>
                         <tbody>
@@ -225,14 +235,14 @@ ${seleccionados.size} traslado(s)?`
                                 <tr key={t.id} className="border-b hover:bg-gray-50">
                                     {/* <td className="border-r px-1 py-0.5">{t.id}</td> */}
                                     {/* Checkbox */}
-                                    <td className="px-2 py-0.5 text-center">
+                                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<td className="px-2 py-0.5 text-center">
                                         <input
                                             type="checkbox"
                                             checked={seleccionados.has(t.id)}
                                             onChange={() => toggleCheck(t.id)}
                                             className="hover:cursor-pointer"
                                         />
-                                    </td>
+                                    </td>)}
                                     <td className="border-r px-0 py-0.5">{t.fechaTraslado?.replace('T', ' ').slice(0, 16)}</td>
                                     <td className="border-r px-1 py-0.5">{t.nomPaciente}</td>
                                     <td className="border-r px-1 py-0.5">{t.documento}</td>
@@ -252,7 +262,7 @@ ${seleccionados.size} traslado(s)?`
                                     >
                                         {t.estado}
                                     </td>
-                                    <td className="px-3 py-2 space-x-2">
+                                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<td className="px-3 py-2 space-x-2">
                                         <button
                                             onClick={() => {
                                                 console.log('🔥 Click Editar, onEdit:', onEdit);
@@ -262,7 +272,7 @@ ${seleccionados.size} traslado(s)?`
                                         >
                                             <FontAwesomeIcon icon={faPencilAlt} className="w-10 h-10 text-blue-600 pr-2 hover:cursor-pointer transition duration-300 ease-in-out transform hover:-translate-y-1" />
                                         </button>
-                                    </td>
+                                    </td>)}
                                 </tr>
                             ))}
                             {data.length === 0 && (
