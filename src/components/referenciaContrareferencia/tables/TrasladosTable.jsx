@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
 
-const API_BASE = 'http://localhost:8082';
+const API_BASE = 'http://192.168.22.148:8082';
 const PAGE_SIZE = 2; // máximo por página
 
 export default function TrasladosTable({ onEdit = () => { }, reloadFlag }) {
@@ -127,7 +127,7 @@ ${seleccionados.size} traslado(s)?`
             </button>)}
             {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_FACTURA') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/facturaciones')}
-                className="font-bold mx-2 my-6 px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faDollar} className="w-4 h-4 text-white pr-2" />Facturación
             </button>)}
@@ -179,14 +179,14 @@ ${seleccionados.size} traslado(s)?`
                     <span className="text-sm text-gray-500 my-auto mr-2">
                         {seleccionados.size > 0 && `${seleccionados.size} seleccionado(s)`}
                     </span>
-                    {tieneRol('ROLE_ADMINISTRADOR') && (<button
+                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_CUENTAS') && (<button
                         onClick={() => cambiarEstado('VALIDADO')}
                         disabled={procesando || seleccionados.size === 0}
                         className="hover:cursor-pointer text-xs font-semibold mx-1 my-2 px-1 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
                     >
                         <FontAwesomeIcon icon={faCheck} className="w-4 h-4 text-white" /> Validar
                     </button>)}
-                    {tieneRol('ROLE_ADMINISTRADOR') && (<button
+                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_CUENTAS') && (<button
                         onClick={() => cambiarEstado('PENDIENTE')}
                         disabled={procesando || seleccionados.size === 0}
                         className="hover:cursor-pointer text-xs font-semibold mx-1 my-2 px-1 py-1 bg-red-500 text-white rounded hover:bg-red-700 disabled:opacity-50"
@@ -265,7 +265,7 @@ ${seleccionados.size} traslado(s)?`
                                     {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<td className="px-3 py-2 space-x-2">
                                         <button
                                             onClick={() => {
-                                                console.log('🔥 Click Editar, onEdit:', onEdit);
+                                                //console.log('🔥 Click Editar, onEdit:', onEdit);
                                                 onEdit?.(t);
                                             }}
                                             className="text-blue-600 hover:underline text-sm"

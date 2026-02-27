@@ -8,6 +8,15 @@ export default function CuentasMedicasPage() {
     const [modo, setModo] = useState('lista');
     const [selectedCuentas, setSelectedCuentas] = useState(null);
     const [reloadFlag, setReloadFlag] = useState(0);
+    // Lee los roles del token directamente
+    const token = localStorage.getItem('tokenhusjp');
+    const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+    // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
+    const roles = Array.isArray(payload.authorities)
+        ? payload.authorities
+        : payload.authorities?.split(',').map(r => r.trim()) || [];
+
+    const tieneRol = (...rolesRequeridos) => rolesRequeridos.some(rol => roles.includes(rol));
 
     const handleEdit = (cuentas) => {
         setSelectedCuentas(cuentas);
@@ -81,13 +90,13 @@ export default function CuentasMedicasPage() {
                                 Gestión Cuentas Médicas
                             </h1>
                         </div>
-                        <button
+                        {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<button
                             onClick={handleCrear}
                             className="mr-10 mt-2 lg:mt-0 px-2 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 w-full lg:w-auto"
                         >
                             <FontAwesomeIcon icon={faPlus} className="w-4 h-4 text-white pr-2" />
                             Nueva Cuenta Médica
-                        </button>
+                        </button>)}
                     </div>
 
                     {/* ✅ Props: onEdit y reloadFlag */}

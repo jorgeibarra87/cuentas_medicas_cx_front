@@ -4,7 +4,7 @@ import { faChevronDown, faChevronRight, faAmbulance, faTruckMedical, faFileEdit,
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
 
-const API_BASE = 'http://localhost:8082';
+const API_BASE = 'http://192.168.22.148:8082';
 const PAGE_SIZE = 2; // máximo por página
 
 export default function TrasladosTotalPage() {
@@ -69,19 +69,19 @@ export default function TrasladosTotalPage() {
             >
                 <FontAwesomeIcon icon={faTruckMedical} className="w-4 h-4 text-white pr-2" />Traslados
             </button>
-            {tieneRol('ROLE_ADMINISTRADOR') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/traslados')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faFileEdit} className="w-4 h-4 text-white pr-2" />Referencia
             </button>)}
-            {tieneRol('ROLE_ADMINISTRADO') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_FACTURA') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/facturaciones')}
-                className="font-bold mx-2 my-6 px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faDollar} className="w-4 h-4 text-white pr-2" />Facturación
             </button>)}
-            {tieneRol('ROLE_ADMINISTRADO') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_CUENTAS') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/cuentas-medicas')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
