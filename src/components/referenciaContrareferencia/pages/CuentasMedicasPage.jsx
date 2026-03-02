@@ -81,7 +81,7 @@ export default function CuentasMedicasPage() {
     // ✅ Modo lista (tabla)
     return (
         <div className="min-h-screen bg-white">
-            <div className="max-w-7xl mx-auto">
+            <div className="w-full mx-auto">
                 <div className="bg-white shadow-2xl rounded-3xl p-2 border border-gray-100 mb-2">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-2">
                         <div>

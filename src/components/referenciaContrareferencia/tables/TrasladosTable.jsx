@@ -111,7 +111,7 @@ ${seleccionados.size} traslado(s)?`
     if (error) return <p className="text-red-600">Error: {error}</p>;
 
     return (
-        <div className="bg-white shadow-md rounded-lg p-2">
+        <div className="bg-white shadow-md rounded-lg p-2 w-full max-w-none">
             {/* ✅ Botones con navegación */}
             <button
                 onClick={() => navigate('/referenciacontrareferencia/totaltraslados')}
@@ -173,8 +173,10 @@ ${seleccionados.size} traslado(s)?`
             </div>
 
             {/* ✅ Contenedor con scroll */}
-            <div className="relative mb-8 border border-gray-300 rounded-lg shadow-md bg-white flex flex-col"
-                style={{ minHeight: '400px', maxHeight: '900px' }}>
+            <div
+                className="relative mb-8 border border-gray-300 rounded-lg shadow-md bg-white flex flex-col w-full"
+                style={{ minHeight: '400px', maxHeight: '900px' }}
+            >
                 <div className="flex justify-end">
                     <span className="text-sm text-gray-500 my-auto mr-2">
                         {seleccionados.size > 0 && `${seleccionados.size} seleccionado(s)`}
@@ -195,7 +197,7 @@ ${seleccionados.size} traslado(s)?`
                     </button>)}
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full text-gray-700" style={{ fontSize: `${fontSize}px` }}>
+                    <table className="w-full min-w-full table-auto text-gray-700" style={{ fontSize: `${fontSize}px` }}>
                         <thead>
                             <tr className="bg-gray-800 text-white">
                                 {/* <th className="px-2 py-0.5 font-semibold">ID</th> */}
