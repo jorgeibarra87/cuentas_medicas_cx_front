@@ -92,7 +92,7 @@ export default function CuentasMedicasPage() {
                         </div>
                         {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<button
                             onClick={handleCrear}
-                            className="mr-10 mt-2 lg:mt-0 px-2 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 w-full lg:w-auto"
+                            className="hover:cursor-pointer mr-10 mt-2 lg:mt-0 px-2 py-2 bg-green-600 text-white font-semibold text-md rounded hover:bg-green-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 sm:w-xs lg:w-auto"
                         >
                             <FontAwesomeIcon icon={faPlus} className="w-4 h-4 text-white pr-2" />
                             Nueva Cuenta Médica
