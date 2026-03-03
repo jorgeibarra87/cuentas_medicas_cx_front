@@ -24,6 +24,7 @@ export default function TrasladosTotalPage() {
 
     // Estado de busqueda
     const [busqueda, setBusqueda] = useState('');
+    const [filtroEstado, setFiltroEstado] = useState('TODOS');
 
     //estados paginacion y tamaño texto
     const [page, setPage] = useState(0);
@@ -43,12 +44,21 @@ export default function TrasladosTotalPage() {
     const toggleFila = (id) =>
         setExpandido(prev => ({ ...prev, [id]: !prev[id] }));
 
-    const datosFiltrados = busqueda.trim() === ''
-        ? datos
-        : datos.filter(({ traslado }) =>
-            traslado.documento?.toLowerCase().includes(busqueda.toLowerCase()) ||
-            traslado.nomPaciente?.toLowerCase().includes(busqueda.toLowerCase())
-        );
+    const datosFiltrados = datos
+        // filtro por texto
+        .filter(({ traslado }) => {
+            if (busqueda.trim() === '') return true;
+            const q = busqueda.toLowerCase();
+            return (
+                traslado.documento?.toLowerCase().includes(q) ||
+                traslado.nomPaciente?.toLowerCase().includes(q)
+            );
+        })
+        // filtro por estado
+        .filter(({ traslado }) => {
+            if (filtroEstado === 'TODOS') return true;
+            return traslado.estado === filtroEstado; // 'PENDIENTE' o 'VALIDADO'
+        });
 
     const totalPages = Math.ceil(datosFiltrados.length / PAGE_SIZE);
     const paginatedData = datosFiltrados.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
@@ -113,11 +123,28 @@ export default function TrasladosTotalPage() {
                     )}
                 </div>
 
-                {/* Tamaño texto */}
-                <div className="flex items-center space-x-2">
-                    <span>Tamaño texto:</span>
-                    <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
-                    <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+                {/* Filtro estado */}
+                <div className="flex items-center space-x-4">
+                    {/* Filtro estado */}
+                    <div className="flex items-center space-x-1">
+                        <span>Estado:</span>
+                        <select
+                            value={filtroEstado}
+                            onChange={e => { setFiltroEstado(e.target.value); setPage(0); }}
+                            className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        >
+                            <option value="TODOS">Todos</option>
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="VALIDADO">Validado</option>
+                        </select>
+                    </div>
+
+                    {/* Tamaño texto */}
+                    <div className="flex items-center space-x-2">
+                        <span>Tamaño texto:</span>
+                        <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
+                        <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+                    </div>
                 </div>
             </div>
 

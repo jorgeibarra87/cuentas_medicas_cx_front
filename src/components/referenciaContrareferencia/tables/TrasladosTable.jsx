@@ -14,7 +14,7 @@ export default function TrasladosTable({ onEdit = () => { }, reloadFlag }) {
     const [seleccionados, setSeleccionados] = useState(new Set());
     const [procesando, setProcesando] = useState(false);
 
-    // Lee los roles del token directamente
+    // Lee los roles del token
     const token = localStorage.getItem('tokenhusjp');
     const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
     // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
@@ -25,6 +25,7 @@ export default function TrasladosTable({ onEdit = () => { }, reloadFlag }) {
     const tieneRol = (...rolesRequeridos) => rolesRequeridos.some(rol => roles.includes(rol));
     // Estado de busqueda
     const [busqueda, setBusqueda] = useState('');
+    const [filtroEstado, setFiltroEstado] = useState('TODOS');
 
     //estados paginacion y tamaño texto
     const [page, setPage] = useState(0);
@@ -93,16 +94,23 @@ ${seleccionados.size} traslado(s)?`
     };
 
 
-    useEffect(() => {
-        loadData();
-    }, [reloadFlag]);
+    useEffect(() => { loadData(); }, [reloadFlag]);
 
-    const dataFiltrada = busqueda.trim() === ''
-        ? data
-        : data.filter(t =>
-            t.documento?.toLowerCase().includes(busqueda.toLowerCase()) ||
-            t.nomPaciente?.toLowerCase().includes(busqueda.toLowerCase())
-        );
+    const dataFiltrada = data
+        // filtro por texto
+        .filter(t => {
+            if (busqueda.trim() === '') return true;
+            const q = busqueda.toLowerCase();
+            return (
+                t.documento?.toLowerCase().includes(q) ||
+                t.nomPaciente?.toLowerCase().includes(q)
+            );
+        })
+        // filtro por estado
+        .filter(t => {
+            if (filtroEstado === 'TODOS') return true;
+            return t.estado === filtroEstado; // 'PENDIENTE' o 'VALIDADO'
+        });
 
     const totalPages = Math.ceil(dataFiltrada.length / PAGE_SIZE);
     const paginatedData = dataFiltrada.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
@@ -164,19 +172,35 @@ ${seleccionados.size} traslado(s)?`
                     )}
                 </div>
 
-                {/* ✅ Control tamaño texto */}
-                <div className="flex justify-end items-center mb-2 space-x-2 text-xs text-gray-600">
-                    <span>Tamaño texto:</span>
-                    <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
-                    <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+                {/* Filtro estado */}
+                <div className="flex items-center space-x-4">
+                    {/* Filtro estado */}
+                    <div className="flex items-center space-x-1">
+                        <span>Estado:</span>
+                        <select
+                            value={filtroEstado}
+                            onChange={e => { setFiltroEstado(e.target.value); setPage(0); }}
+                            className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        >
+                            <option value="TODOS">Todos</option>
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="VALIDADO">Validado</option>
+                        </select>
+                    </div>
+
+                    {/* ✅ Control tamaño texto */}
+                    <div className="flex justify-end items-center mb-2 space-x-2 text-xs text-gray-600">
+                        <span>Tamaño texto:</span>
+                        <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
+                        <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+                    </div>
                 </div>
             </div>
 
             {/* ✅ Contenedor con scroll */}
             <div
                 className="relative mb-8 border border-gray-300 rounded-lg shadow-md bg-white flex flex-col w-full"
-                style={{ minHeight: '400px', maxHeight: '900px' }}
-            >
+                style={{ minHeight: '400px', maxHeight: '900px' }} >
                 <div className="flex justify-end">
                     <span className="text-sm text-gray-500 my-auto mr-2">
                         {seleccionados.size > 0 && `${seleccionados.size} seleccionado(s)`}

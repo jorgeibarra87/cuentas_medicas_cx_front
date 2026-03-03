@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookMedical, faDollar, faFileEdit, faPencilAlt, faTruckMedical, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faBookMedical, faDollar, faFileEdit, faPencilAlt, faTruckMedical, faSearch, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
@@ -12,8 +12,9 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [seleccionados, setSeleccionados] = useState(new Set());
+    const [procesando, setProcesando] = useState(false);
 
-    // Lee los roles del token directamente
+    // Lee los roles del token
     const token = localStorage.getItem('tokenhusjp');
     const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
     // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
@@ -24,6 +25,7 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
     const tieneRol = (...rolesRequeridos) => rolesRequeridos.some(rol => roles.includes(rol));
     // Estado de busqueda
     const [busqueda, setBusqueda] = useState('');
+    const [filtroEstado, setFiltroEstado] = useState('TODOS');
 
     //estados paginacion y tamaño texto
     const [page, setPage] = useState(0);
@@ -47,14 +49,66 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
         }
     };
 
+    // Toggle individual
+    const toggleCheck = (id) => {
+        setSeleccionados(prev => {
+            const nuevo = new Set(prev);
+            nuevo.has(id) ? nuevo.delete(id) : nuevo.add(id);
+            return nuevo;
+        });
+    };
+
+    // Cambiar estado
+    const cambiarEstado = async (nuevoEstado) => {
+        if (seleccionados.size === 0) {
+            alert('Selecciona al menos un traslado');
+            return;
+        }
+
+        // ✅ Confirmación antes de proceder
+        const confirmacion = window.confirm(
+            `¿Estás seguro de que deseas ${nuevoEstado === 'AUDITADO' ? 'AUDITAR' : 'INVALIDAR'} 
+${seleccionados.size} cuenta(s) médica(s)?`
+        );
+
+        if (!confirmacion) return; // ← Si cancela, no hace nada
+
+        setProcesando(true);
+        try {
+            await Promise.all(
+                [...seleccionados].map(id =>
+                    fetch(`${API_BASE}/cuentas-medicas/${id}/estado?estado=${nuevoEstado}`, {
+                        method: 'PATCH'
+                    })
+                )
+            );
+            setSeleccionados(new Set());
+            loadData();
+            alert(`✅ ${seleccionados.size} cuenta(s) médica(s) ${nuevoEstado === 'AUDITADO' ? 'auditada(s)' : 'invalidado(s)'} correctamente`);
+        } catch (err) {
+            alert('❌ Error al cambiar estado: ' + err.message);
+        } finally {
+            setProcesando(false);
+        }
+    };
+
     useEffect(() => { loadData(); }, [reloadFlag]);
 
-    const dataFiltrada = busqueda.trim() === ''
-        ? data
-        : data.filter(t =>
-            t.documento?.toLowerCase().includes(busqueda.toLowerCase()) ||
-            t.nomPaciente?.toLowerCase().includes(busqueda.toLowerCase())
-        );
+    const dataFiltrada = data
+        // filtro por texto
+        .filter(t => {
+            if (busqueda.trim() === '') return true;
+            const q = busqueda.toLowerCase();
+            return (
+                t.documento?.toLowerCase().includes(q) ||
+                t.nomPaciente?.toLowerCase().includes(q)
+            );
+        })
+        // filtro por estado
+        .filter(t => {
+            if (filtroEstado === 'TODOS') return true;
+            return t.estado === filtroEstado; // 'PENDIENTE' o 'AUDITADO'
+        });
 
     const totalPages = Math.ceil(dataFiltrada.length / PAGE_SIZE);
     const paginatedData = dataFiltrada.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
@@ -116,24 +170,71 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
                     )}
                 </div>
 
-                {/* ✅ Control tamaño texto */}
-                <div className="flex justify-end items-center mb-2 space-x-2">
-                    <span>Tamaño texto:</span>
-                    <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
-                    <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+                {/* Filtro estado */}
+                <div className="flex items-center space-x-4">
+                    {/* Filtro estado */}
+                    <div className="flex items-center space-x-1">
+                        <span>Estado:</span>
+                        <select
+                            value={filtroEstado}
+                            onChange={e => { setFiltroEstado(e.target.value); setPage(0); }}
+                            className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        >
+                            <option value="TODOS">Todos</option>
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="AUDITADO">Auditado</option>
+                        </select>
+                    </div>
+
+                    {/* ✅ Control tamaño texto */}
+                    <div className="flex justify-end items-center mb-2 space-x-2">
+                        <span>Tamaño texto:</span>
+                        <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A–</button>
+                        <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+                    </div>
                 </div>
             </div>
 
             {/* ✅ Contenedor con scroll */}
             <div
                 className="relative mb-8 border border-gray-300 rounded-lg shadow-md bg-white flex flex-col w-full"
-                style={{ minHeight: '400px', maxHeight: '900px' }}
-            >
+                style={{ minHeight: '400px', maxHeight: '900px' }}>
 
+                <div className="flex justify-end">
+                    <span className="text-sm text-gray-500 my-auto mr-2">
+                        {seleccionados.size > 0 && `${seleccionados.size} seleccionado(s)`}
+                    </span>
+                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_CUENTAS') && (<button
+                        onClick={() => cambiarEstado('AUDITADO')}
+                        disabled={procesando || seleccionados.size === 0}
+                        className="hover:cursor-pointer text-xs font-semibold mx-1 my-2 px-1 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                    >
+                        <FontAwesomeIcon icon={faCheck} className="w-4 h-4 text-white" /> Auditado
+                    </button>)}
+                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_CUENTAS') && (<button
+                        onClick={() => cambiarEstado('PENDIENTE')}
+                        disabled={procesando || seleccionados.size === 0}
+                        className="hover:cursor-pointer text-xs font-semibold mx-1 my-2 px-1 py-1 bg-red-500 text-white rounded hover:bg-red-700 disabled:opacity-50"
+                    >
+                        <FontAwesomeIcon icon={faXmark} className="w-4 h-4 text-white font-bold" /> Invalidar
+                    </button>)}
+                </div>
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-full table-auto text-gray-700" style={{ fontSize: `${fontSize}px` }}>
                         <thead>
                             <tr className="bg-gray-800 text-white">
+                                {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<th className="hover:cursor-pointer px-2 py-0.5">
+                                    {/* Seleccionar todos */}
+                                    <input
+                                        type="checkbox"
+                                        className="hover:cursor-pointer"
+                                        onChange={e => {
+                                            if (e.target.checked) setSeleccionados(new Set(data.map(t => t.id)));
+                                            else setSeleccionados(new Set());
+                                        }}
+                                        checked={seleccionados.size === data.length && data.length > 0}
+                                    />
+                                </th>)}
                                 <th className="px-2 py-0.5 font-semibold">Traslado ID</th>
                                 <th className="px-2 py-0.5 font-semibold">Documento</th>
                                 <th className="px-2 py-0.5 font-semibold">Paciente</th>
@@ -141,6 +242,7 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
                                 <th className="px-2 py-0.5 font-semibold">Servicio Egreso</th>
                                 <th className="px-2 py-0.5 font-semibold">Responsable Auditoria</th>
                                 <th className="px-2 py-0.5 font-semibold">Observaciones</th>
+                                <th className="px-2 py-0.5 font-semibold">Estado</th>
                                 {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<th className="px-2 py-0.5 font-semibold">Acciones</th>)}
                             </tr>
                         </thead>
@@ -150,6 +252,15 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
                                     key={t.id}
                                     className={`border-b hover:bg-gray-50 ${seleccionados.has(t.id) ? 'bg-blue-50' : ''}`}
                                 >
+                                    {/* Checkbox */}
+                                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<td className="px-2 py-0.5 text-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={seleccionados.has(t.id)}
+                                            onChange={() => toggleCheck(t.id)}
+                                            className="hover:cursor-pointer"
+                                        />
+                                    </td>)}
                                     <td className="border-r px-1 py-0.5">{t.trasladoId}</td>
                                     <td className="border-r px-1 py-0.5">{t.documento}</td>
                                     <td className="border-r px-1 py-0.5">{t.nomPaciente}</td>
@@ -159,6 +270,10 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
                                     <td className="border-r px-1 py-0.5">{t.servicioEgreso}</td>
                                     <td className="border-r px-1 py-0.5">{t.responsableAuditoria}</td>
                                     <td className="border-r px-1 py-0.5">{t.observaciones}</td>
+                                    <td className={`border-r px-1 py-0.5 font-semibold ${t.estado === "PENDIENTE" ? "bg-yellow-300" : ""} ${t.estado === "AUDITADO" ? "bg-green-400" : ""}`}
+                                    >
+                                        {t.estado}
+                                    </td>
                                     {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<td className="px-3 py-2">
                                         <button onClick={() => onEdit(t)}>
                                             <FontAwesomeIcon
