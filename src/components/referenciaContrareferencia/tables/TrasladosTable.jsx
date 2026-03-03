@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookMedical, faCheck, faDollar, faEdit, faFileEdit, faPencilAlt, faTruckMedical, faXmark, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faBookMedical, faCheck, faDollar, faFileEdit, faPencilAlt, faTruckMedical, faXmark, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';

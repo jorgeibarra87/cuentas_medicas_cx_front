@@ -235,6 +235,7 @@ export default function TrasladosTotalPage() {
                                                                 <th className="border-r px-2 py-1 text-left">Valor</th>
                                                                 <th className="border-r px-2 py-1 text-left">Facturador</th>
                                                                 <th className="border-r px-2 py-1 text-left">F. Factura</th>
+                                                                <th className="border-r px-2 py-1 text-left">Estado</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -245,7 +246,11 @@ export default function TrasladosTotalPage() {
                                                                     <td className="border-r px-2 py-1">{f.factura}</td>
                                                                     <td className="border-r px-2 py-1">${f.valor?.toLocaleString()}</td>
                                                                     <td className="border-r px-2 py-1">{f.nombreFacturador}</td>
-                                                                    <td className="px-2 py-1">{f.fechaFactura?.slice(0, 10)}</td>
+                                                                    <td className="border-r px-2 py-1">{f.fechaFactura?.slice(0, 10)}</td>
+                                                                    <td className={`px-2 py-1 ${f.estado === "PENDIENTE" ? "bg-yellow-300" : ""} ${f.estado === "FACTURADO" ? "bg-green-400" : ""}`}
+                                                                    >
+                                                                        {f.estado}
+                                                                    </td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>
@@ -272,10 +277,11 @@ export default function TrasladosTotalPage() {
                                                         <thead className="bg-blue-50 text-blue-800">
                                                             <tr>
                                                                 {/* <th className="px-2 py-1 text-left">ID</th> */}
-                                                                <th className="px-2 py-1 text-left">Fecha Cuenta</th>
-                                                                <th className="px-2 py-1 text-left">Servicio Egreso</th>
-                                                                <th className="px-2 py-1 text-left">Responsable</th>
-                                                                <th className="px-2 py-1 text-left">Observaciones</th>
+                                                                <th className="border-r px-2 py-1 text-left">Fecha Cuenta</th>
+                                                                <th className="border-r px-2 py-1 text-left">Servicio Egreso</th>
+                                                                <th className="border-r px-2 py-1 text-left">Responsable</th>
+                                                                <th className="border-r px-2 py-1 text-left">Observaciones</th>
+                                                                <th className="px-2 py-1 text-left">Estado</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -286,6 +292,10 @@ export default function TrasladosTotalPage() {
                                                                     <td className="border-r px-2 py-1">{c.servicioEgreso}</td>
                                                                     <td className="border-r px-2 py-1">{c.responsableAuditoria}</td>
                                                                     <td className="border-r px-2 py-1">{c.observaciones}</td>
+                                                                    <td className={`px-2 py-1 ${c.estado === "PENDIENTE" ? "bg-yellow-300" : ""} ${c.estado === "AUDITADO" ? "bg-green-400" : ""}`}
+                                                                    >
+                                                                        {c.estado}
+                                                                    </td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>
