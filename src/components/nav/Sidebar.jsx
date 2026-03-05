@@ -27,7 +27,7 @@ export default function Sidebar({ componente: Componente }) {
   }, []);
 
   const opcionesMenu = [
-    {
+    /* {
       nombre: 'Peticion',
       roles: ['ROLE_ADMINISTRADOR'], // Define los roles para esta opción
       submenu: [
@@ -91,7 +91,7 @@ export default function Sidebar({ componente: Componente }) {
           ]
         }
       ]
-    },
+    }, */
     // {
     //     nombre: 'InnoProduc',
     //     roles: ['ROLE_ADMINISTRADOR'], // Define los roles para esta opción
@@ -134,14 +134,14 @@ export default function Sidebar({ componente: Componente }) {
         { nombre: 'Cuentas Médicas', ruta: '/referenciacontrareferencia/cuentas-medicas', roles: ['ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_FORMULARIO'] }, */
       ]
     },
-    {
+    /* {
       nombre: 'Asignación_de_camas',
       roles: ['ROLE_ADMINISTRADOR', 'ROLE_ADMINISTRADOR', 'ROLE_CAMAS_COORD_INTERNACION', 'ROLE_CAMAS_MEDICO_ESPECIALISTA', 'ROLE_CAMAS_ENFERMERO_INTERNACION', 'ROLE_CAMAS_FACTURACION', 'ROLE_CAMAS_ENFERMERO_URGENCIAS'],
       submenu: [
         { nombre: 'Solicitar cama', ruta: '/asginacioncamas/solicitud', roles: ['ROLE_ADMINISTRADOR', 'ROLE_ADMINISTRADOR', 'ROLE_CAMAS_MEDICO_ESPECIALISTA', 'ROLE_CAMAS_ENFERMERO_INTERNACION', 'ROLE_CAMAS_COORD_INTERNACION', 'ROLE_CAMAS_FACTURACION', 'ROLE_CAMAS_ENFERMERO_URGENCIAS'] },
         { nombre: 'Asignaciones', ruta: '/asginacioncamas/', roles: ['ROLE_ADMINISTRADOR', 'ROLE_ADMINISTRADOR', 'ROLE_CAMAS_ENFERMERO_INTERNACION', 'ROLE_CAMAS_COORD_INTERNACION', 'ROLE_CAMAS_ENFERMERO_URGENCIAS'] }
       ]
-    },
+    }, */
     // // {
     // //     nombre: 'MesadeProcesos',
     // //     roles: ['ROLE_ADMINISTRADOR','ROLE_MESADEPROCESOS_COORD','ROLE_MESADEPROCESOS_USER'],
@@ -167,13 +167,13 @@ export default function Sidebar({ componente: Componente }) {
     //         {nombre: 'Ajustes', ruta: '/monitorizacionhc/ajustes', roles: ['ROLE_ADMINISTRADOR']}
     //     ]
     // },
-    {
+    /* {
       nombre: 'Ajustes',
       roles: ['ROLE_ADMINISTRADOR'],
       submenu: [
         { nombre: 'Usuario', ruta: '/ajustes/usuario', roles: ['ROLE_ADMINISTRADOR'] }
       ]
-    }
+    } */
     // Agrega más opciones de menú aquí si es necesario
   ];
 

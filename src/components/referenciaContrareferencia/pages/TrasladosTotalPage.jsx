@@ -79,19 +79,19 @@ export default function TrasladosTotalPage() {
             >
                 <FontAwesomeIcon icon={faTruckMedical} className="w-4 h-4 text-white pr-2" />Traslados
             </button>
-            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_LIDER', 'ROLE_REFERENCIA_ASISTENTE') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/traslados')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faFileEdit} className="w-4 h-4 text-white pr-2" />Referencia
             </button>)}
-            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_FACTURA') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_FACTURACION_LIDER', 'ROLE_FACTURACION_ASISTENTE') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/facturaciones')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faDollar} className="w-4 h-4 text-white pr-2" />Facturación
             </button>)}
-            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_CUENTAS') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_MEDICAS_LIDER', 'ROLE_CUENTAS_MEDICAS_ASISTENTE') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/cuentas-medicas')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >

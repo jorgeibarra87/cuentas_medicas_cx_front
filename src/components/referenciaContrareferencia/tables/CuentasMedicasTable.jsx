@@ -67,7 +67,7 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
 
         // ✅ Confirmación antes de proceder
         const confirmacion = window.confirm(
-            `¿Estás seguro de que deseas ${nuevoEstado === 'AUDITADO' ? 'AUDITAR' : 'INVALIDAR'} 
+            `¿Estás seguro de que deseas ${nuevoEstado === 'AUDITADO' ? 'AUDITAR' : 'PENDIENTE'} 
 ${seleccionados.size} cuenta(s) médica(s)?`
         );
 
@@ -84,7 +84,7 @@ ${seleccionados.size} cuenta(s) médica(s)?`
             );
             setSeleccionados(new Set());
             loadData();
-            alert(`✅ ${seleccionados.size} cuenta(s) médica(s) ${nuevoEstado === 'AUDITADO' ? 'auditada(s)' : 'invalidado(s)'} correctamente`);
+            alert(`✅ ${seleccionados.size} cuenta(s) médica(s) ${nuevoEstado === 'AUDITADO' ? 'auditada(s)' : 'pendiente(s)'} correctamente`);
         } catch (err) {
             alert('❌ Error al cambiar estado: ' + err.message);
         } finally {
@@ -126,19 +126,19 @@ ${seleccionados.size} cuenta(s) médica(s)?`
             >
                 <FontAwesomeIcon icon={faTruckMedical} className="w-4 h-4 text-white pr-2" />Traslados
             </button>
-            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_LIDER', 'ROLE_REFERENCIA_ASISTENTE') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/traslados')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faFileEdit} className="w-4 h-4 text-white pr-2" />Referencia
             </button>)}
-            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_FACTURACION_LIDER', 'ROLE_FACTURACION_ASISTENTE') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/facturaciones')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faDollar} className="w-4 h-4 text-white pr-2" />Facturación
             </button>)}
-            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_LIDER', 'ROLE_CUENTAS_ASISTENTE') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/cuentas-medicas')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
@@ -204,26 +204,26 @@ ${seleccionados.size} cuenta(s) médica(s)?`
                     <span className="text-sm text-gray-500 my-auto mr-2">
                         {seleccionados.size > 0 && `${seleccionados.size} seleccionado(s)`}
                     </span>
-                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_CUENTAS') && (<button
+                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_LIDER') && (<button
                         onClick={() => cambiarEstado('AUDITADO')}
                         disabled={procesando || seleccionados.size === 0}
                         className="hover:cursor-pointer text-xs font-semibold mx-1 my-2 px-1 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
                     >
                         <FontAwesomeIcon icon={faCheck} className="w-4 h-4 text-white" /> Auditado
                     </button>)}
-                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_CUENTAS') && (<button
+                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_LIDER') && (<button
                         onClick={() => cambiarEstado('PENDIENTE')}
                         disabled={procesando || seleccionados.size === 0}
                         className="hover:cursor-pointer text-xs font-semibold mx-1 my-2 px-1 py-1 bg-red-500 text-white rounded hover:bg-red-700 disabled:opacity-50"
                     >
-                        <FontAwesomeIcon icon={faXmark} className="w-4 h-4 text-white font-bold" /> Invalidar
+                        <FontAwesomeIcon icon={faXmark} className="w-4 h-4 text-white font-bold" /> Pendiente
                     </button>)}
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-full table-auto text-gray-700" style={{ fontSize: `${fontSize}px` }}>
                         <thead>
                             <tr className="bg-gray-800 text-white">
-                                {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<th className="hover:cursor-pointer px-2 py-0.5">
+                                {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_LIDER') && (<th className="hover:cursor-pointer px-2 py-0.5">
                                     {/* Seleccionar todos */}
                                     <input
                                         type="checkbox"
@@ -243,7 +243,7 @@ ${seleccionados.size} cuenta(s) médica(s)?`
                                 <th className="px-2 py-0.5 font-semibold">Responsable Auditoria</th>
                                 <th className="px-2 py-0.5 font-semibold">Observaciones</th>
                                 <th className="px-2 py-0.5 font-semibold">Estado</th>
-                                {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<th className="px-2 py-0.5 font-semibold">Acciones</th>)}
+                                {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_LIDER') && (<th className="px-2 py-0.5 font-semibold">Acciones</th>)}
                             </tr>
                         </thead>
                         <tbody>
@@ -253,7 +253,7 @@ ${seleccionados.size} cuenta(s) médica(s)?`
                                     className={`border-b hover:bg-gray-50 ${seleccionados.has(t.id) ? 'bg-blue-50' : ''}`}
                                 >
                                     {/* Checkbox */}
-                                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<td className="px-2 py-0.5 text-center">
+                                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_LIDER') && (<td className="px-2 py-0.5 text-center">
                                         <input
                                             type="checkbox"
                                             checked={seleccionados.has(t.id)}
@@ -274,7 +274,7 @@ ${seleccionados.size} cuenta(s) médica(s)?`
                                     >
                                         {t.estado}
                                     </td>
-                                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADO_REFERENCIA') && (<td className="px-3 py-2">
+                                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_LIDER') && (<td className="px-3 py-2">
                                         <button onClick={() => onEdit(t)}>
                                             <FontAwesomeIcon
                                                 icon={faPencilAlt}
