@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 const SearchIngreso = ({ fetchAdnIngreso, setAdnIngreso, adnIngreso, fetchPreguntas, setServicio, setRespuestas, fechaEvaluacion, setFechaEvaluacion }) => {
-  const tiposValidos = ['medico', 'enfermeria'];
+  const tiposValidos = ['medico', 'enfermeria', 'facturacion'];
 
   const [ingreso, setIngreso] = useState('');
   const { procServ, loadingUPS, error, fetchUsuaroProcServByDocumento } = useFecthUsuarioProcServ();
