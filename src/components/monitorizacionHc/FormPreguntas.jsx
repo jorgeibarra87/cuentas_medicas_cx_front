@@ -14,7 +14,7 @@ function FormPreguntas() {
   const { preguntas: grupoPreguntas, setPreguntas, loadingP, fetchPreguntas } = useFetchPreguntas();
   const { loadingRes, responseSr, saveRespuestas, error } = useSaveRespuestas();
 
-  const { tipo: tipoPregunta } = useParams(); // Medico, Enfermeria
+  const { tipo: tipoPregunta } = useParams(); // Medico, Enfermeria, Facturacion
   const [respuestas, setRespuestas] = useState([]);
   const [servicio, setServicio] = useState(null);
   const [fechaEvaluacion, setFechaEvaluacion] = useState("");
