@@ -1,14 +1,27 @@
 import Select from 'react-select';
 import useFetchRespuestaIndividual from '../../hooks/monitorizacionHC/useFetchRespuestaIndividual';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Loader from '../Loader';
+import { obtenerTipoPreguntas } from '../../api/monitorizacionHc/preguntasService';
 
 function ReporteIndividual({ procesosServicios }) {
   const { data, loading, error, fetchRespuestasIndividual } = useFetchRespuestaIndividual();
+  const [tipoPregunta, setTipoPregunta] = useState([]);
 
   const [formData, setFormData] = useState({
     ingreso: '',
   });
+
+  //traer los tipos de preguntas para el select
+  useEffect(() => {
+    if (tipoPregunta.length > 0) 
+      return;
+    const llamarTipoPreguntas = async () => {
+      const respuesta = await obtenerTipoPreguntas();
+      setTipoPregunta(respuesta);
+    }
+    llamarTipoPreguntas();
+  },[])
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -68,8 +81,9 @@ function ReporteIndividual({ procesosServicios }) {
             <select name="tipo_pregunta" id="tipoPregunta" required onChange={handleInputChange} value={formData.tipo_pregunta}
               className="border border-gray-300 rounded px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500">
               <option value="">Seleccione una opción</option>
-              <option value="MEDICO">MEDICO</option>
-              <option value="ENFERMERIA">ENFERMERIA</option>
+              {tipoPregunta.map((tipo) => (
+                <option key={tipo} value={tipo}>{tipo}</option>
+              ))}
             </select>
           </div>
 

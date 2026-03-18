@@ -6,6 +6,7 @@ import useFetchPorcentajesByDates from '../../hooks/monitorizacionHC/useFetchDat
 import useFetchDataByProServTipoPregunta from '../../hooks/monitorizacionHC/useFetchDataByProServTipoPregunta';
 import useFechDataByGrupoResumen from '../../hooks/monitorizacionHC/useFechDataByGrupoResumen';
 import useFetchResumenRespuByPregunta from '../../hooks/monitorizacionHC/useFetchResumenRespuByPregunta';
+import { obtenerTipoPreguntas } from '../../api/monitorizacionHc/preguntasService';
 
 function GraficasPorcentajes({ procesosServicios }) {
   const { porcentajes, setPorcentajes, loading: loadingTodo, error: errorTodo, fetchPorcentajesByDates } = useFetchPorcentajesByDates();
@@ -19,6 +20,7 @@ function GraficasPorcentajes({ procesosServicios }) {
   const [selectProserSeleccionado, setSelectProserSeleccionado] = useState(null);
   const [selectTipoPregunta, setSelectTipoPregunta] = useState(null);
   const [selectTipoGrafica, setSelectTipoGrafica] = useState(null);
+  const [tipoPregunta, setTipoPregunta] = useState([]);
 
   // Cambia el título de la página al cargar el componente
   useEffect(() => {
@@ -28,6 +30,17 @@ function GraficasPorcentajes({ procesosServicios }) {
   const getLastDayOfMonth = (year, month) => {
     return new Date(year, month, 0).getDate();
   };
+
+  //traer los tipos de preguntas para el select
+  useEffect(() => {
+      if (tipoPregunta.length > 0)
+        return;
+      const llamarTipoPreguntas = async () => {
+        const respuesta = await obtenerTipoPreguntas();
+        setTipoPregunta(respuesta);
+      }
+      llamarTipoPreguntas();
+    },[])
 
   // si cambia algun input o se selecciona un proceso/servicio, resetea los datos de los gráficos
   useEffect(() => {
@@ -163,8 +176,9 @@ function GraficasPorcentajes({ procesosServicios }) {
               className="border border-gray-300 rounded px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500">
               <option value="">Seleccione una opción</option>
               <option value="TODO">TODO</option>
-              <option value="MEDICO">MEDICO</option>
-              <option value="ENFERMERIA">ENFERMERIA</option>
+              {tipoPregunta.map((tipo) => (
+                <option key={tipo} value={tipo}>{tipo}</option>
+              ))}
             </select>
           </div>
 
