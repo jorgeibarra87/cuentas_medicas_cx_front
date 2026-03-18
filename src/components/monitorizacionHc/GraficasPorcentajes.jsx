@@ -331,7 +331,7 @@ function GraficasPorcentajes({ procesosServicios }) {
                 <td>{dataTbl.reduce((acc, i) => acc + i.cantidadSi, 0)}</td>
                 <td>{dataTbl.reduce((acc, i) => acc + i.cantidadNo, 0)}</td>
                 <td>{dataTbl.reduce((acc, i) => acc + i.cantidadNoAplica, 0)}</td>
-                <td>{`promedio: ${(dataTbl.reduce((acc, i) => acc + i.porcentaje, 0) / dataTbl.length).toFixed(2)}%`}</td>
+                <td>{`${((dataTbl.reduce((acc, i) => acc + i.cantidadSi, 0) / dataTbl.reduce((acc, i) => acc + i.cantidadSi + i.cantidadNo, 0)) * 100).toFixed(2)}%`}</td>
               </tr>
             </tbody>
           </table>
