@@ -90,3 +90,13 @@ export const obtenerInfocanteidadesPorPreguntas = async (fechaInicio, fechaFin, 
         throw error;
     }
 }
+
+export const obtenerRespuestas = async (body) => {
+    try {
+        const response = await apiClienteMonitorizacionHc.post('respuestas/buscar', body);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener las respuestas', error);
+        throw error;
+    }
+}
