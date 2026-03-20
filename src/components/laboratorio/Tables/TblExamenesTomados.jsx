@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useFetchExamenesTomados from "../../../hooks/laboratorio/useFetchExamenesTomados";
 import { actualizarExamenesTomados } from '../../../api/laboratorio/examenesService';
 import Pagination from "../../Pagination";
@@ -8,6 +8,7 @@ function TblExamenesTomados() {
 
     const { data, loading, error, fetchExamenesTomados } = useFetchExamenesTomados();
     const [page, setPage] = useState(0);
+    const size = 10;
     const [fontSize, setFontSize] = useState(10); // por defecto pequeño
     const aumentarTexto = () => setFontSize((prev) => Math.min(prev + 1, 16));
     const reducirTexto = () => setFontSize((prev) => Math.max(prev - 1, 8));
@@ -28,7 +29,7 @@ function TblExamenesTomados() {
 
     const toggleCheckTomado = (examen) => {
         setCheckedItemsTomados(prev => {
-            const key = `${examen.documento}-${examen.folio}`;
+            const key = `${examen.documento}-${examen.folio}-${examen.descCups}`;
             const updated = { ...prev };
             updated[key] = !updated[key];
             return updated;
@@ -39,8 +40,10 @@ function TblExamenesTomados() {
         const seleccionados = Object.keys(checkedItemsTomados)
             .filter(key => checkedItemsTomados[key])
             .map(key => {
-                const [doc, folio] = key.split('-');
-                return data.content.find(p => p.documento === doc && p.folio === folio);
+                const [doc, folio, descCups] = key.split('-');
+                return data.content.find(
+                    p => p.documento === doc && p.folio === folio && p.descCups === descCups
+                );
             })
             .filter(Boolean)
             .map(p => ({
@@ -55,10 +58,19 @@ function TblExamenesTomados() {
             toast.warning("Selecciona exámenes pendientes");
             return;
         }
+
         await marcarTomadosPendientes(seleccionados);
     };
 
     const totalSeleccionadosPendientes = Object.values(checkedItemsTomados).filter(Boolean).length;
+
+    useEffect(() => {
+        fetchExamenesTomados(page, size);
+    }, [page]);
+
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+    };
 
     return (
         <div>
@@ -118,7 +130,7 @@ function TblExamenesTomados() {
                                             {p.fechaTomado === null && (
                                                 <input
                                                     type="checkbox"
-                                                    checked={checkedItemsTomados[`${p.documento}-${p.folio}`] || false}
+                                                    checked={checkedItemsTomados[`${p.documento}-${p.folio}-${p.descCups}`] || false}
                                                     onChange={() => toggleCheckTomado(p)}
                                                     className="w-4 h-4"
                                                 />

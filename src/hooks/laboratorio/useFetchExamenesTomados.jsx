@@ -23,7 +23,7 @@ const useFetchExamenesTomados = () => {
         fetchExamenesTomados(); // page=0, size=10
     }, []);
 
-    return {data, loading, error, fetchExamenesTomados };
+    return { data, loading, error, fetchExamenesTomados };
 };
 
 export default useFetchExamenesTomados;
