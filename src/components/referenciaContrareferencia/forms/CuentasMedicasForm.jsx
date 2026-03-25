@@ -273,6 +273,19 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Fecha Egreso
+                    </label>
+                    <input
+                        type="datetime-local"
+                        value={formData.fechaEgreso}
+                        onChange={e => handleChange('fechaEgreso', e.target.value)}
+                        className={INPUT_CLASS}
+                        required
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                         Responsable Auditoria
                     </label>
                     <input

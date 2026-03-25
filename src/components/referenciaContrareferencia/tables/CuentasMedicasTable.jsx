@@ -240,6 +240,7 @@ ${seleccionados.size} cuenta(s) médica(s)?`
                                 <th className="px-2 py-0.5 font-semibold">Paciente</th>
                                 <th className="px-2 py-0.5 font-semibold">Fecha Cuenta</th>
                                 <th className="px-2 py-0.5 font-semibold">Servicio Egreso</th>
+                                <th className="px-2 py-0.5 font-semibold">Fecha Egreso</th>
                                 <th className="px-2 py-0.5 font-semibold">Responsable Auditoria</th>
                                 <th className="px-2 py-0.5 font-semibold">Observaciones</th>
                                 <th className="px-2 py-0.5 font-semibold">Estado</th>
@@ -268,6 +269,9 @@ ${seleccionados.size} cuenta(s) médica(s)?`
                                         {t.fechaCuenta?.replace('T', ' ').slice(0, 16)}
                                     </td>
                                     <td className="border-r px-1 py-0.5">{t.servicioEgreso}</td>
+                                    <td className="border-r px-1 py-0.5">
+                                        {t.fechaEgreso?.replace('T', ' ').slice(0, 16)}
+                                    </td>
                                     <td className="border-r px-1 py-0.5">{t.responsableAuditoria}</td>
                                     <td className="border-r px-1 py-0.5">{t.observaciones}</td>
                                     <td className={`border-r px-1 py-0.5 font-semibold ${t.estado === "PENDIENTE" ? "bg-yellow-300" : ""} ${t.estado === "AUDITADO" ? "bg-green-400" : ""}`}
