@@ -1,4 +1,4 @@
-import useIdleTimer from "../../hooks/turnos/useInactivity";
+import useIdleTimer from "../../hooks/useInactivity";
 import { useDispatch } from "react-redux";
 import { cerrarSesionAction } from "../../actions/loginActions";
 

@@ -21,3 +21,13 @@ export const obtenerProcesosServiciosQueTienenPreguntas = async () => {
         throw error;
     }
 }
+
+export const obtenerTipoPreguntas = async () => {
+    try {
+        const response = await apiClienteMonitorizacionHc.get('/preguntas/tipos');
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener los tipos de preguntas de monitorizacion microservice',error);
+        throw error;
+    }
+}

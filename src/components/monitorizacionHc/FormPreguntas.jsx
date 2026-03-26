@@ -8,13 +8,15 @@ import Loader from '../Loader';
 import AdnIngreso from '../../models/dinamica/AdnIngreso';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import useFetchRespuestas from '../../hooks/monitorizacionHC/useFetchRespuestas';
 
 function FormPreguntas() {
-  const { adnIngreso, setAdnIngreso, loadingAdnI, fetchAdnIngreso } = useAdnIngreso();
+  const { adnIngreso, setAdnIngreso, loadingAdnI, fetchAdnIngreso, error: errorAdnIngreso } = useAdnIngreso();
   const { preguntas: grupoPreguntas, setPreguntas, loadingP, fetchPreguntas } = useFetchPreguntas();
   const { loadingRes, responseSr, saveRespuestas, error } = useSaveRespuestas();
+  const { data: respuestasData, loading: loadingRespuestas, error: errorRespuestas, fetchRespuestas  } = useFetchRespuestas();
 
-  const { tipo: tipoPregunta } = useParams(); // Medico, Enfermeria
+  const { tipo: tipoPregunta } = useParams(); // Medico, Enfermeria, Facturacion
   const [respuestas, setRespuestas] = useState([]);
   const [servicio, setServicio] = useState(null);
   const [fechaEvaluacion, setFechaEvaluacion] = useState("");
@@ -37,6 +39,15 @@ function FormPreguntas() {
   useEffect(() => {
     document.title = 'Monitorición HC - Formulario de Preguntas';
   }, []);
+
+  useEffect(() => {
+    if (errorAdnIngreso == null) return;
+    if (errorAdnIngreso?.response?.data?.codigoError === "GC-0003") {
+      toast.warning(errorAdnIngreso.response.data.mensaje.split(',')[1]);
+    } else if (errorAdnIngreso) {
+      toast.error('Se presentó un error al cargar el ingreso');
+    }
+  }, [errorAdnIngreso])
 
   useEffect(() => {
     setPreguntas([]);
@@ -73,15 +84,35 @@ function FormPreguntas() {
     }
   }, [responseSr, tipoPregunta]);
 
+  // verificar si el usuario ya tiene respuestas para ese ingreso y tipo de pregunta, si es así no volver a mostrar preguntas.
+  useEffect(() => {
+    if(servicio === null) return;
+    const form = {
+      ingreso: adnIngreso.id,
+      procesoOServicioId: servicio.id,
+      procesoServicio: servicio.tipo,
+      tipoPregunta: tipoPregunta.toUpperCase(),
+    }
+    fetchRespuestas(form);
+  }, [servicio]);
+
+
+  console.log('respuestasData', respuestasData);
   return (
     <div className="px-4 py-2">
-      {(loadingRes || loadingAdnI || loadingP) && <Loader />}
+      {(loadingRes || loadingAdnI || loadingP || loadingRespuestas) && <Loader />}
+
+      {respuestasData?.respuestas?.length > 0 && (
+        <div className="mb-4 p-4 border rounded-lg shadow-lg bg-yellow-100">
+          <h2 className="text-center text-yellow-800 text-lg font-semibold">Ya se han registrado respuestas para este ingreso y tipo de pregunta.</h2>
+        </div>
+      ) }
 
       <div className="flex flex-col gap-4">
         {/* <SearchIngreso fetchAdnIngreso={fetchAdnIngreso} setAdnIngreso={setAdnIngreso} fetchPreguntas={fetchPreguntas} adnIngreso={adnIngreso} fetchRespuestasByIngreso={fetchRespuestasByIngreso} setServicio={setServicio}/> */}
         <SearchIngreso {...{ fetchAdnIngreso, setAdnIngreso, fetchPreguntas, adnIngreso, setServicio, setRespuestas, fechaEvaluacion, setFechaEvaluacion }} />
 
-        {grupoPreguntas.length === 0 ? (
+        {grupoPreguntas.length === 0 && (
           adnIngreso.id ? (
             <div className="mt-4">
               <div className="p-6 border rounded-lg shadow-lg bg-white">
@@ -89,7 +120,9 @@ function FormPreguntas() {
               </div>
             </div>
           ) : null
-        ) : (
+        )}
+
+        {grupoPreguntas.length > 0 && respuestasData?.id === null && !loadingRespuestas && (
           <div className="mt-4">
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
               <table className="w-full text-sm text-left rtl:text-right ">
