@@ -3,8 +3,8 @@ import { faBookMedical, faCheck, faDollar, faFileEdit, faPencilAlt, faTruckMedic
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
+import { cambiarEstadoTraslado, obtenerTraslados } from '../../../api/referenciaContrareferencia/trasladosService';
 
-const API_BASE = 'http://192.168.22.148:8082';
 const PAGE_SIZE = 2; // máximo por página
 
 export default function TrasladosTable({ onEdit = () => { }, reloadFlag }) {
@@ -39,10 +39,8 @@ export default function TrasladosTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch(`${API_BASE}/traslados`);
-            if (!res.ok) throw new Error(`Error ${res.status}`);
-            const json = await res.json();
-            setData(json);
+            const response = await obtenerTraslados();
+            setData(response);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -78,9 +76,7 @@ ${seleccionados.size} traslado(s)?`
         try {
             await Promise.all(
                 [...seleccionados].map(id =>
-                    fetch(`${API_BASE}/traslados/${id}/estado?estado=${nuevoEstado}`, {
-                        method: 'PATCH'
-                    })
+                    cambiarEstadoTraslado(id, nuevoEstado)
                 )
             );
             setSeleccionados(new Set());

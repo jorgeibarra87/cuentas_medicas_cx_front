@@ -1,8 +1,8 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faPlus, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
+import { guardarTraslado, actualizarTraslado } from '../../../api/referenciaContrareferencia/trasladosService';
 
-const API_BASE = 'http://192.168.22.148:8082';
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";
 
@@ -91,26 +91,16 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     .filter(Boolean)
             };
 
-            const url = traslado
-                ? `${API_BASE}/traslados/${traslado.id}`
-                : `${API_BASE}/traslados`;
-
-            const method = traslado ? 'PUT' : 'POST';
-
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) {
-                const txt = await res.text();
-                throw new Error(`Error ${res.status}: ${txt}`);
+            if (traslado) {
+                await actualizarTraslado(traslado.id, payload);
+            } else {
+                await guardarTraslado(payload);
             }
 
             onSaved && onSaved();
         } catch (err) {
-            setError(err.message);
+            const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
+            setError(backendMessage || err.message || 'Ocurrio un error al guardar el traslado.');
         } finally {
             setLoading(false);
         }
@@ -193,8 +183,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
                         type="text"
                         value={formData.nomPaciente}
                         onChange={e => handleChange('nomPaciente', e.target.value)}
-                        readOnly
-                        className={INPUT_READONLY}
+                        className={INPUT_CLASS}
                         required
                     />
                 </div>
@@ -207,8 +196,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
                         type="text"
                         value={formData.ingreso}
                         onChange={e => handleChange('ingreso', e.target.value)}
-                        readOnly
-                        className={INPUT_READONLY}
+                        className={INPUT_CLASS}
                         required
                     />
                 </div>
@@ -221,8 +209,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
                         type="text"
                         value={formData.eps}
                         onChange={e => handleChange('eps', e.target.value)}
-                        readOnly
-                        className={INPUT_READONLY}
+                        className={INPUT_CLASS}
                         required
                     />
                 </div>
@@ -235,8 +222,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
                         type="text"
                         value={formData.servicio}
                         onChange={e => handleChange('servicio', e.target.value)}
-                        readOnly
-                        className={INPUT_READONLY}
+                        className={INPUT_CLASS}
                         required
                     />
                 </div>

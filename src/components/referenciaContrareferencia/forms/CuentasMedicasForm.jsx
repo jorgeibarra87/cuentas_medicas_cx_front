@@ -1,8 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faFile, faFileEdit, faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
+import { guardarCuentaMedica, actualizarCuentaMedica } from '../../../api/referenciaContrareferencia/cuentasMedicasService';
+import { obtenerTraslados, obtenerTrasladoPorId } from '../../../api/referenciaContrareferencia/trasladosService';
 
-const API_BASE = 'http://192.168.22.148:8082';
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";
 
@@ -35,9 +36,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
     const buscarPorTrasladoId = async (trasladoId) => {
         if (!trasladoId) return;
         try {
-            const res = await fetch(`${API_BASE}/traslados/${trasladoId}`);
-            if (!res.ok) throw new Error(`Error ${res.status}`);
-            const traslado = await res.json();
+            const traslado = await obtenerTrasladoPorId(trasladoId);
             setInfoTraslado({
                 nomPaciente: traslado.nomPaciente || '',
                 ingreso: traslado.ingreso || '',
@@ -45,7 +44,8 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
             });
             setDocumento(traslado.documento || '');
         } catch (err) {
-            setError('Error al cargar datos del traslado: ' + err.message);
+            const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
+            setError('Error al cargar datos del traslado: ' + (backendMessage || err.message));
         }
     };
 
@@ -55,9 +55,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
         setBuscando(true);
         setError('');
         try {
-            const res = await fetch(`${API_BASE}/traslados`);
-            if (!res.ok) throw new Error(`Error ${res.status}`);
-            const lista = await res.json();
+            const lista = await obtenerTraslados();
 
             // Busca el traslado más reciente con ese documento
             const encontrado = lista
@@ -77,7 +75,8 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                 setError(`No se encontró ningún traslado con documento: ${doc}`);
             }
         } catch (err) {
-            setError('Error al buscar: ' + err.message);
+            const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
+            setError('Error al buscar: ' + (backendMessage || err.message));
         } finally {
             setBuscando(false);
         }
@@ -98,25 +97,16 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                 valor: Number(formData.valor)
             };
 
-            const url = cuentas
-                ? `${API_BASE}/cuentas-medicas/${cuentas.id}`
-                : `${API_BASE}/cuentas-medicas`;
-            const method = cuentas ? 'PUT' : 'POST';
-
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) {
-                const txt = await res.text();
-                throw new Error(`Error ${res.status}: ${txt}`);
+            if (cuentas) {
+                await actualizarCuentaMedica(cuentas.id, payload);
+            } else {
+                await guardarCuentaMedica(payload);
             }
 
             onSaved && onSaved();
         } catch (err) {
-            setError(err.message);
+            const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
+            setError(backendMessage || err.message || 'Ocurrio un error al guardar la cuenta medica.');
         } finally {
             setLoading(false);
         }

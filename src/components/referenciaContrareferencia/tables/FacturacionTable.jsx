@@ -3,8 +3,8 @@ import { faBookMedical, faDollar, faFileEdit, faPencilAlt, faTruckMedical, faSea
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
+import { cambiarEstadoFactura, obtenerFacturas } from '../../../api/referenciaContrareferencia/facturacionService';
 
-const API_BASE = 'http://192.168.22.148:8082';
 const PAGE_SIZE = 2; // máximo por página
 
 export default function FacturacionTable({ onEdit = () => { }, reloadFlag }) {
@@ -40,9 +40,8 @@ export default function FacturacionTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch(`${API_BASE}/facturaciones`);
-            if (!res.ok) throw new Error(`Error ${res.status}`);
-            setData(await res.json());
+            const response = await obtenerFacturas();
+            setData(response);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -78,9 +77,7 @@ ${seleccionados.size} factura(s)?`
         try {
             await Promise.all(
                 [...seleccionados].map(id =>
-                    fetch(`${API_BASE}/facturaciones/${id}/estado?estado=${nuevoEstado}`, {
-                        method: 'PATCH'
-                    })
+                    cambiarEstadoFactura(id, nuevoEstado)
                 )
             );
             setSeleccionados(new Set());

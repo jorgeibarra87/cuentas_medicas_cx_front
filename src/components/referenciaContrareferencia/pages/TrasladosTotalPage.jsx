@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight, faAmbulance, faTruckMedical, faFileEdit, faDollar, faBookMedical, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
+import { obtenerTrasladosCompletos } from '../../../api/referenciaContrareferencia/trasladosService';
 
-const API_BASE = 'http://192.168.22.148:8082';
-const PAGE_SIZE = 2; // máximo por página
+const PAGE_SIZE = 50; // máximo por página
 
 export default function TrasladosTotalPage() {
     const [datos, setDatos] = useState([]);
@@ -35,10 +35,14 @@ export default function TrasladosTotalPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`${API_BASE}/traslados-completos`)
-            .then(res => res.json())
-            .then(data => setDatos(data))
-            .finally(() => setLoading(false));
+
+        const fetchData = async () => {
+            const response = await obtenerTrasladosCompletos();
+            setDatos(response);
+            setLoading(false);
+        };
+
+        fetchData();
     }, []);
 
     const toggleFila = (id) =>

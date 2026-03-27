@@ -3,8 +3,7 @@ import { faBookMedical, faDollar, faFileEdit, faPencilAlt, faTruckMedical, faSea
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
-
-const API_BASE = 'http://192.168.22.148:8082';
+import { obtenerCuentasMedicas, cambiarEstadoCuentaMedica } from '../../../api/referenciaContrareferencia/cuentasMedicasService';
 const PAGE_SIZE = 1; // máximo por página
 
 export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) {
@@ -39,9 +38,8 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
         setLoading(true);
         setError('');
         try {
-            const res = await fetch(`${API_BASE}/cuentas-medicas`);
-            if (!res.ok) throw new Error(`Error ${res.status}`);
-            setData(await res.json());
+            const response = await obtenerCuentasMedicas();
+            setData(response);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -77,9 +75,7 @@ ${seleccionados.size} cuenta(s) médica(s)?`
         try {
             await Promise.all(
                 [...seleccionados].map(id =>
-                    fetch(`${API_BASE}/cuentas-medicas/${id}/estado?estado=${nuevoEstado}`, {
-                        method: 'PATCH'
-                    })
+                    cambiarEstadoCuentaMedica(id, nuevoEstado)
                 )
             );
             setSeleccionados(new Set());
