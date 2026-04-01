@@ -2,11 +2,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faPlus, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { guardarTraslado, actualizarTraslado } from '../../../api/referenciaContrareferencia/trasladosService';
+import { obtenerInformacionCompletaPaciente } from '../../../api/dinamica/genPacienService';
+import Loader from '../../Loader';
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";
 
 export default function TrasladosForm({ traslado, onSaved }) {
+
+    const [dataUsuario, setDatausuario] = useState(null);
+
     const [formData, setFormData] = useState({
         fechaTraslado: '',
         nomPaciente: '',
@@ -108,41 +113,51 @@ export default function TrasladosForm({ traslado, onSaved }) {
 
     const buscarPaciente = async (documento) => {
         if (documento.length < 5) return;
+        setDatausuario(null);
+        setLoading(true);
 
-        // ✅ DATOS SIMULADOS
-        const datosSimulados = {
-            '1061234567': { ingreso: '100234', eps: 'NUEVA EPS', servicio: 'URGENCIAS', nomPaciente: 'JUAN PEREZ' },
-            '2345678901': { ingreso: '100235', eps: 'SURA', servicio: 'MEDICINA INTERNA', nomPaciente: 'MARIA GOMEZ' },
-            '3456789012': { ingreso: '100236', eps: 'SANITAS', servicio: 'CIRUGIA', nomPaciente: 'CARLOS RODRIGUEZ' },
-            '87069640': { ingreso: '100237', eps: 'COOSALUD', servicio: 'PEDIATRIA', nomPaciente: 'ANA LOPEZ' },
-        };
+        try {
+            const respuesta = await obtenerInformacionCompletaPaciente(documento);
+            setDatausuario(respuesta);
+        } catch (error) {
+            manejarConfirmacion(documento);
+        }
+        setLoading(false);
+    };
 
-        const simulado = datosSimulados[documento];
+    const manejarConfirmacion = async (documento) => {
+        const confirmar = window.confirm("El documento ingresado no contiene ingreso activo en el sistema. ¿Desea continuar con el traslado con esta información?");
+        
+        if (!confirmar) {
+            handleChange('documento', '');
+        }else{
+            setDatausuario({
+                pacNumDoc: documento,
+                ingreso: 'SIN INGRESO',
+            });
+        }
+    };
 
-        if (simulado) {
-            handleChange('ingreso', simulado.ingreso);
-            handleChange('eps', simulado.eps);
-            handleChange('servicio', simulado.servicio);
-            handleChange('nomPaciente', simulado.nomPaciente);
+
+    useEffect(() => {
+        setLoading(false);
+        handleChange('ingreso', '');
+        handleChange('eps', '');
+        handleChange('servicio', '');
+        handleChange('nomPaciente', '');
+        if (dataUsuario) {
+            handleChange('documento', dataUsuario.pacNumDoc || '');
+            handleChange('ingreso', dataUsuario?.ingreso || '');
+            handleChange('eps', dataUsuario?.entidad || '');
+            handleChange('servicio', dataUsuario?.servicio || 'SIN SERVICIO');
+            handleChange('nomPaciente', dataUsuario?.nombreCompleto || '');
             return;
         }
-        // try {
-        //     const res = await fetch(
-        //         `${API_LABORATORIO}/dinamica-microservicio/hcnSolExa/buscar-paciente?documento=${documento}`
-        //     );
-        //     const data = await res.json();
-        //     if (data.encontrado) {
-        //         handleChange('ingreso',  data.ingreso);
-        //         handleChange('eps',      data.eps);
-        //         handleChange('servicio', data.servicio);
-        //     }
-        // } catch (err) {
-        //     console.warn('No se pudo autocompletar:', err.message);
-        // }
-    };
+    }, [dataUsuario]);
 
     return (
         <div className="bg-white shadow-md rounded-lg p-2 mb-2">
+            {loading && ( <Loader /> )}
 
             {error && (
                 <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
@@ -160,12 +175,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Documento
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.documento}
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Documento</label>
+                    <input type="text" value={formData.documento} 
                         onChange={e => handleChange('documento', e.target.value)}
                         onBlur={e => buscarPaciente(e.target.value)}
                         placeholder="Ej: 1061234567"
@@ -179,60 +190,52 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Paciente
                     </label>
-                    <input
-                        type="text"
-                        value={formData.nomPaciente}
+                    <input type="text" value={formData.nomPaciente}
                         onChange={e => handleChange('nomPaciente', e.target.value)}
-                        className={INPUT_CLASS}
+                        readOnly = {dataUsuario?.nombreCompleto ? true : false}
+                        className={dataUsuario?.nombreCompleto ? INPUT_READONLY : INPUT_CLASS} 
                         required
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Ingreso
-                    </label>
-                    <input
-                        type="text"
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Ingreso </label>
+                    <input type="text"
                         value={formData.ingreso}
                         onChange={e => handleChange('ingreso', e.target.value)}
-                        className={INPUT_CLASS}
+                        readOnly={dataUsuario ? true : false}
+                        className={dataUsuario ? INPUT_READONLY : INPUT_CLASS}
                         required
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        EPS
-                    </label>
-                    <input
-                        type="text"
+                    <label className="block text-sm font-medium text-gray-700 mb-1">EPS</label>
+                    <input type="text"
                         value={formData.eps}
                         onChange={e => handleChange('eps', e.target.value)}
-                        className={INPUT_CLASS}
+                        //className={INPUT_CLASS}
+                        readOnly={dataUsuario?.entidad ? true : false}
+                        className={dataUsuario?.entidad ? INPUT_READONLY : INPUT_CLASS}
                         required
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Servicio
-                    </label>
-                    <input
-                        type="text"
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Servicio</label>
+                    <input type="text"
                         value={formData.servicio}
                         onChange={e => handleChange('servicio', e.target.value)}
-                        className={INPUT_CLASS}
+                        //className={INPUT_CLASS}
+                        readOnly={dataUsuario ? true : false}
+                        className={dataUsuario ? INPUT_READONLY : INPUT_CLASS}
                         required
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Fecha traslado
-                    </label>
-                    <input
-                        type="datetime-local"
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Fecha traslado</label>
+                    <input type="datetime-local"
                         value={formData.fechaTraslado}
                         onChange={e => handleChange('fechaTraslado', e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -241,15 +244,11 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Tipo traslado
-                    </label>
-                    <select
-                        value={formData.tipoTraslado}
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Tipo traslado </label>
+                    <select value={formData.tipoTraslado}
                         onChange={e => handleChange('tipoTraslado', e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    >
+                        required >
                         <option value="">-- Seleccionar --</option>
                         <option value="TBS">TBS</option>
                         <option value="TBR">TBR</option>
@@ -262,34 +261,24 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Destino
                     </label>
-                    <input
-                        type="text"
-                        value={formData.destino}
+                    <input type="text" value={formData.destino}
                         onChange={e => handleChange('destino', e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    />
+                        required />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Ciudad
-                    </label>
-                    <input
-                        type="text"
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Ciudad </label>
+                    <input type="text"
                         value={formData.ciudad}
                         onChange={e => handleChange('ciudad', e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    />
+                        required />
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Autorización
-                    </label>
-                    <textarea
-                        rows={2}
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Autorización </label>
+                    <textarea rows={2}
                         value={formData.autorizacion}
                         onChange={e => handleChange('autorizacion', e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -297,11 +286,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Auxiliar referencia
-                    </label>
-                    <select
-                        value={formData.auxiliarReferencia}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Auxiliar referencia</label>
+                    <select value={formData.auxiliarReferencia}
                         onChange={e => handleChange('auxiliarReferencia', e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
@@ -319,11 +305,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Auxiliar ambulancia
-                    </label>
-                    <select
-                        value={formData.auxiliarAmbulancia}
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Auxiliar ambulancia </label>
+                    <select value={formData.auxiliarAmbulancia}
                         onChange={e => handleChange('auxiliarAmbulancia', e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
@@ -341,8 +324,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Medicamentos (separados por coma)
                     </label>
-                    <input
-                        type="text"
+                    <input type="text"
                         value={medicamentosTexto}
                         onChange={e => setMedicamentosTexto(e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -351,15 +333,11 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Archivo
-                    </label>
-                    <select
-                        value={formData.archivo}
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Archivo</label>
+                    <select value={formData.archivo}
                         onChange={e => handleChange('archivo', e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                    >
+                        required >
                         <option value="">-- Seleccionar --</option>
                         <option value="REFERENCIA_Y_SOLICITUDES">REFERENCIA Y SOLICITUDES</option>
                         <option value="CONSULTAR_ARCHIVOS_ADJUNTOS">CONSULTAR ARCHIVOS ADJUNTOS</option>
@@ -367,11 +345,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Observación
-                    </label>
-                    <textarea
-                        rows={2}
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Observación </label>
+                    <textarea rows={2}
                         value={formData.observaciones}
                         onChange={e => handleChange('observaciones', e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -379,11 +354,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 </div>
 
                 <div className="md:col-span-2 flex justify-end space-x-3 mt-4">
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="px-2 py-2 bg-green-600 text-white font-semibold text-md rounded hover:bg-green-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 w-full lg:w-auto"
-                    >
+                    <button type="submit" disabled={loading}
+                        className="px-2 py-2 bg-green-600 text-white font-semibold text-md rounded hover:bg-green-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 w-full lg:w-auto">
                         {loading ? 'Guardando...' : (traslado ? <span><FontAwesomeIcon icon={faArrowsRotate} className="w-4 h-4 text-white pr-2" />Actualizar</span> : <span><FontAwesomeIcon icon={faPlus} className="w-4 h-4 text-white pr-2" />Crear</span>)}
                     </button>
                 </div>

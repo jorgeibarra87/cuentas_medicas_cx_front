@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
 import { cambiarEstadoTraslado, obtenerTraslados } from '../../../api/referenciaContrareferencia/trasladosService';
 
-const PAGE_SIZE = 2; // máximo por página
+const PAGE_SIZE = 50; // máximo por página
 
 export default function TrasladosTable({ onEdit = () => { }, reloadFlag }) {
     const [data, setData] = useState([]);
