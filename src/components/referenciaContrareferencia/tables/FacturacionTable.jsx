@@ -136,7 +136,7 @@ ${seleccionados.size} factura(s)?`
             >
                 <FontAwesomeIcon icon={faDollar} className="w-4 h-4 text-white pr-2" />Facturación
             </button>)}
-            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_LIDER', 'ROLE_CUENTAS_ASISTENTE') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_MEDICAS_LIDER', 'ROLE_CUENTAS_ASISTENTE') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/cuentas-medicas')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
