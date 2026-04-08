@@ -97,7 +97,8 @@ ${seleccionados.size} cuenta(s) médica(s)?`
             const q = busqueda.toLowerCase();
             return (
                 t.documento?.toLowerCase().includes(q) ||
-                t.nomPaciente?.toLowerCase().includes(q)
+                t.nomPaciente?.toLowerCase().includes(q) ||
+                t.ingreso?.toString().toLowerCase().includes(q)
             );
         })
         // filtro por estado
@@ -152,7 +153,7 @@ ${seleccionados.size} cuenta(s) médica(s)?`
                             setBusqueda(e.target.value);
                             setPage(0); // resetea a página 1 al buscar
                         }}
-                        placeholder="Documento o paciente..."
+                        placeholder="Documento o paciente o ingreso"
                         className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
                         style={{ width: '200px' }}
                     />
