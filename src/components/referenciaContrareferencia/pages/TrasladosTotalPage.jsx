@@ -55,7 +55,8 @@ export default function TrasladosTotalPage() {
             const q = busqueda.toLowerCase();
             return (
                 traslado.documento?.toLowerCase().includes(q) ||
-                traslado.nomPaciente?.toLowerCase().includes(q)
+                traslado.nomPaciente?.toLowerCase().includes(q) ||
+                traslado.ingreso?.toString().toLowerCase().includes(q)
             );
         })
         // filtro por estado
@@ -113,7 +114,7 @@ export default function TrasladosTotalPage() {
                             setBusqueda(e.target.value);
                             setPage(0); // ✅ resetea a página 1 al buscar
                         }}
-                        placeholder="Documento o paciente..."
+                        placeholder="Documento o paciente o ingreso"
                         className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
                         style={{ width: '200px' }}
                     />
