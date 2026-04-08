@@ -133,7 +133,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                 trasladoId: '',
                 fechaCuenta: now,
                 servicioEgreso: '',
-                responsableAuditoria: '',
+                responsableAuditoria: usuario?.name_user || '',
                 observaciones: '',
             });
             setInfoTraslado({ nomPaciente: '', ingreso: '', eps: '' });
@@ -282,12 +282,9 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Responsable Auditoria
                     </label>
-                    <input
-                        type="text"
-                        value={formData.responsableAuditoria}
-                        onChange={e => handleChange('responsableAuditoria', e.target.value)}
-                        className={INPUT_CLASS}
-                    />
+                    <div className={INPUT_READONLY + ' ' + INPUT_CLASS}>
+                        {formData.responsableAuditoria || ''}
+                    </div>
                 </div>
 
                 <div className="md:col-span-2">
