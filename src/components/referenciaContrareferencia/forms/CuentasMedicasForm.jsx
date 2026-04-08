@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faFile, faFileEdit, faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { guardarCuentaMedica, actualizarCuentaMedica } from '../../../api/referenciaContrareferencia/cuentasMedicasService';
 import { obtenerTraslados, obtenerTrasladoPorId } from '../../../api/referenciaContrareferencia/trasladosService';
 
@@ -9,11 +10,14 @@ const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-
 
 export default function CuentasMedicasForm({ cuentas, onSaved }) {
 
+    const statelogin = useSelector((state) => state.login);
+    const usuario = statelogin.decodeToken;
+
     const [formData, setFormData] = useState({
         trasladoId: '',
         fechaCuenta: '',
         servicioEgreso: '',
-        responsableAuditoria: '',
+        responsableAuditoria: usuario?.name_user || '',
         observaciones: '',
     });
 
@@ -121,7 +125,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                 responsableAuditoria: cuentas.responsableAuditoria || '',
                 observaciones: cuentas.observaciones || '',
             });
-            // ✅ Carga automática de datos del traslado al editar
+            // Carga automática de datos del traslado al editar
             buscarPorTrasladoId(cuentas.trasladoId);
         } else {
             const now = new Date().toISOString().slice(0, 16);
@@ -137,7 +141,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
         }
     }, [cuentas]);
 
-
+    
 
     return (
         <div className="bg-white shadow-md rounded-lg p-4 mb-2">
