@@ -1,12 +1,17 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faFile, faFileEdit, faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { guardarFactura, actualizarFactura } from '../../../api/referenciaContrareferencia/facturacionService';
 import { obtenerTraslados, obtenerTrasladoPorId } from '../../../api/referenciaContrareferencia/trasladosService';
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";
 
 export default function FacturacionForm({ facturacion, onSaved }) {
+
+    const statelogin = useSelector((state) => state.login);
+    const usuario = statelogin.decodeToken;
+
 
     const [formData, setFormData] = useState({
         trasladoId: '',
@@ -16,7 +21,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
         fechaFactura: '',
         factura: '',
         valor: '',
-        nombreFacturador: ''
+        nombreFacturador: usuario?.name_user || ''
     });
 
     // Datos del traslado (solo lectura, para referencia visual)
@@ -129,16 +134,19 @@ export default function FacturacionForm({ facturacion, onSaved }) {
             // ✅ Carga automática de datos del traslado al editar
             buscarPorTrasladoId(facturacion.trasladoId);
         } else {
-            const now = new Date().toISOString().slice(0, 16);
+            const now = new Date();
+            const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
             setFormData({
                 trasladoId: '',
-                fechaPrefactura: now,
+                fechaPrefactura: local,
                 prefactura: '',
                 produccion: '',
-                fechaFactura: now,
+                fechaFactura: local,
                 factura: '',
                 valor: '',
-                nombreFacturador: ''
+                nombreFacturador: usuario?.name_user || ''
             });
             setInfoTraslado({ nomPaciente: '', ingreso: '', eps: '' });
             setDocumento('');
@@ -318,17 +326,13 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                     />
                 </div>
 
-                <div className="col-span-2">
+                <div className="col-span-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Nombre facturador
                     </label>
-                    <input
-                        type="text"
-                        value={formData.nombreFacturador}
-                        onChange={e => handleChange('nombreFacturador', e.target.value)}
-                        className={INPUT_CLASS}
-                        required
-                    />
+                    <div className={INPUT_READONLY + ' ' + INPUT_CLASS}>
+                        {formData.nombreFacturador || ''}
+                    </div>
                 </div>
 
                 <div className="col-span-2 flex justify-end mt-4">
