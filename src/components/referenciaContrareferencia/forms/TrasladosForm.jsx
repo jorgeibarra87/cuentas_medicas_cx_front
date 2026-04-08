@@ -127,10 +127,10 @@ export default function TrasladosForm({ traslado, onSaved }) {
 
     const manejarConfirmacion = async (documento) => {
         const confirmar = window.confirm("El documento ingresado no contiene ingreso activo en el sistema. ¿Desea continuar con el traslado con esta información?");
-        
+
         if (!confirmar) {
             handleChange('documento', '');
-        }else{
+        } else {
             setDatausuario({
                 pacNumDoc: documento,
                 ingreso: 'SIN INGRESO',
@@ -138,26 +138,19 @@ export default function TrasladosForm({ traslado, onSaved }) {
         }
     };
 
-
     useEffect(() => {
-        setLoading(false);
-        handleChange('ingreso', '');
-        handleChange('eps', '');
-        handleChange('servicio', '');
-        handleChange('nomPaciente', '');
-        if (dataUsuario) {
+        if (dataUsuario && !traslado) {  //actualizar si NO es edición
             handleChange('documento', dataUsuario.pacNumDoc || '');
             handleChange('ingreso', dataUsuario?.ingreso || '');
             handleChange('eps', dataUsuario?.entidad || '');
             handleChange('servicio', dataUsuario?.servicio || 'SIN SERVICIO');
             handleChange('nomPaciente', dataUsuario?.nombreCompleto || '');
-            return;
         }
-    }, [dataUsuario]);
+    }, [dataUsuario, traslado]);
 
     return (
         <div className="bg-white shadow-md rounded-lg p-2 mb-2">
-            {loading && ( <Loader /> )}
+            {loading && (<Loader />)}
 
             {error && (
                 <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
@@ -176,7 +169,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1"> Documento</label>
-                    <input type="text" value={formData.documento} 
+                    <input type="text" value={formData.documento}
                         onChange={e => handleChange('documento', e.target.value)}
                         onBlur={e => buscarPaciente(e.target.value)}
                         placeholder="Ej: 1061234567"
@@ -192,8 +185,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     </label>
                     <input type="text" value={formData.nomPaciente}
                         onChange={e => handleChange('nomPaciente', e.target.value)}
-                        readOnly = {dataUsuario?.nombreCompleto ? true : false}
-                        className={dataUsuario?.nombreCompleto ? INPUT_READONLY : INPUT_CLASS} 
+                        readOnly={dataUsuario?.nombreCompleto ? true : false}
+                        className={dataUsuario?.nombreCompleto ? INPUT_READONLY : INPUT_CLASS}
                         required
                     />
                 </div>
