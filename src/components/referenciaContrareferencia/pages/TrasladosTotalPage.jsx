@@ -162,7 +162,7 @@ export default function TrasladosTotalPage() {
                         <thead className=" bg-gray-800 text-white text-xs">
                             <tr>
                                 <th className="px-2 py-2"></th>
-                                {/* <th className="px-2 py-2 text-left">ID</th> */}
+                                <th className="px-2 py-2 text-left">ID</th>
                                 <th className="px-2 py-2 text-left">Documento</th>
                                 <th className="px-2 py-2 text-left">Paciente</th>
                                 <th className="px-2 py-2 text-left">EPS</th>
@@ -193,11 +193,12 @@ export default function TrasladosTotalPage() {
                                             <FontAwesomeIcon icon={expandido[traslado.id] ? faChevronDown : faChevronRight} />
                                         </td>
                                         {/* <td className="px-2 py-2 font-semibold text-blue-700">{traslado.id}</td> */}
+                                        <td className="border-r border-b px-2 py-2">{traslado.id}</td>
                                         <td className="border-r border-b px-2 py-2 font-semibold text-blue-700">{traslado.documento}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.nomPaciente}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.eps}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.ingreso}</td>
-                                        <td className="border-r border-b px-2 py-2">{traslado.fechaTraslado?.slice(0, 10)}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.fechaTraslado?.slice(0, 16).replace('T', ' ')}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.tipoTraslado}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.servicio}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.destino}</td>
