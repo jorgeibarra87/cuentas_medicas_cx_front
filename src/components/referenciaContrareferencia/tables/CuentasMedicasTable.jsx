@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
 import { obtenerCuentasMedicas, cambiarEstadoCuentaMedica } from '../../../api/referenciaContrareferencia/cuentasMedicasService';
-const PAGE_SIZE = 1; // máximo por página
+const PAGE_SIZE = 50; // máximo por página
 
 export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) {
     const [data, setData] = useState([]);
