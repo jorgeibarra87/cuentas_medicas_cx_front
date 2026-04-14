@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
 import { cambiarEstadoFactura, obtenerFacturas } from '../../../api/referenciaContrareferencia/facturacionService';
 
-const PAGE_SIZE = 2; // máximo por página
+const PAGE_SIZE = 50; // máximo por página
 
 export default function FacturacionTable({ onEdit = () => { }, reloadFlag }) {
     const [data, setData] = useState([]);
