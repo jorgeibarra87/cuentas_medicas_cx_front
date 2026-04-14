@@ -56,9 +56,10 @@ export default function TrasladosForm({ traslado, onSaved }) {
             });
             setMedicamentosTexto((traslado.medicamentos || []).join(', '));
         } else {
-            const now = new Date().toISOString().slice(0, 16);
+            const now = new Date();
+            const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
             setFormData({
-                fechaTraslado: now,
+                fechaTraslado: local.toISOString().slice(0, 16),
                 nomPaciente: '',
                 documento: '',
                 ingreso: '',
@@ -111,29 +112,29 @@ export default function TrasladosForm({ traslado, onSaved }) {
         }
     };
 
-    const buscarPaciente = async (documento) => {
-        if (documento.length < 5) return;
+    const buscarPaciente = async (ingreso) => {
+        if (ingreso.length < 3) return;
         setDatausuario(null);
         setLoading(true);
 
         try {
-            const respuesta = await obtenerInformacionCompletaPaciente(documento);
+            const respuesta = await obtenerInformacionCompletaPaciente(ingreso);
             setDatausuario(respuesta);
         } catch (error) {
-            manejarConfirmacion(documento);
+            manejarConfirmacion(ingreso);
         }
         setLoading(false);
     };
 
-    const manejarConfirmacion = async (documento) => {
-        const confirmar = window.confirm("El documento ingresado no contiene ingreso activo en el sistema. ¿Desea continuar con el traslado con esta información?");
+    const manejarConfirmacion = async (ingreso) => {
+        const confirmar = window.confirm("El ingreso no esta activo en el sistema. ¿Desea continuar con el traslado con esta información?");
 
         if (!confirmar) {
-            handleChange('documento', '');
+            handleChange('ingreso', '');
         } else {
             setDatausuario({
-                pacNumDoc: documento,
-                ingreso: 'SIN INGRESO',
+                ingreso: ingreso,
+                pacNumDoc: 'SIN DOCUMENTO',
             });
         }
     };
@@ -163,14 +164,15 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 {/* ── SECCIÓN: Buscar paciente ── */}
                 <div className="col-span-2">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
-                        <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm w-4 h-4 text-black" /> Buscar paciente por documento
+                        <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm w-4 h-4 text-black" /> Buscar paciente por Ingreso
                     </p>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1"> Documento</label>
-                    <input type="text" value={formData.documento}
-                        onChange={e => handleChange('documento', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Ingreso </label>
+                    <input type="text"
+                        value={formData.ingreso}
+                        onChange={e => handleChange('ingreso', e.target.value)}
                         onBlur={e => buscarPaciente(e.target.value)}
                         placeholder="Ej: 1061234567"
                         // Solo editable al crear, bloqueado al editar
@@ -192,10 +194,9 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1"> Ingreso </label>
-                    <input type="text"
-                        value={formData.ingreso}
-                        onChange={e => handleChange('ingreso', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Documento</label>
+                    <input type="text" value={formData.documento}
+                        onChange={e => handleChange('documento', e.target.value)}
                         readOnly={dataUsuario ? true : false}
                         className={dataUsuario ? INPUT_READONLY : INPUT_CLASS}
                         required
