@@ -28,16 +28,40 @@ export default function FacturacionForm({ facturacion, onSaved }) {
     const [infoTraslado, setInfoTraslado] = useState({
         nomPaciente: '',
         ingreso: '',
+        documento: '',
         eps: ''
     });
 
-    const [documento, setDocumento] = useState('');
+    const [ingreso, setIngreso] = useState('');
     const [buscando, setBuscando] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [trasladosEncontrados, setTrasladosEncontrados] = useState([]);
+    const [infoMessage, setInfoMessage] = useState('');
 
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const simularConsultaPorIngreso = (ingresoRaw) => {
+        const ingreso = ingresoRaw.trim();
+
+        const datosSimulados = {
+            '5882823': {
+                nomPaciente: 'JORGE EDUARDO PANTOJA YADUN',
+                ingreso: '5882823',
+                documento: '98385877',
+                eps: 'NUEVA EMPRESA PROMOTORA DE SALUD SA - NUEVA EPS SUBSIDIADO',
+            },
+            '5853765': {
+                nomPaciente: 'MIGUEL ANGEL ANACONA',
+                ingreso: '5853765',
+                documento: '76027691',
+                eps: 'AIC',
+            }
+        };
+
+        return datosSimulados[ingreso] || null;
     };
 
     const buscarPorTrasladoId = async (trasladoId) => {
@@ -47,43 +71,73 @@ export default function FacturacionForm({ facturacion, onSaved }) {
             setInfoTraslado({
                 nomPaciente: traslado.nomPaciente || '',
                 ingreso: traslado.ingreso || '',
+                documento: traslado.documento || '',
                 eps: traslado.eps || ''
             });
-            setDocumento(traslado.documento || '');
+            setIngreso(String(traslado.ingreso || ''));
         } catch (err) {
             const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
             setError('Error al cargar datos del traslado: ' + (backendMessage || err.message));
         }
     };
 
-    // Busca en la tabla traslados por documento
-    const buscarPorDocumento = async (doc) => {
-        if (doc.length < 5) return;
+    // Busca en la tabla traslados por ingreso
+    const buscarPorIngreso = async (ingresoRaw) => {
+        const ingresoBuscado = ingresoRaw.trim();
+        if (!ingresoBuscado || ingresoBuscado.length < 3) return;
+
         setBuscando(true);
         setError('');
+        setInfoMessage('');
+
         try {
+            const encontrado = simularConsultaPorIngreso(ingresoBuscado);
+
+            if (!encontrado) {
+                setInfoTraslado({ nomPaciente: '', ingreso: '', documento: '', eps: '' });
+                setTrasladosEncontrados([]);
+                setFormData(prev => ({ ...prev, trasladoId: '' }));
+                setError(`No se encontró información para el ingreso: ${ingresoBuscado}`);
+                return;
+            }
+
+            setInfoTraslado({
+                nomPaciente: encontrado.nomPaciente || '',
+                ingreso: encontrado.ingreso || '',
+                documento: encontrado.documento || '',
+                eps: encontrado.eps || ''
+            });
+
             const lista = await obtenerTraslados();
 
-            // Busca el traslado más reciente con ese documento
-            const encontrado = lista
-                .filter(t => t.documento === doc)
-                .sort((a, b) => new Date(b.fechaTraslado) - new Date(a.fechaTraslado))[0];
+            const coincidencias = lista
+                .filter(t => String(t.ingreso).trim() === ingresoBuscado)
+                .sort((a, b) => new Date(b.fechaTraslado || b.fecha_traslado) - new Date(a.fechaTraslado || a.fecha_traslado));
 
-            if (encontrado) {
-                setInfoTraslado({
-                    nomPaciente: encontrado.nomPaciente || '',
-                    ingreso: encontrado.ingreso || '',
-                    eps: encontrado.eps || ''
-                });
-                handleChange('trasladoId', encontrado.id);
+            setTrasladosEncontrados(coincidencias);
+
+            if (coincidencias.length === 1) {
+                const traslado = coincidencias[0];
+                setFormData(prev => ({
+                    ...prev,
+                    trasladoId: traslado.id_traslado || traslado.id
+                }));
+            } else if (coincidencias.length > 1) {
+                setFormData(prev => ({
+                    ...prev,
+                    trasladoId: ''
+                }));
+                setInfoMessage('Se encontraron varios traslados para este ingreso. Selecciona el correcto.');
             } else {
-                setInfoTraslado({ nomPaciente: '', ingreso: '', eps: '' });
-                handleChange('trasladoId', '');
-                setError(`No se encontró ningún traslado con documento: ${doc}`);
+                setFormData(prev => ({
+                    ...prev,
+                    trasladoId: ''
+                }));
+                setError(`Se encontró el ingreso ${ingresoBuscado}, pero no hay traslados asociados.`);
             }
         } catch (err) {
             const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
-            setError('Error al buscar: ' + (backendMessage || err.message));
+            setError(backendMessage || err.message || 'Ocurrió un error al consultar el ingreso.');
         } finally {
             setBuscando(false);
         }
@@ -132,6 +186,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                 nombreFacturador: facturacion.nombreFacturador || ''
             });
             // ✅ Carga automática de datos del traslado al editar
+            setIngreso(String(facturacion.ingreso || ''));
             buscarPorTrasladoId(facturacion.trasladoId);
         } else {
             const now = new Date();
@@ -148,8 +203,10 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                 valor: '',
                 nombreFacturador: usuario?.name_user || ''
             });
-            setInfoTraslado({ nomPaciente: '', ingreso: '', eps: '' });
-            setDocumento('');
+            setInfoTraslado({ nomPaciente: '', ingreso: '', documento: '', eps: '' });
+            setIngreso('');
+            setTrasladosEncontrados([]);
+            setInfoMessage('');
         }
     }, [facturacion]);
 
@@ -169,20 +226,20 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                 {/* ── SECCIÓN: Buscar paciente ── */}
                 <div className="col-span-2">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
-                        <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm w-4 h-4 text-black" /> Buscar paciente por documento
+                        <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm w-4 h-4 text-black" /> Buscar paciente por ingreso
                     </p>
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Documento
+                        Ingreso
                     </label>
                     <input
                         type="text"
-                        value={documento}
-                        onChange={e => setDocumento(e.target.value)}
-                        onBlur={e => buscarPorDocumento(e.target.value)}
-                        placeholder="Ej: 1061234567"
+                        value={ingreso}
+                        onChange={e => setIngreso(e.target.value)}
+                        onBlur={e => buscarPorIngreso(e.target.value)}
+                        placeholder="Ej: 5853765"
                         // Solo editable al crear, bloqueado al editar
                         readOnly={!!facturacion}
                         className={facturacion ? INPUT_READONLY : INPUT_CLASS}
@@ -202,6 +259,30 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                         className={INPUT_READONLY}
                     />
                 </div>
+                {trasladosEncontrados.length > 1 && (
+                    <div className="col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Seleccionar traslado
+                        </label>
+                        <select
+                            value={formData.trasladoId}
+                            onChange={e => handleChange('trasladoId', e.target.value)}
+                            className={INPUT_CLASS}
+                            required
+                        >
+                            <option value="">-- Seleccionar traslado --</option>
+                            {trasladosEncontrados.map((t) => (
+                                <option key={t.id_traslado || t.id} value={t.id_traslado || t.id}>
+                                    {`ID: ${t.id_traslado || t.id} | fecha: ${t.fechaTraslado || t.fecha_traslado} | tipo: ${t.tipoTraslado || t.tipo_traslado} | destino: ${t.destino} | estado: ${t.estado}`}
+                                </option>
+                            ))}
+                        </select>
+
+                        <p className="mt-1 text-sm text-yellow-800 bg-yellow-50 border border-yellow-300 rounded px-3 py-2">
+                            Se encontraron varios traslados para este ingreso. Selecciona el correcto.
+                        </p>
+                    </div>
+                )}
 
                 {/* Datos del traslado - solo lectura */}
                 <div>
@@ -219,11 +300,11 @@ export default function FacturacionForm({ facturacion, onSaved }) {
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Ingreso
+                        Documento
                     </label>
                     <input
                         type="text"
-                        value={infoTraslado.ingreso}
+                        value={infoTraslado.documento}
                         readOnly
                         className={INPUT_READONLY}
                         required
