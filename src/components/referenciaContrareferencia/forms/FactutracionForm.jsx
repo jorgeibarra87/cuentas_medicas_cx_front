@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { guardarFactura, actualizarFactura } from '../../../api/referenciaContrareferencia/facturacionService';
 import { obtenerTraslados, obtenerTrasladoPorId } from '../../../api/referenciaContrareferencia/trasladosService';
+import { obtenerInformacionPacienteEgreso } from '../../../api/dinamica/genPacienService';
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";
 
@@ -43,27 +44,6 @@ export default function FacturacionForm({ facturacion, onSaved }) {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const simularConsultaPorIngreso = (ingresoRaw) => {
-        const ingreso = ingresoRaw.trim();
-
-        const datosSimulados = {
-            '5882823': {
-                nomPaciente: 'JORGE EDUARDO PANTOJA YADUN',
-                ingreso: '5882823',
-                documento: '98385877',
-                eps: 'NUEVA EMPRESA PROMOTORA DE SALUD SA - NUEVA EPS SUBSIDIADO',
-            },
-            '5853765': {
-                nomPaciente: 'MIGUEL ANGEL ANACONA',
-                ingreso: '5853765',
-                documento: '76027691',
-                eps: 'AIC',
-            }
-        };
-
-        return datosSimulados[ingreso] || null;
-    };
-
     const buscarPorTrasladoId = async (trasladoId) => {
         if (!trasladoId) return;
         try {
@@ -76,7 +56,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
             });
             setIngreso(String(traslado.ingreso || ''));
         } catch (err) {
-            const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
+            const backendMessage = err?.response?.data?.mensaje || err?.response?.data?.error;
             setError('Error al cargar datos del traslado: ' + (backendMessage || err.message));
         }
     };
@@ -91,7 +71,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
         setInfoMessage('');
 
         try {
-            const encontrado = simularConsultaPorIngreso(ingresoBuscado);
+            const encontrado = await obtenerInformacionPacienteEgreso(ingresoBuscado);
 
             if (!encontrado) {
                 setInfoTraslado({ nomPaciente: '', ingreso: '', documento: '', eps: '' });
@@ -102,10 +82,10 @@ export default function FacturacionForm({ facturacion, onSaved }) {
             }
 
             setInfoTraslado({
-                nomPaciente: encontrado.nomPaciente || '',
+                nomPaciente: encontrado.nombreCompleto || '',
                 ingreso: encontrado.ingreso || '',
-                documento: encontrado.documento || '',
-                eps: encontrado.eps || ''
+                documento: encontrado.pacNumDoc || '',
+                eps: encontrado.entidad || ''
             });
 
             const lista = await obtenerTraslados();
@@ -136,7 +116,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                 setError(`Se encontró el ingreso ${ingresoBuscado}, pero no hay traslados asociados.`);
             }
         } catch (err) {
-            const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
+            const backendMessage = err?.response?.data?.mensaje || err?.response?.data?.error;
             setError(backendMessage || err.message || 'Ocurrió un error al consultar el ingreso.');
         } finally {
             setBuscando(false);
@@ -166,7 +146,7 @@ export default function FacturacionForm({ facturacion, onSaved }) {
 
             onSaved && onSaved();
         } catch (err) {
-            const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
+            const backendMessage = err?.response?.data?.mensaje || err?.response?.data?.error;
             setError(backendMessage || err.message || 'Ocurrio un error al guardar la factura.');
         } finally {
             setLoading(false);
@@ -210,8 +190,6 @@ export default function FacturacionForm({ facturacion, onSaved }) {
         }
     }, [facturacion]);
 
-
-
     return (
         <div className="bg-white shadow-md rounded-lg p-4 mb-2">
 
@@ -220,56 +198,31 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                     {error}
                 </div>
             )}
-
             <form onSubmit={handleSubmit} className="grid grid-cols-2 md:grid-cols-2 gap-3">
-
                 {/* ── SECCIÓN: Buscar paciente ── */}
                 <div className="col-span-2">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                         <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm w-4 h-4 text-black" /> Buscar paciente por ingreso
                     </p>
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Ingreso
-                    </label>
-                    <input
-                        type="text"
-                        value={ingreso}
-                        onChange={e => setIngreso(e.target.value)}
-                        onBlur={e => buscarPorIngreso(e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Ingreso</label>
+                    <input type="text" value={ingreso} onChange={e => setIngreso(e.target.value)} onBlur={e => buscarPorIngreso(e.target.value)}
                         placeholder="Ej: 5853765"
                         // Solo editable al crear, bloqueado al editar
-                        readOnly={!!facturacion}
-                        className={facturacion ? INPUT_READONLY : INPUT_CLASS}
-                        required
+                        readOnly={!!facturacion} className={facturacion ? INPUT_READONLY : INPUT_CLASS} required
                     />
                     {buscando && <p className="text-xs text-blue-500 mt-1">Buscando...</p>}
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        ID Traslado
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.trasladoId}
-                        readOnly
-                        className={INPUT_READONLY}
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">ID Traslado</label>
+                    <input type="text" value={formData.trasladoId} readOnly className={INPUT_READONLY} />
                 </div>
                 {trasladosEncontrados.length > 1 && (
                     <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Seleccionar traslado
-                        </label>
-                        <select
-                            value={formData.trasladoId}
-                            onChange={e => handleChange('trasladoId', e.target.value)}
-                            className={INPUT_CLASS}
-                            required
-                        >
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Seleccionar traslado</label>
+                        <select value={formData.trasladoId} onChange={e => handleChange('trasladoId', e.target.value)}
+                            className={INPUT_CLASS} required >
                             <option value="">-- Seleccionar traslado --</option>
                             {trasladosEncontrados.map((t) => (
                                 <option key={t.id_traslado || t.id} value={t.id_traslado || t.id}>
@@ -277,51 +230,23 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                                 </option>
                             ))}
                         </select>
-
                         <p className="mt-1 text-sm text-yellow-800 bg-yellow-50 border border-yellow-300 rounded px-3 py-2">
                             Se encontraron varios traslados para este ingreso. Selecciona el correcto.
                         </p>
                     </div>
                 )}
-
                 {/* Datos del traslado - solo lectura */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Paciente
-                    </label>
-                    <input
-                        type="text"
-                        value={infoTraslado.nomPaciente}
-                        readOnly
-                        className={INPUT_READONLY}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Paciente</label>
+                    <input type="text" value={infoTraslado.nomPaciente} readOnly className={INPUT_READONLY} required />
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Documento
-                    </label>
-                    <input
-                        type="text"
-                        value={infoTraslado.documento}
-                        readOnly
-                        className={INPUT_READONLY}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Documento</label>
+                    <input type="text" value={infoTraslado.documento} readOnly className={INPUT_READONLY} required/>
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        EPS
-                    </label>
-                    <input
-                        type="text"
-                        value={infoTraslado.eps}
-                        readOnly
-                        className={INPUT_READONLY}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">EPS</label>
+                    <input type="text" value={infoTraslado.eps} readOnly className={INPUT_READONLY} required/>
                 </div>
 
                 {/* ── SECCIÓN: Datos de facturación ── */}
@@ -330,96 +255,42 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                         <FontAwesomeIcon icon={faFile} className="text-sm w-4 h-4 " /> Datos de facturación
                     </p>
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Fecha prefactura
-                    </label>
-                    <input
-                        type="datetime-local"
-                        value={formData.fechaPrefactura}
-                        onChange={e => handleChange('fechaPrefactura', e.target.value)}
-                        className={INPUT_CLASS}
-                        required
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha prefactura</label>
+                    <input type="datetime-local" value={formData.fechaPrefactura} onChange={e => handleChange('fechaPrefactura', e.target.value)}
+                        className={INPUT_CLASS} required 
                     />
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Prefactura
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.prefactura}
-                        onChange={e => handleChange('prefactura', e.target.value)}
-                        className={INPUT_CLASS}
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Prefactura</label>
+                    <input type="text" value={formData.prefactura} onChange={e => handleChange('prefactura', e.target.value)} className={INPUT_CLASS}/>
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Producción
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.produccion}
-                        onChange={e => handleChange('produccion', e.target.value)}
-                        className={INPUT_CLASS}
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Producción</label>
+                    <input type="text" value={formData.produccion}
+                        onChange={e => handleChange('produccion', e.target.value)} className={INPUT_CLASS}/>
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Fecha factura
-                    </label>
-                    <input
-                        type="datetime-local"
-                        value={formData.fechaFactura}
-                        onChange={e => handleChange('fechaFactura', e.target.value)}
-                        className={INPUT_CLASS}
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha factura</label>
+                    <input type="datetime-local" value={formData.fechaFactura} 
+                        onChange={e => handleChange('fechaFactura', e.target.value)} className={INPUT_CLASS} />
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Factura
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.factura}
-                        onChange={e => handleChange('factura', e.target.value)}
-                        className={INPUT_CLASS}
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Factura</label>
+                    <input type="text" value={formData.factura} onChange={e => handleChange('factura', e.target.value)}
+                        className={INPUT_CLASS}/>
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Valor
-                    </label>
-                    <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={formData.valor}
-                        onChange={e => handleChange('valor', e.target.value)}
-                        className={INPUT_CLASS}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Valor</label>
+                    <input type="number" min="0" step="0.01" value={formData.valor}
+                        onChange={e => handleChange('valor', e.target.value)} className={INPUT_CLASS} required/>
                 </div>
-
                 <div className="col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Nombre facturador
-                    </label>
-                    <div className={INPUT_READONLY + ' ' + INPUT_CLASS}>
-                        {formData.nombreFacturador || ''}
-                    </div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nombre facturador</label>
+                    <div className={INPUT_READONLY + ' ' + INPUT_CLASS}> {formData.nombreFacturador || ''}</div>
                 </div>
-
                 <div className="col-span-2 flex justify-end mt-4">
-                    <button
-                        type="submit"
-                        disabled={loading}
+                    <button type="submit" disabled={loading}
                         className="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
                     >
                         {loading ? 'Guardando...' : (
@@ -429,7 +300,6 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                         )}
                     </button>
                 </div>
-
             </form>
         </div>
     );

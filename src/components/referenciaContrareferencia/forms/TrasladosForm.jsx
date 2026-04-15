@@ -105,7 +105,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
 
             onSaved && onSaved();
         } catch (err) {
-            const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
+            const backendMessage = err?.response?.data?.mensaje || err?.response?.data?.error;
             setError(backendMessage || err.message || 'Ocurrio un error al guardar el traslado.');
         } finally {
             setLoading(false);
