@@ -331,6 +331,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                         type="datetime-local"
                         value={formData.fechaCuenta}
                         onChange={e => handleChange('fechaCuenta', e.target.value)}
+                        readOnly
                         className={INPUT_READONLY}
                         required
                     />
@@ -344,7 +345,9 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                         type="text"
                         value={formData.servicioEgreso}
                         onChange={e => handleChange('servicioEgreso', e.target.value)}
+                        readOnly
                         className={INPUT_READONLY}
+                        required
                     />
                 </div>
 
@@ -356,6 +359,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                         type="datetime-local"
                         value={formData.fechaEgreso}
                         onChange={e => handleChange('fechaEgreso', e.target.value)}
+                        readOnly
                         className={INPUT_READONLY}
                         required
                     />
