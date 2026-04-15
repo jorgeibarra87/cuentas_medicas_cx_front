@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faPlus, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
-import { guardarTraslado, actualizarTraslado } from '../../../api/referenciaContrareferencia/trasladosService';
+import { guardarTraslado, actualizarTraslado, obtenerTraslados } from '../../../api/referenciaContrareferencia/trasladosService';
 import { obtenerInformacionCompletaPaciente } from '../../../api/dinamica/genPacienService';
 import Loader from '../../Loader';
 
@@ -33,6 +33,84 @@ export default function TrasladosForm({ traslado, onSaved }) {
     const [medicamentosTexto, setMedicamentosTexto] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    const normalizar = (valor) =>
+        String(valor || '').trim().toUpperCase();
+
+    const esMismoTraslado = (a, b) => {
+        return (
+            normalizar(a.ingreso) === normalizar(b.ingreso) &&
+            normalizar(a.nomPaciente) === normalizar(b.nomPaciente) &&
+            normalizar(a.documento) === normalizar(b.documento) &&
+            normalizar(a.eps) === normalizar(b.eps) &&
+            normalizar(a.tipoTraslado) === normalizar(b.tipoTraslado) &&
+            normalizar(a.servicio) === normalizar(b.servicio) &&
+            normalizar(a.destino) === normalizar(b.destino) &&
+            normalizar(a.ciudad) === normalizar(b.ciudad)
+        );
+    };
+
+    const validarDuplicadosAntesDeGuardar = async () => {
+        if (!formData.ingreso || traslado) return true;
+
+        const todos = await obtenerTraslados();
+
+        const existentes = todos.filter(t =>
+            normalizar(t.ingreso) === normalizar(formData.ingreso)
+        );
+
+        const payloadActual = {
+            ingreso: formData.ingreso,
+            nomPaciente: formData.nomPaciente,
+            documento: formData.documento,
+            eps: formData.eps,
+            tipoTraslado: formData.tipoTraslado,
+            servicio: formData.servicio,
+            destino: formData.destino,
+            ciudad: formData.ciudad
+        };
+
+        const duplicadoPendienteExacto = existentes.find(t =>
+            normalizar(t.estado) === 'PENDIENTE' &&
+            esMismoTraslado(t, payloadActual)
+        );
+
+        if (duplicadoPendienteExacto) {
+            setError(
+                `Ya existe un traslado PENDIENTE con los mismos datos para el ingreso ${formData.ingreso}. ` +
+                `No se permite crear duplicados exactos.`
+            );
+            return false;
+        }
+
+        const coincidenciaPendienteParcial = existentes.find(t =>
+            normalizar(t.estado) === 'PENDIENTE'
+        );
+
+        if (coincidenciaPendienteParcial) {
+            const confirmar = window.confirm(
+                `Ya existe un traslado PENDIENTE para este ingreso, pero con datos diferentes. ` +
+                `¿Desea continuar con la creación del nuevo traslado?`
+            );
+
+            if (!confirmar) return false;
+        }
+
+        const coincidenciaValidada = existentes.find(t =>
+            normalizar(t.estado) === 'VALIDADO'
+        );
+
+        if (coincidenciaValidada) {
+            const confirmar = window.confirm(
+                `Ya existe al menos un traslado VALIDADO para este ingreso. ` +
+                `¿Desea crear uno nuevo?`
+            );
+
+            if (!confirmar) return false;
+        }
+
+        return true;
+    };
 
     useEffect(() => {
         if (traslado) {
@@ -89,6 +167,13 @@ export default function TrasladosForm({ traslado, onSaved }) {
         setError('');
 
         try {
+            const puedeGuardar = await validarDuplicadosAntesDeGuardar();
+
+            if (!puedeGuardar) {
+                setLoading(false);
+                return;
+            }
+
             const payload = {
                 ...formData,
                 medicamentos: medicamentosTexto
@@ -174,7 +259,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
                         value={formData.ingreso}
                         onChange={e => handleChange('ingreso', e.target.value)}
                         onBlur={e => buscarPaciente(e.target.value)}
-                        placeholder="Ej: 1061234567"
+                        placeholder="Ej: 10612345"
                         // Solo editable al crear, bloqueado al editar
                         readOnly={!!traslado}
                         className={traslado ? INPUT_READONLY : INPUT_CLASS}
@@ -220,7 +305,6 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     <input type="text"
                         value={formData.servicio}
                         onChange={e => handleChange('servicio', e.target.value)}
-                        //className={INPUT_CLASS}
                         readOnly={dataUsuario ? true : false}
                         className={dataUsuario ? INPUT_READONLY : INPUT_CLASS}
                         required
