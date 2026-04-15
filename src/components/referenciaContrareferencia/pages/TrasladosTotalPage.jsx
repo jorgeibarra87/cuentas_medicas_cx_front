@@ -1,6 +1,6 @@
 import { useEffect, useState, Fragment } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronRight, faAmbulance, faTruckMedical, faFileEdit, faDollar, faBookMedical, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronRight, faAmbulance, faTruckMedical, faFileEdit, faFileAlt, faDollar, faBookMedical, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
 import { obtenerTrasladosCompletos } from '../../../api/referenciaContrareferencia/trasladosService';
@@ -55,7 +55,8 @@ export default function TrasladosTotalPage() {
             const q = busqueda.toLowerCase();
             return (
                 traslado.documento?.toLowerCase().includes(q) ||
-                traslado.nomPaciente?.toLowerCase().includes(q)
+                traslado.nomPaciente?.toLowerCase().includes(q) ||
+                traslado.ingreso?.toString().toLowerCase().includes(q)
             );
         })
         // filtro por estado
@@ -101,6 +102,12 @@ export default function TrasladosTotalPage() {
             >
                 <FontAwesomeIcon icon={faBookMedical} className="w-4 h-4 text-white pr-2" />Cuentas Medicas
             </button>)}
+            <button
+                onClick={() => navigate('/referenciacontrareferencia/reporte')}
+                className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+            >
+                <FontAwesomeIcon icon={faFileAlt} className="w-4 h-4 text-white pr-2" />Reporte
+            </button>
 
             <div className="flex justify-between items-center mb-2 text-xs text-gray-600">
                 {/* Buscador */}
@@ -113,7 +120,7 @@ export default function TrasladosTotalPage() {
                             setBusqueda(e.target.value);
                             setPage(0); // ✅ resetea a página 1 al buscar
                         }}
-                        placeholder="Documento o paciente..."
+                        placeholder="Documento o paciente o ingreso"
                         className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
                         style={{ width: '200px' }}
                     />
@@ -161,7 +168,7 @@ export default function TrasladosTotalPage() {
                         <thead className=" bg-gray-800 text-white text-xs">
                             <tr>
                                 <th className="px-2 py-2"></th>
-                                {/* <th className="px-2 py-2 text-left">ID</th> */}
+                                <th className="px-2 py-2 text-left">ID</th>
                                 <th className="px-2 py-2 text-left">Documento</th>
                                 <th className="px-2 py-2 text-left">Paciente</th>
                                 <th className="px-2 py-2 text-left">EPS</th>
@@ -192,11 +199,12 @@ export default function TrasladosTotalPage() {
                                             <FontAwesomeIcon icon={expandido[traslado.id] ? faChevronDown : faChevronRight} />
                                         </td>
                                         {/* <td className="px-2 py-2 font-semibold text-blue-700">{traslado.id}</td> */}
+                                        <td className="border-r border-b px-2 py-2">{traslado.id}</td>
                                         <td className="border-r border-b px-2 py-2 font-semibold text-blue-700">{traslado.documento}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.nomPaciente}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.eps}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.ingreso}</td>
-                                        <td className="border-r border-b px-2 py-2">{traslado.fechaTraslado?.slice(0, 10)}</td>
+                                        <td className="border-r border-b px-2 py-2">{traslado.fechaTraslado?.slice(0, 16).replace('T', ' ')}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.tipoTraslado}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.servicio}</td>
                                         <td className="border-r border-b px-2 py-2">{traslado.destino}</td>

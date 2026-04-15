@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookMedical, faCheck, faDollar, faFileEdit, faPencilAlt, faTruckMedical, faXmark, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faBookMedical, faCheck, faDollar, faFileEdit, faFileAlt, faPencilAlt, faTruckMedical, faXmark, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
@@ -99,7 +99,8 @@ ${seleccionados.size} traslado(s)?`
             const q = busqueda.toLowerCase();
             return (
                 t.documento?.toLowerCase().includes(q) ||
-                t.nomPaciente?.toLowerCase().includes(q)
+                t.nomPaciente?.toLowerCase().includes(q) ||
+                t.ingreso?.toString().toLowerCase().includes(q)
             );
         })
         // filtro por estado
@@ -141,6 +142,12 @@ ${seleccionados.size} traslado(s)?`
             >
                 <FontAwesomeIcon icon={faBookMedical} className="w-4 h-4 text-white pr-2" />Cuentas Medicas
             </button>)}
+            <button
+                            onClick={() => navigate('/referenciacontrareferencia/reporte')}
+                            className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+                        >
+                            <FontAwesomeIcon icon={faFileAlt} className="w-4 h-4 text-white pr-2" />Reporte
+                        </button>
 
 
             <div className="flex justify-between items-center mb-2 text-xs text-gray-600">
@@ -154,7 +161,7 @@ ${seleccionados.size} traslado(s)?`
                             setBusqueda(e.target.value);
                             setPage(0); // resetea a página 1 al buscar
                         }}
-                        placeholder="Documento o paciente..."
+                        placeholder="Documento o paciente o ingreso"
                         className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
                         style={{ width: '200px' }}
                     />

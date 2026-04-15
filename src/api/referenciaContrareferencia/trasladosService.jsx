@@ -62,3 +62,13 @@ export const actualizarTraslado = async (id, trasladoData) => {
         throw error;
     }
 }
+
+export const obtenerReporteTraslados = async (fechaInicio, fechaFin) => {
+    const response = await apiClientReferenciaContrareferencia.get('/reporte/traslados', {
+        params: {
+            fechaInicio,
+            fechaFin
+        }
+    });
+    return response.data;
+};
