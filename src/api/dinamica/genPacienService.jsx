@@ -50,11 +50,23 @@ export const obtenerInformacionGeneralPaciente = async (documento) => {
  */
 export const obtenerInformacionCompletaPaciente = async (documento) => {
     try {
-        const response = await apiClienteDinamica.get(`genPacien/informacion/${documento}`);
+        const response = await apiClienteDinamica.get(`genPacien/informacion/ingreso/${documento}`);
         return response.data;
     }
     catch (error) {
         console.error('Error al obtener información completa del paciente:', error);
+        throw error;
+    }
+};
+
+
+export const obtenerInformacionPacienteEgreso = async (ingreso) => {
+    try {
+        const response = await apiClienteDinamica.get(`genPacien/informacion/egreso/${ingreso}`);
+        return response.data;
+    }
+    catch (error) {
+        console.error('Error al obtener información de egreso del paciente:', error);
         throw error;
     }
 };

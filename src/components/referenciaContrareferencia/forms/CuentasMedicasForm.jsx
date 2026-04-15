@@ -4,9 +4,19 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { guardarCuentaMedica, actualizarCuentaMedica } from '../../../api/referenciaContrareferencia/cuentasMedicasService';
 import { obtenerTraslados } from '../../../api/referenciaContrareferencia/trasladosService';
+import { obtenerInformacionPacienteEgreso } from '../../../api/dinamica/genPacienService';
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";
+
+const toDatetimeLocal = (value) => {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+
+    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 16);
+};
 
 export default function CuentasMedicasForm({ cuentas, onSaved }) {
 
@@ -56,26 +66,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
         setError('');
 
         try {
-            const datosSimulados = {
-                '5882823': {
-                    nomPaciente: 'JORGE EDUARDO PANTOJA YADUN',
-                    ingreso: '5882823',
-                    documento: '98385877',
-                    eps: 'NUEVA EMPRESA PROMOTORA DE SALUD SA - NUEVA EPS SUBSIDIADO',
-                    servicioEgreso: 'URGENCIAS ADULTOS',
-                    fechaEgreso: '2026-04-13T13:22'
-                },
-                '5853765': {
-                    nomPaciente: 'MIGUEL ANGEL ANACONA',
-                    ingreso: '5853765',
-                    documento: '76027691',
-                    eps: 'AIC',
-                    servicioEgreso: 'UCI 3 36',
-                    fechaEgreso: '2026-04-07T14:01'
-                }
-            };
-
-            const encontrado = datosSimulados[ingreso];
+            const encontrado = await obtenerInformacionPacienteEgreso(ingreso);
 
             if (!encontrado) {
                 setInfoTraslado({
@@ -97,19 +88,21 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                 return;
             }
 
+            const fechaEgresoFormateada = toDatetimeLocal(encontrado.fechaEgreso);
+
             setInfoTraslado({
-                nomPaciente: encontrado.nomPaciente,
-                ingreso: encontrado.ingreso,
-                documento: encontrado.documento,
-                fechaEgreso: encontrado.fechaEgreso,
-                servicioEgreso: encontrado.servicioEgreso,
-                eps: encontrado.eps
+                nomPaciente: encontrado.nombreCompleto || '',
+                ingreso: encontrado.ingreso ? String(encontrado.ingreso) : '',
+                documento: encontrado.pacNumDoc || '',
+                fechaEgreso: fechaEgresoFormateada,
+                servicioEgreso: encontrado.servicio || '',
+                eps: encontrado.entidad || ''
             });
 
             setFormData(prev => ({
                 ...prev,
-                servicioEgreso: encontrado.servicioEgreso,
-                fechaEgreso: encontrado.fechaEgreso,
+                servicioEgreso: encontrado.servicio || '',
+                fechaEgreso: fechaEgresoFormateada,
                 trasladoId: ''
             }));
 
@@ -133,7 +126,8 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
             }
 
         } catch (err) {
-            const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
+            console.log('Error al buscar por ingreso:', err);
+            const backendMessage = err?.response?.data?.mensaje || err?.response?.data?.error;
             setError(backendMessage || err.message || 'Ocurrió un error al consultar el ingreso.');
         } finally {
             setBuscando(false);
@@ -164,7 +158,7 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
 
             onSaved && onSaved();
         } catch (err) {
-            const backendMessage = err?.response?.data?.message || err?.response?.data?.error;
+            const backendMessage = err?.response?.data?.mensaje || err?.response?.data?.error;
             setError(backendMessage || err.message || 'Ocurrio un error al guardar la cuenta medica.');
         } finally {
             setLoading(false);
@@ -204,63 +198,36 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
 
     return (
         <div className="bg-white shadow-md rounded-lg p-4 mb-2">
-
             {error && (
                 <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
                     {error}
                 </div>
             )}
-
             <form onSubmit={handleSubmit} className="grid grid-cols-2 md:grid-cols-2 gap-3">
-
                 {/* ── SECCIÓN: Buscar paciente ── */}
                 <div className="col-span-2">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                         <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm w-4 h-4 text-black" /> Buscar paciente por ingreso
                     </p>
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Ingreso
-                    </label>
-                    <input
-                        type="text"
-                        value={ingreso}
-                        onChange={e => setIngreso(e.target.value)}
-                        onBlur={e => buscarPorIngreso(e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Ingreso</label>
+                    <input type="text" value={ingreso} onChange={e => setIngreso(e.target.value)} onBlur={e => buscarPorIngreso(e.target.value)}
                         placeholder="Ej: 5853765"
                         // Solo editable al crear, bloqueado al editar
-                        readOnly={!!cuentas}
-                        className={cuentas ? INPUT_READONLY : INPUT_CLASS}
-                        required
+                        readOnly={!!cuentas} className={cuentas ? INPUT_READONLY : INPUT_CLASS} required
                     />
                     {buscando && <p className="text-xs text-blue-500 mt-1">Buscando...</p>}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        ID Traslado
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.trasladoId}
-                        readOnly
-                        className={INPUT_READONLY}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">ID Traslado</label>
+                    <input type="text" value={formData.trasladoId} readOnly className={INPUT_READONLY} required />
                 </div>
                 {trasladosEncontrados.length > 1 && (
                     <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Seleccionar traslado
-                        </label>
-                        <select
-                            value={formData.trasladoId}
-                            onChange={e => handleSeleccionTraslado(e.target.value)}
-                            className={INPUT_CLASS}
-                            required
-                        >
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Seleccionar traslado</label>
+                        <select value={formData.trasladoId} onChange={e => handleSeleccionTraslado(e.target.value)} className={INPUT_CLASS} required >
                             <option value="">-- Seleccionar traslado --</option>
                             {trasladosEncontrados.map((t) => (
                                 <option key={t.id} value={t.id}>
@@ -268,7 +235,6 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                                 </option>
                             ))}
                         </select>
-
                         <p className="mt-1 text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded px-3 py-2">
                             Se encontraron varios traslados para este ingreso. Selecciona el correcto.
                         </p>
@@ -277,119 +243,50 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
 
                 {/* Datos del traslado - solo lectura */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Paciente
-                    </label>
-                    <input
-                        type="text"
-                        value={infoTraslado.nomPaciente}
-                        readOnly
-                        className={INPUT_READONLY}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Paciente</label>
+                    <input type="text" value={infoTraslado.nomPaciente} readOnly className={INPUT_READONLY} required />
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Documento
-                    </label>
-                    <input
-                        type="text"
-                        value={infoTraslado.documento}
-                        readOnly
-                        className={INPUT_READONLY}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Documento</label>
+                    <input type="text" value={infoTraslado.documento} readOnly className={INPUT_READONLY} required />
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        EPS
-                    </label>
-                    <input
-                        type="text"
-                        value={infoTraslado.eps}
-                        readOnly
-                        className={INPUT_READONLY}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">EPS</label>
+                    <input type="text" value={infoTraslado.eps} readOnly className={INPUT_READONLY} required/>
                 </div>
-
                 {/* ── SECCIÓN: Datos de Cuentas Médicas ── */}
-
                 <div className="col-span-2 mt-2">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                         <FontAwesomeIcon icon={faFile} className="text-sm w-4 h-4 " /> Datos de Cuentas Médicas
                     </p>
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Fecha Cuenta
-                    </label>
-                    <input
-                        type="datetime-local"
-                        value={formData.fechaCuenta}
-                        onChange={e => handleChange('fechaCuenta', e.target.value)}
-                        readOnly
-                        className={INPUT_READONLY}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Cuenta</label>
+                    <input type="datetime-local" value={formData.fechaCuenta} onChange={e => handleChange('fechaCuenta', e.target.value)}
+                        readOnly className={INPUT_READONLY} required />
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Servicio Egreso
-                    </label>
-                    <input
-                        type="text"
-                        value={formData.servicioEgreso}
-                        onChange={e => handleChange('servicioEgreso', e.target.value)}
-                        readOnly
-                        className={INPUT_READONLY}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Servicio Egreso</label>
+                    <input type="text" value={formData.servicioEgreso} onChange={e => handleChange('servicioEgreso', e.target.value)}
+                        readOnly className={INPUT_READONLY} required />
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Fecha Egreso
-                    </label>
-                    <input
-                        type="datetime-local"
-                        value={formData.fechaEgreso}
-                        onChange={e => handleChange('fechaEgreso', e.target.value)}
-                        readOnly
-                        className={INPUT_READONLY}
-                        required
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Egreso</label>
+                    <input type="datetime-local" value={formData.fechaEgreso} onChange={e => handleChange('fechaEgreso', e.target.value)}
+                        readOnly className={INPUT_READONLY} required />
                 </div>
-
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Responsable Auditoria
-                    </label>
-                    <div className={INPUT_READONLY + ' ' + INPUT_CLASS}>
-                        {formData.responsableAuditoria || ''}
-                    </div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Responsable Auditoria</label>
+                    <div className={INPUT_READONLY + ' ' + INPUT_CLASS}> {formData.responsableAuditoria || ''}</div>
                 </div>
-
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Observación
-                    </label>
-                    <textarea
-                        rows={2}
-                        value={formData.observaciones}
-                        onChange={e => handleChange('observaciones', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Observación</label>
+                    <textarea rows={2} value={formData.observaciones} onChange={e => handleChange('observaciones', e.target.value)}
                         className="input-field border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                 </div>
-
                 <div className="col-span-2 flex justify-end mt-4">
-                    <button
-                        type="submit"
-                        disabled={loading}
+                    <button type="submit" disabled={loading}
                         className="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
                     >
                         {loading ? 'Guardando...' : (
@@ -399,7 +296,6 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
                         )}
                     </button>
                 </div>
-
             </form>
         </div>
     );
