@@ -28,6 +28,7 @@ import TrasladosTotalPage from '../referenciaContrareferencia/pages/TrasladosTot
 import TrasladosPage from '../referenciaContrareferencia/pages/TrasladosPage';
 import FacturacionPage from '../referenciaContrareferencia/pages/FacturacionPage';
 import CuentasMedicasPage from '../referenciaContrareferencia/pages/CuentasMedicasPage';
+import ReporteTraslado from '../referenciaContrareferencia/pages/ReporteTraslado';
 import HospitalTableRefContraRef from '../referenciaContrareferencia/tables/HospitalTableRefContraRef';
 import RegistroAsistenciaAmbulatoria from '../rehabilitacion/RegistroAsistenciaAmbulatoria';
 import GenSerRipsCambioSipEstado from '../facturacion/GenSerRipsCambioSipEstado';
@@ -160,6 +161,7 @@ export default function RutasConfig() {
                     <Route path='formulario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormDatos}/></RequireAuth>}/>
                     <Route path='datos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReferenciaTable}/></RequireAuth>}/>
                     <Route path='hospitales' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HospitalTableRefContraRef} /></RequireAuth>}/>
+                    <Route path='reporte' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReporteTraslado} /></RequireAuth>} />
                 </Route>
                 <Route path='*' element={<Error404 />} />
             </Routes>

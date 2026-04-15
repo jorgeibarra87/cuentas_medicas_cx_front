@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookMedical, faCheck, faDollar, faFileEdit, faPencilAlt, faTruckMedical, faXmark, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faBookMedical, faCheck, faDollar, faFileEdit, faFileAlt, faPencilAlt, faTruckMedical, faXmark, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../Pagination';
@@ -142,6 +142,12 @@ ${seleccionados.size} traslado(s)?`
             >
                 <FontAwesomeIcon icon={faBookMedical} className="w-4 h-4 text-white pr-2" />Cuentas Medicas
             </button>)}
+            <button
+                            onClick={() => navigate('/referenciacontrareferencia/reporte')}
+                            className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+                        >
+                            <FontAwesomeIcon icon={faFileAlt} className="w-4 h-4 text-white pr-2" />Reporte
+                        </button>
 
 
             <div className="flex justify-between items-center mb-2 text-xs text-gray-600">
