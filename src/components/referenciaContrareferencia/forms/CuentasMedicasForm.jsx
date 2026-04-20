@@ -126,7 +126,6 @@ export default function CuentasMedicasForm({ cuentas, onSaved }) {
             }
 
         } catch (err) {
-            console.log('Error al buscar por ingreso:', err);
             const backendMessage = err?.response?.data?.mensaje || err?.response?.data?.error;
             setError(backendMessage || err.message || 'Ocurrió un error al consultar el ingreso.');
         } finally {

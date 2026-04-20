@@ -279,7 +279,6 @@ export default function SincronizarPersona({ onClose, onPersonaSincronizada }) {
                 await personasTitulosService.addTituloToPersona(personaGuardada.idPersona, titulo.idTitulo);
             } catch (error) {
                 // Si ya existe la relación, no es un error grave
-                console.log('La relación persona-título ya existe o hubo un error menor:', error.message);
             }
 
             // Preparar datos para el componente padre

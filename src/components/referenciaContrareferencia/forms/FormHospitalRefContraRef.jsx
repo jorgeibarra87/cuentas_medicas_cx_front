@@ -39,7 +39,6 @@ export default function FormHospitalRefContraRef({ onClose }) {
         const validar = ["nombre", "ciudad"];
         validar.forEach(element => {
             const input = e.target[element];
-            console.log(input.value);
             if (!input.value) {
                 input.classList.add("border-red-500");
             } else {

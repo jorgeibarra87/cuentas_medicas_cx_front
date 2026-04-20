@@ -97,7 +97,6 @@ function FormPreguntas() {
   }, [servicio]);
 
 
-  console.log('respuestasData', respuestasData);
   return (
     <div className="px-4 py-2">
       {(loadingRes || loadingAdnI || loadingP || loadingRespuestas) && <Loader />}

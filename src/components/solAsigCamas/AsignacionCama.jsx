@@ -17,7 +17,6 @@ import { cancelarAsignacionVersionSolicitudCama, finalizarAsignacionVersionSolic
 //         brokerURL: SOCKET_URL, 
 //         webSocketFactory: () => new SockJS(SOCKET_URL), 
 //         onConnect: () => { 
-//             console.log('Connected'); 
 //             client.subscribe('/topic/notifications', (message) => { 
 //                     if (message.body) { 
                         
@@ -33,7 +32,6 @@ import { cancelarAsignacionVersionSolicitudCama, finalizarAsignacionVersionSolic
 
 // const showNotification = (message) => { 
 //     if (Notification.permission === 'granted') { 
-//         console.log('Notificación-------', message);
 //         const notification = new Notification('SOLICITUD CAMILLERO', 
 //             { body: message, 
 //                 icon: icono,
