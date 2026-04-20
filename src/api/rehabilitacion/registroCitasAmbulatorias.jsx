@@ -11,6 +11,16 @@ export const registrarllegadaCitaAmbulatoria = async (body) => {
     }
 }
 
+export const registrarInicioCitaAmbulatoria = async (id, body) => {
+  try {
+    const response = await apiClientRehabilitacion.patch(`${id}/iniciar`, body);
+    return response.data;
+  } catch (error) {
+    console.error('Error al registrar el inicio de la cita ambulatoria', error);
+    throw error;
+  }
+}
+
 export const registrarFinalizacionCitaAmbulatoria = async (id) => {
     try {
         const response = await apiClientRehabilitacion.patch(`${id}/finalizar`);
@@ -70,7 +80,8 @@ export const obtenerCitasConsolidadas = async (verTodo = false) => {
       return {
         ...cita,
         id: datosAmbulatorios ? datosAmbulatorios.id : cita.id,
-        estadoSesion: datosAmbulatorios?.estadoSesion || 'PENDIENTE_DE_LLEGADA'
+        estadoSesion: datosAmbulatorios?.estadoSesion || 'PENDIENTE_DE_LLEGADA',
+        llegadaTardia: datosAmbulatorios?.llegadaTardia || null,
       };
     });
 
