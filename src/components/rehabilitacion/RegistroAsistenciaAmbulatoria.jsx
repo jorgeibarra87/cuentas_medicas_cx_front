@@ -222,7 +222,7 @@ function RegistroAsistenciaAmbulatoria() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-center space-x-2">
-                    {cita.estadoSesion === 'PENDIENTE_DE_LLEGADA' && (
+                    {cita.estadoSesion === 'PENDIENTE_DE_LLEGADA' && canLlegada && (
                     <button onClick={() => llegadaAtencion(cita)} disabled={cita.estadoSesion !== 'PENDIENTE_DE_LLEGADA'}
                       className={`px-3 py-1 rounded text-white text-sm 
                         ${cita.estadoSesion === 'PENDIENTE_DE_LLEGADA' ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-300 cursor-not-allowed'}`} >
