@@ -44,7 +44,7 @@ function RegistroAsistenciaAmbulatoria() {
   const roles = stateLogin?.decodeToken?.authorities?.split(',') || []
   const hasRole = (...rolesToCheck) => rolesToCheck.some(role => roles.includes(role))
 
-  const canLlegada = hasRole('ROLE_ADMINISTRADOR', 'ROLE_REHABILITACION_FACTURACION','ROLE_JEFE_REHABILITACION')
+  const canLlegada = hasRole('ROLE_ADMINISTRADOR', 'ROLE_FACTURACION_REHABILITACION','ROLE_JEFE_REHABILITACION')
   const canIniciar = hasRole('ROLE_ADMINISTRADOR','ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
   const canFinalizar = hasRole('ROLE_ADMINISTRADOR', 'ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
   const canNoLlego = hasRole('ROLE_ADMINISTRADOR', 'ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
@@ -210,6 +210,7 @@ function RegistroAsistenciaAmbulatoria() {
 
           <tbody className="divide-y">
             {citas.map(cita => (
+              console.log('Cita:', cita),
               <Fragment key={cita.id}>
               <tr className="hover:bg-gray-50">
                 <td className="px-4 py-3">{obtenerHora(cita.appoinmentDate)}</td>
