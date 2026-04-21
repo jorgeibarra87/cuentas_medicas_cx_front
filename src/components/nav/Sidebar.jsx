@@ -21,9 +21,11 @@ export default function Sidebar({ componente: Componente }) {
 
   const decoded = jwtDecode(token);
 
-  const authorities = Array.isArray(decoded.authorities)
-    ? decoded.authorities
-    : [decoded.authorities]; // fuerza array
+  let authorities = decoded.authorities;
+
+  if (typeof authorities === "string") {
+    authorities = authorities.split(","); 
+  }
 
   setUsuario({
     ...decoded,
