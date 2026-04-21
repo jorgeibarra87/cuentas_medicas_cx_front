@@ -16,15 +16,20 @@ export default function Sidebar({ componente: Componente }) {
   };
 
     useEffect(() => {
-        const token = localStorage.getItem('tokenhusjp');
-        const usuario2 = jwtDecode(token);
-        const combinedAuthorities = usuario.authorities.concat(usuario2.authorities); 
-                
-        setUsuario({
-            ...usuario,
-            authorities: combinedAuthorities
-        })
-    }, [])
+  const token = localStorage.getItem('tokenhusjp');
+  if (!token) return;
+
+  const decoded = jwtDecode(token);
+
+  const authorities = Array.isArray(decoded.authorities)
+    ? decoded.authorities
+    : [decoded.authorities]; // fuerza array
+
+  setUsuario({
+    ...decoded,
+    authorities
+  });
+}, []);
 
     const opcionesMenu = [
         {
@@ -36,10 +41,10 @@ export default function Sidebar({ componente: Componente }) {
         },
         {
           nombre: 'Rehabilitación y Terapias',
-          roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION', 'ROLE_FISIOTERAPEUTA_REHABILITACION'],
+          roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION', 'ROLE_FISIOTERAPEUTA_REHABILITACION', 'ROLE_FACTURACION_REHABILITACION'],
           submenu: [
             { nombre: 'Indicadores', ruta: '/rehabilitacion/indicadores', roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION'] },
-            { nombre: 'Registro fases de atención consulta ambulatoria', ruta: '/rehabilitacion/tomaAsistencias', roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION', 'ROLE_FISIOTERAPEUTA_REHABILITACION'] }
+            { nombre: 'Registro fases de atención consulta ambulatoria', ruta: '/rehabilitacion/tomaAsistencias', roles: ['ROLE_ADMINISTRADOR','ROLE_JEFE_REHABILITACION', 'ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_FACTURACION_REHABILITACION'] }
           ]
         },
         {
@@ -122,21 +127,21 @@ export default function Sidebar({ componente: Componente }) {
     // Filtra las opciones del menú principal según los roles del usuario
     const opcionesFiltradas = opcionesMenu.filter(opcion => {
         if (!opcion.roles) return true; // Si no se especifican roles, mostrar la opción
-        return opcion.roles.some(rol => usuario.authorities.includes(rol));
+        return opcion.roles.some(rol => usuario.authorities?.includes(rol));
     });
 
     // Filtra las subopciones del menú según los roles del usuario
     const filtrarSubopciones = (subopciones) => {
         return subopciones.filter(subopcion => {
             if (!subopcion.roles) return true; // Si no se especifican roles, mostrar la subopción
-            return subopcion.roles.some(rol => usuario.authorities.includes(rol));
+            return subopcion.roles.some(rol => usuario.authorities?.includes(rol));
         });
     };
 
     const filtrarSubmenuAdicional = (subopcionesadicionales) => {
         return subopcionesadicionales.filter(subopcionadicional => {
             if (!subopcionadicional.roles) return true;
-            return subopcionadicional.roles.some(rol => usuario.authorities.includes(rol));
+            return subopcionadicional.roles.some(rol => usuario.authorities?.includes(rol));
         });
     };
 
