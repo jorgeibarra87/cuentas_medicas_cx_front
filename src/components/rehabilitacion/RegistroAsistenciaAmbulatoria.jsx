@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { obtenerCitasConsolidadas, registrarFinalizacionCitaAmbulatoria, registrarInicioCitaAmbulatoria, registrarllegadaCitaAmbulatoria, registrarNoLLegadaCitaAmbulatoria } from '../../api/rehabilitacion/registroCitasAmbulatorias'
 
 const EXTERNAL_REASONS = [
@@ -38,6 +39,15 @@ const INTERNAL_REASONS = [
 ]
 
 function RegistroAsistenciaAmbulatoria() {
+
+  const stateLogin = useSelector(state => state.login)
+  const roles = stateLogin?.decodeToken?.authorities?.split(',') || []
+  const hasRole = (...rolesToCheck) => rolesToCheck.some(role => roles.includes(role))
+
+  const canLlegada = hasRole('ROLE_ADMINISTRADOR', 'ROLE_REHABILITACION_FACTURACION','ROLE_JEFE_REHABILITACION')
+  const canIniciar = hasRole('ROLE_ADMINISTRADOR','ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
+  const canFinalizar = hasRole('ROLE_ADMINISTRADOR', 'ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
+  const canNoLlego = hasRole('ROLE_ADMINISTRADOR', 'ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
 
   const [citas, setCitas] = useState([])
   const [verTodo, setVerTodo] = useState(false)
@@ -200,8 +210,8 @@ function RegistroAsistenciaAmbulatoria() {
 
           <tbody className="divide-y">
             {citas.map(cita => (
-              <>
-              <tr key={cita.id} className="hover:bg-gray-50">
+              <Fragment key={cita.id}>
+              <tr className="hover:bg-gray-50">
                 <td className="px-4 py-3">{obtenerHora(cita.appoinmentDate)}</td>
                 <td className="px-4 py-3 font-medium">{cita.patientName}</td>
                 <td className="px-4 py-3">{cita.speciality}</td>
@@ -219,21 +229,21 @@ function RegistroAsistenciaAmbulatoria() {
                       Llegada
                     </button>
                   )}
-                  {cita.estadoSesion === 'LLEGADA' && (
+                  {cita.estadoSesion === 'LLEGADA' && canIniciar && (
                     <button onClick={() => iniciarAtencion(cita)} 
                       className={`px-3 py-1 rounded text-white text-sm bg-blue-600 hover:bg-blue-700`} >
                       Iniciar
                     </button>
                   )}
 
-                  {cita.estadoSesion === 'EN_PROCESO' && (
+                  {cita.estadoSesion === 'EN_PROCESO' && canFinalizar && (
                     <button onClick={() => finalizarAtencion(cita.id)} className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-800 text-white text-sm" >
                       Finalizar
                     </button>
                   )}
 
                   {cita.estadoSesion === 'PENDIENTE_DE_LLEGADA' &&
-                    yaPasoHora(cita.appoinmentDate) && (
+                    yaPasoHora(cita.appoinmentDate) && canNoLlego && (
                       <button onClick={() => marcarNoLlegado(cita)} className="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-sm" >
                         No llegó
                       </button>
@@ -268,7 +278,7 @@ function RegistroAsistenciaAmbulatoria() {
                     </td>
                 </tr>
               )}
-              </>
+              </Fragment>
             ))}
           </tbody>
         </table>
