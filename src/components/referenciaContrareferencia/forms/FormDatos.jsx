@@ -96,8 +96,6 @@ export default function FormDatos() {
     }
   }
 
-
-  console.log('infoPaciente', infoPaciente);
   return (
     <>
       {showModal && <ModalDataRefContraRef handleClose={() => setShowModal(false)} data={documentData} />}

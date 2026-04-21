@@ -79,8 +79,6 @@ export default function TblExamenesPaciente({ tipo, titulo }) {
 
                 const ingresos = [...new Set(data.content.map(p => String(p.ingreso)))];
 
-                //console.log('Ingresos a consultar (strings):', ingresos);
-
                 if (ingresos.length === 0) {
                     console.warn('No hay ingresos válidos para consultar');
                     setExamenesTomados([]);
@@ -90,7 +88,6 @@ export default function TblExamenesPaciente({ tipo, titulo }) {
                 const response = await obtenerExamenesTomadosPorIngresos(ingresos);
                 setExamenesTomados(response || []);
 
-                //console.log('Exámenes tomados cargados:', response?.length || 0);
             } catch (error) {
                 console.error('Error cargando exámenes tomados:', error);
 

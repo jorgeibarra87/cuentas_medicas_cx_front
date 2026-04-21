@@ -38,12 +38,10 @@ export const obtenerExamenesTomadosPageble = async (page, size) => {
 
 export const guardarExamenesImpresion = async (examenesTomados) => {
     try {
-        console.log('📄 Guardando impresión:', examenesTomados);
         const response = await apiClienteLaboratorio.post(
             `examenes-tomados/guardar-impresion`,
             examenesTomados
         );
-        console.log('✅ Guardado OK:', response.data);
         return response.data;
     } catch (error) {
         console.error('❌ Error guardar-impresion:', error);

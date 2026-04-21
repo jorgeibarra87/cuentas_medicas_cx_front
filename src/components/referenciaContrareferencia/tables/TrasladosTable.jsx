@@ -294,7 +294,6 @@ ${seleccionados.size} traslado(s)?`
                                     {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_LIDER') && (<td className="px-3 py-2 space-x-2">
                                         <button
                                             onClick={() => {
-                                                //console.log('🔥 Click Editar, onEdit:', onEdit);
                                                 onEdit?.(t);
                                             }}
                                             className="text-blue-600 hover:underline text-sm"

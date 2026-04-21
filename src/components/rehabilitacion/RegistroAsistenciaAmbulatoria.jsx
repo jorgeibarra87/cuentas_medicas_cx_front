@@ -1,10 +1,57 @@
-import { useEffect, useState } from 'react'
-import { obtenerCitasConsolidadas, registrarFinalizacionCitaAmbulatoria, registrarllegadaCitaAmbulatoria, registrarNoLLegadaCitaAmbulatoria } from '../../api/rehabilitacion/registroCitasAmbulatorias'
+import { Fragment, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { obtenerCitasConsolidadas, registrarFinalizacionCitaAmbulatoria, registrarInicioCitaAmbulatoria, registrarllegadaCitaAmbulatoria, registrarNoLLegadaCitaAmbulatoria } from '../../api/rehabilitacion/registroCitasAmbulatorias'
+
+const EXTERNAL_REASONS = [
+  'CALAMIDAD DOMESTICA',
+  'PROBLEMAS DE TRANSPORTE',
+  'INCAPACIDAD MEDICA',
+  'DOMICILIO LEJANO',
+  'ORDEN PUBLICO',
+  'FACTORES SOCIOECONOMICOS',
+  'OTRA CITA MEDICA o EXAMENES',
+  'FACTORES CLIMATICOS',
+  'PACIENTE NO SE PRESENTA AL LLAMADO',
+  'PACIENTE OLVIDA FACTURAR',
+  'CERRADO POR PARO NACIONAL',
+  'CERRADO POR PARO REGIONAL',
+  'CERRADO POR BLOQUEO DE VIA',
+  'CERRADO POR CONFLICTO SOCIAL',
+  'CERRADO POR PROTESTA SOCIAL',
+  'CERRADO POR FALTA DE SEGURIDAD EN LA VIA',
+  'CERRADO POR PARO DE TRANSPORTADORES',
+  'CERRADO POR PARO EN EL SECTOR AGRARIO',
+  'CERRADO POR PROTESTA DE COMUNIDADES INDIGENAS',
+  'CERRADO POR DESASTRES NATURALES',
+  'CAUSA LABORAL'
+]
+
+const INTERNAL_REASONS = [
+  'RETRASO EN FACTURACION',
+  'RETRASO EN PROCESOS INTERNOS',
+  'FALLO DEL SISTEMA',
+  'ERROR EN AGENDAMIENTO',
+  'DEFICIENCIA EN INFRAESTRUCTURA',
+  'SE ATIENDE A TIEMPO PERO SE OLVIDA REALIZAR REGISTRO',
+  'RETRASO DEL TERAPEUTA',
+  'ERRORES EN CODIFICACION',
+  'LLEGADA TARDE AL SERVICIO'
+]
 
 function RegistroAsistenciaAmbulatoria() {
 
+  const stateLogin = useSelector(state => state.login)
+  const roles = stateLogin?.decodeToken?.authorities?.split(',') || []
+  const hasRole = (...rolesToCheck) => rolesToCheck.some(role => roles.includes(role))
+
+  const canLlegada = hasRole('ROLE_ADMINISTRADOR', 'ROLE_REHABILITACION_FACTURACION','ROLE_JEFE_REHABILITACION')
+  const canIniciar = hasRole('ROLE_ADMINISTRADOR','ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
+  const canFinalizar = hasRole('ROLE_ADMINISTRADOR', 'ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
+  const canNoLlego = hasRole('ROLE_ADMINISTRADOR', 'ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
+
   const [citas, setCitas] = useState([])
   const [verTodo, setVerTodo] = useState(false)
+  const [showTardia, setShowTardia] = useState(null)
 
   // ============================
   // Fetch agenda
@@ -37,7 +84,7 @@ function RegistroAsistenciaAmbulatoria() {
 
   const badgeEstado = (estado) => {
     switch (estado) {
-      case 'EN_PROGRESO':
+      case 'EN_PROCESO':
         return 'bg-blue-100 text-blue-700'
       case 'FINALIZADA':
         return 'bg-gray-200 text-gray-700'
@@ -51,7 +98,13 @@ function RegistroAsistenciaAmbulatoria() {
   // ============================
   // Acciones
   // ============================
-  const iniciarAtencion = async (cita) => {
+  const llegadaAtencion = async (cita) => {
+    if(yaPasoHora(cita.appoinmentDate) && showTardia?.razon == null){ 
+      setShowTardia({ citaId: cita.id, tipoRazon: 'EXTERNA', razones: EXTERNAL_REASONS })
+      return;
+    }
+
+
     try {
       const body = {
         nombreCompletoPaciente: cita.patientName,
@@ -59,7 +112,9 @@ function RegistroAsistenciaAmbulatoria() {
         fechaProgramada: cita.appoinmentDate.split('T')[0],
         horaProgramada: cita.appoinmentDate.split('T')[1].substring(0, 8),
         especialidad: cita.speciality,
-        profesional: cita.doctor
+        profesional: cita.doctor,
+        categoriaMotivoLlegadaTardia: 'EXTERNA',
+        llegadaTardia: showTardia?.razon || null
       }
 
       const response = await registrarllegadaCitaAmbulatoria(body)
@@ -67,13 +122,35 @@ function RegistroAsistenciaAmbulatoria() {
       setCitas(prev =>
         prev.map(c =>
           c.patientId === cita.patientId
-            ? { ...c, estadoSesion: 'EN_PROGRESO', id: response.id }
+            ? { ...c, estadoSesion: 'LLEGADA', id: response.id, llegadaTardia: response.llegadaTardia }
             : c
         )
       )
+      setShowTardia(null);
     } catch (error) {
       console.error('Error al iniciar atención', error)
     }
+  }
+
+  const iniciarAtencion = async (cita) => {
+    if(yaPasoHora(cita.appoinmentDate) && showTardia?.razon == null && cita.llegadaTardia == null){
+      setShowTardia({ citaId: cita.id, tipoRazon: 'INTERNA', razones: INTERNAL_REASONS })
+      return; 
+    }
+    const body = {
+      categoriaMotivoAtencionTardia: 'INTERNA',
+      detalleMotivoAtencionTardia: showTardia?.razon || null
+    }
+
+    await registrarInicioCitaAmbulatoria(cita.id, body)
+
+    setCitas(prev =>
+      prev.map(c =>
+        c.id === cita.id ? { ...c, estadoSesion: 'EN_PROCESO' } : c
+      )
+    )
+
+    setShowTardia(null);
   }
 
   const finalizarAtencion = async (id) => {
@@ -133,7 +210,8 @@ function RegistroAsistenciaAmbulatoria() {
 
           <tbody className="divide-y">
             {citas.map(cita => (
-              <tr key={cita.id} className="hover:bg-gray-50">
+              <Fragment key={cita.id}>
+              <tr className="hover:bg-gray-50">
                 <td className="px-4 py-3">{obtenerHora(cita.appoinmentDate)}</td>
                 <td className="px-4 py-3 font-medium">{cita.patientName}</td>
                 <td className="px-4 py-3">{cita.speciality}</td>
@@ -144,26 +222,63 @@ function RegistroAsistenciaAmbulatoria() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-center space-x-2">
-                  <button onClick={() => iniciarAtencion(cita)} disabled={cita.estadoSesion !== 'PENDIENTE_DE_LLEGADA'}
-                    className={`px-3 py-1 rounded text-white text-sm 
-                      ${cita.estadoSesion === 'PENDIENTE_DE_LLEGADA' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-300 cursor-not-allowed'}`} >
-                    Iniciar
-                  </button>
+                    {cita.estadoSesion === 'PENDIENTE_DE_LLEGADA' && (
+                    <button onClick={() => llegadaAtencion(cita)} disabled={cita.estadoSesion !== 'PENDIENTE_DE_LLEGADA'}
+                      className={`px-3 py-1 rounded text-white text-sm 
+                        ${cita.estadoSesion === 'PENDIENTE_DE_LLEGADA' ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-300 cursor-not-allowed'}`} >
+                      Llegada
+                    </button>
+                  )}
+                  {cita.estadoSesion === 'LLEGADA' && canIniciar && (
+                    <button onClick={() => iniciarAtencion(cita)} 
+                      className={`px-3 py-1 rounded text-white text-sm bg-blue-600 hover:bg-blue-700`} >
+                      Iniciar
+                    </button>
+                  )}
 
-                  {cita.estadoSesion === 'EN_PROGRESO' && (
+                  {cita.estadoSesion === 'EN_PROCESO' && canFinalizar && (
                     <button onClick={() => finalizarAtencion(cita.id)} className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-800 text-white text-sm" >
                       Finalizar
                     </button>
                   )}
 
                   {cita.estadoSesion === 'PENDIENTE_DE_LLEGADA' &&
-                    yaPasoHora(cita.appoinmentDate) && (
+                    yaPasoHora(cita.appoinmentDate) && canNoLlego && (
                       <button onClick={() => marcarNoLlegado(cita)} className="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-sm" >
                         No llegó
                       </button>
                     )}
                 </td>
               </tr>
+              {showTardia?.citaId === cita.id && cita.llegadaTardia == null && (
+                <tr className='bg-red-50'>
+                    <td colSpan="7" className="px-4 py-3">
+                      <div className='grid md:grid-cols-3 gap-3 items-end'>
+                          <div>
+                            <label className='block text-xs font-semibold text-gray-600 mb-1'>Motivo:</label>
+                            <select value={showTardia.razon} 
+                            onChange={(e) => setShowTardia(prev => ({...prev, razon: e.target.value}))}
+                            className='w-full p-2 border rounded text-sm'>
+                              <option value="">Seleccione un motivo</option>
+                              {(showTardia.razones.map(opcion => (
+                                <option key={opcion} value={opcion}>{opcion}</option>
+                              )))}
+                            </select>
+                          </div>
+                          <div className='flex gap-2'>
+                            <button onClick={cita.estadoSesion == 'LLEGADA' ? () => iniciarAtencion(cita) : () => llegadaAtencion(cita)}
+                            className='px-3 py-2 rounded bg-red-600 hover:bg-red-700 text-white text-sm'>
+                              confirmar
+                            </button>
+                            <button onClick={() => setShowTardia(null)} className='px-3 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-700 text-sm'>
+                              cancelar
+                            </button>
+                          </div>
+                      </div>
+                    </td>
+                </tr>
+              )}
+              </Fragment>
             ))}
           </tbody>
         </table>

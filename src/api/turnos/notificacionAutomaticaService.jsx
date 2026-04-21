@@ -441,7 +441,6 @@ export class NotificacionService {
             // Enviar notificaciones
             const resultado = await apiNotificacionService.notificaciones.enviarNotificacionesAutomaticas(notificaciones);
 
-            console.log(`✅ Notificaciones automáticas enviadas a ${correosActivos.length} destinatarios`, resultado);
             return resultado;
 
         } catch (error) {
