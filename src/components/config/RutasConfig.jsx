@@ -153,15 +153,10 @@ export default function RutasConfig() {
                     <Route path='traslados' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={TrasladosPage} /></RequireAuth>} />
                     <Route path='facturaciones' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FacturacionPage} /></RequireAuth>} />
                     <Route path='cuentas-medicas' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={CuentasMedicasPage} /></RequireAuth>} />
+                    <Route path='reporte' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReporteTraslado} /></RequireAuth>} />
                 </Route>
                 <Route path='/ajustes'>
                     <Route path='usuario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={OpcionesUsuario} /></RequireAuth>}></Route>
-                </Route>
-                <Route path='/referenciacontrareferencia'>
-                    <Route path='formulario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormDatos}/></RequireAuth>}/>
-                    <Route path='datos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReferenciaTable}/></RequireAuth>}/>
-                    <Route path='hospitales' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HospitalTableRefContraRef} /></RequireAuth>}/>
-                    <Route path='reporte' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReporteTraslado} /></RequireAuth>} />
                 </Route>
                 <Route path='*' element={<Error404 />} />
             </Routes>
