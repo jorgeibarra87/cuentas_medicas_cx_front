@@ -127,14 +127,14 @@ export default function TrasladosForm({ traslado, onSaved }) {
     };
 
     const manejarConfirmacion = async (ingreso) => {
-        const confirmar = window.confirm("El ingreso no esta activo en el sistema. ¿Desea continuar con el traslado con esta información?");
+        const confirmar = window.confirm("El paciente no tiene ingreso activo. ¿Desea continuar con el traslado con esta información?");
 
         if (!confirmar) {
             handleChange('ingreso', '');
         } else {
             setDatausuario({
-                ingreso: ingreso,
-                pacNumDoc: 'SIN DOCUMENTO',
+                ingreso: 'SIN DOCUMENTO',
+                pacNumDoc: ingreso,
             });
         }
     };
@@ -169,16 +169,14 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1"> Ingreso </label>
-                    <input type="text"
-                        value={formData.ingreso}
-                        onChange={e => handleChange('ingreso', e.target.value)}
-                        onBlur={e => buscarPaciente(e.target.value)}
-                        placeholder="Ej: 1061234567"
-                        // Solo editable al crear, bloqueado al editar
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Documento</label>
+                    <input type="text" value={formData.documento}
+                        onChange={e => handleChange('documento', e.target.value)}
                         readOnly={!!traslado}
+                        onBlur={e => buscarPaciente(e.target.value)}
                         className={traslado ? INPUT_READONLY : INPUT_CLASS}
-                    />
+                        required
+                        />
                 </div>
 
                 <div>
@@ -190,16 +188,18 @@ export default function TrasladosForm({ traslado, onSaved }) {
                         readOnly={dataUsuario?.nombreCompleto ? true : false}
                         className={dataUsuario?.nombreCompleto ? INPUT_READONLY : INPUT_CLASS}
                         required
-                    />
+                        />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1"> Documento</label>
-                    <input type="text" value={formData.documento}
-                        onChange={e => handleChange('documento', e.target.value)}
+                    <label className="block text-sm font-medium text-gray-700 mb-1"> Ingreso </label>
+                    <input type="text"
+                        value={formData.ingreso}
+                        onChange={e => handleChange('ingreso', e.target.value)}
+                        placeholder="Ej: 1061234567"
+                        // Solo editable al crear, bloqueado al editar
                         readOnly={dataUsuario ? true : false}
                         className={dataUsuario ? INPUT_READONLY : INPUT_CLASS}
-                        required
                     />
                 </div>
 
