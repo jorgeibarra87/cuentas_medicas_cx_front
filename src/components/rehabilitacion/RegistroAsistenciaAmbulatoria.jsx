@@ -1,6 +1,10 @@
 import { Fragment, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { obtenerCitasConsolidadas, registrarFinalizacionCitaAmbulatoria, registrarInicioCitaAmbulatoria, registrarllegadaCitaAmbulatoria, registrarNoLLegadaCitaAmbulatoria } from '../../api/rehabilitacion/registroCitasAmbulatorias'
+import SockJS from 'sockjs-client'
+import { Client } from '@stomp/stompjs'
+import { toast } from 'react-toastify'
+import Loader from '../Loader'
 
 const EXTERNAL_REASONS = [
   'CALAMIDAD DOMESTICA',
@@ -40,9 +44,13 @@ const INTERNAL_REASONS = [
 
 function RegistroAsistenciaAmbulatoria() {
 
+  const MINUTOS_TOLERANCIA_LLEGADA = 10
+  const MINUTOS_TOLERANCIA_ATENCION = 10
+
   const stateLogin = useSelector(state => state.login)
   const roles = stateLogin?.decodeToken?.authorities?.split(',') || []
   const hasRole = (...rolesToCheck) => rolesToCheck.some(role => roles.includes(role))
+  const rutaRehabilitacion = window.env.VITE_URL_MIROCERVICE_REHABILITACION;
 
   const canLlegada = hasRole('ROLE_ADMINISTRADOR', 'ROLE_FACTURACION_REHABILITACION','ROLE_JEFE_REHABILITACION')
   const canIniciar = hasRole('ROLE_ADMINISTRADOR','ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
@@ -52,6 +60,7 @@ function RegistroAsistenciaAmbulatoria() {
   const [citas, setCitas] = useState([])
   const [verTodo, setVerTodo] = useState(false)
   const [showTardia, setShowTardia] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   // ============================
   // Fetch agenda
@@ -59,14 +68,75 @@ function RegistroAsistenciaAmbulatoria() {
   useEffect(() => {
     const fetchCitas = async () => {
       try {
+        setLoading(true)
         const response = await obtenerCitasConsolidadas(verTodo) // Pasamos true para ver todas las citas, false para solo las del médico logueado
         setCitas(response)
       } catch (error) {
         console.error('Error al obtener las citas de rehabilitación', error)
+      } finally {
+        setLoading(false)
       }
     }
     fetchCitas()
   }, [verTodo])
+
+  useEffect(() => {
+    if (!canIniciar) return;
+
+    const socket = new SockJS(`${rutaRehabilitacion}ws`);
+
+    const stompClient = new Client({
+      webSocketFactory: () => socket, 
+      reconnectDelay: 5000,
+
+      onConnect: () => {
+        
+        const fisioterapeutaId = stateLogin?.decodeToken?.sub; 
+        console.log('Suscribiéndose a canal de llegadas para fisioterapeuta ID:', fisioterapeutaId)
+        stompClient.subscribe(`/topic/llegadas/${fisioterapeutaId}`, (message) => {
+          const data = JSON.parse(message.body);
+
+          toast.info(`Llegó el paciente ${data.nombreCompletoPaciente} a la cita de las ${data.horaProgramada}`, {
+            position: "top-center",
+            autoClose: false,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setCitas(prev =>
+            prev.map(c => {
+              const fechaCita = new Date(c.appoinmentDate).getTime();
+              const fechaData = new Date(`${data.fechaProgramada}T${data.horaProgramada}`).getTime();
+
+              return (
+                c.patientId === data.documentoPaciente &&
+                fechaCita === fechaData
+              )
+                ? { ...c, estadoSesion: 'LLEGADA' }
+                : c;
+            })
+          );
+
+          const mensaje = `Llegó ${data.nombreCompletoPaciente}`;
+
+          const speech = new SpeechSynthesisUtterance(mensaje);
+          speech.lang= 'es-CO';
+          speech.rate = 1;
+          speech.pitch = 1;
+
+          window.speechSynthesis.speak(speech);
+
+        });
+      }
+    });
+    stompClient.activate();
+    return () => {
+      stompClient.deactivate();
+    }
+
+  }, [])
 
   // ============================
   // Utils
@@ -80,6 +150,15 @@ function RegistroAsistenciaAmbulatoria() {
       hour: '2-digit',
       minute: '2-digit'
     })
+  }
+
+  const esTardia = (fechaHoraCita, minutosTolerancia) => {
+    const fechaCita = new Date(fechaHoraCita)
+    const ahora = new Date()
+
+    const limite = new Date(fechaCita.getTime() + minutosTolerancia * 60000)
+
+    return ahora > limite
   }
 
   const badgeEstado = (estado) => {
@@ -99,7 +178,7 @@ function RegistroAsistenciaAmbulatoria() {
   // Acciones
   // ============================
   const llegadaAtencion = async (cita) => {
-    if(yaPasoHora(cita.appoinmentDate) && showTardia?.razon == null){ 
+    if(esTardia(cita.appoinmentDate, MINUTOS_TOLERANCIA_LLEGADA) && showTardia?.razon == null){ 
       setShowTardia({ citaId: cita.id, tipoRazon: 'EXTERNA', razones: EXTERNAL_REASONS })
       return;
     }
@@ -113,6 +192,7 @@ function RegistroAsistenciaAmbulatoria() {
         horaProgramada: cita.appoinmentDate.split('T')[1].substring(0, 8),
         especialidad: cita.speciality,
         profesional: cita.doctor,
+        docMedico: cita.docMedico,
         categoriaMotivoLlegadaTardia: 'EXTERNA',
         llegadaTardia: showTardia?.razon || null
       }
@@ -133,7 +213,7 @@ function RegistroAsistenciaAmbulatoria() {
   }
 
   const iniciarAtencion = async (cita) => {
-    if(yaPasoHora(cita.appoinmentDate) && showTardia?.razon == null && cita.llegadaTardia == null){
+    if (esTardia(cita.appoinmentDate, MINUTOS_TOLERANCIA_ATENCION) && showTardia?.razon == null && cita.llegadaTardia == null){
       setShowTardia({ citaId: cita.id, tipoRazon: 'INTERNA', razones: INTERNAL_REASONS })
       return; 
     }
@@ -192,16 +272,18 @@ function RegistroAsistenciaAmbulatoria() {
       </h2>
 
       <div className="overflow-x-auto rounded-lg shadow">
-        <select className="mb-4 p-2 border rounded" value={verTodo} onChange={(e) => setVerTodo(e.target.value === 'true')}>
+        <select className={`mb-4 p-2 border rounded ${loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-white hover:bg-gray-100'}`} value={verTodo} onChange={(e) => setVerTodo(e.target.value === 'true')} disabled={loading}>
           <option value={false}>Ver mis citas</option>
           <option value={true}>Ver todas las citas</option>
         </select>
-        <table className="min-w-full bg-white">
+        {loading ? <Loader /> : (
+          <table className="min-w-full bg-white">
           <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
             <tr>
               <th className="px-4 py-3 text-left">Hora</th>
               <th className="px-4 py-3 text-left">Paciente</th>
               <th className="px-4 py-3 text-left">Especialidad</th>
+              <th className='px-4 py-3 text-left'>Medico</th>
               <th className="px-4 py-3 text-left">EPS</th>
               <th className="px-4 py-3 text-center">Estado</th>
               <th className="px-4 py-3 text-center">Acciones</th>
@@ -210,12 +292,12 @@ function RegistroAsistenciaAmbulatoria() {
 
           <tbody className="divide-y">
             {citas.map(cita => (
-              console.log('Cita:', cita),
               <Fragment key={cita.id}>
               <tr className="hover:bg-gray-50">
                 <td className="px-4 py-3">{obtenerHora(cita.appoinmentDate)}</td>
                 <td className="px-4 py-3 font-medium">{cita.patientName}</td>
                 <td className="px-4 py-3">{cita.speciality}</td>
+                <td className="px-4 py-3">{cita.doctor}</td>
                 <td className="px-4 py-3 text-sm">{cita.eps}</td>
                 <td className="px-4 py-3 text-center">
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badgeEstado(cita.estadoSesion)}`}>
@@ -244,7 +326,7 @@ function RegistroAsistenciaAmbulatoria() {
                   )}
 
                   {cita.estadoSesion === 'PENDIENTE_DE_LLEGADA' &&
-                    yaPasoHora(cita.appoinmentDate) && canNoLlego && (
+                    esTardia(cita.appoinmentDate, MINUTOS_TOLERANCIA_LLEGADA) && canNoLlego && (
                       <button onClick={() => marcarNoLlegado(cita)} className="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-sm" >
                         No llegó
                       </button>
@@ -283,6 +365,7 @@ function RegistroAsistenciaAmbulatoria() {
             ))}
           </tbody>
         </table>
+      )}
       </div>
     </div>
   )
