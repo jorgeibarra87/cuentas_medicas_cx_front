@@ -4,6 +4,7 @@ import { obtenerCitasConsolidadas, registrarFinalizacionCitaAmbulatoria, registr
 import SockJS from 'sockjs-client'
 import { Client } from '@stomp/stompjs'
 import { toast } from 'react-toastify'
+import Loader from '../Loader'
 
 const EXTERNAL_REASONS = [
   'CALAMIDAD DOMESTICA',
@@ -43,6 +44,9 @@ const INTERNAL_REASONS = [
 
 function RegistroAsistenciaAmbulatoria() {
 
+  const MINUTOS_TOLERANCIA_LLEGADA = 10
+  const MINUTOS_TOLERANCIA_ATENCION = 10
+
   const stateLogin = useSelector(state => state.login)
   const roles = stateLogin?.decodeToken?.authorities?.split(',') || []
   const hasRole = (...rolesToCheck) => rolesToCheck.some(role => roles.includes(role))
@@ -56,6 +60,7 @@ function RegistroAsistenciaAmbulatoria() {
   const [citas, setCitas] = useState([])
   const [verTodo, setVerTodo] = useState(false)
   const [showTardia, setShowTardia] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   // ============================
   // Fetch agenda
@@ -63,10 +68,13 @@ function RegistroAsistenciaAmbulatoria() {
   useEffect(() => {
     const fetchCitas = async () => {
       try {
+        setLoading(true)
         const response = await obtenerCitasConsolidadas(verTodo) // Pasamos true para ver todas las citas, false para solo las del médico logueado
         setCitas(response)
       } catch (error) {
         console.error('Error al obtener las citas de rehabilitación', error)
+      } finally {
+        setLoading(false)
       }
     }
     fetchCitas()
@@ -144,6 +152,15 @@ function RegistroAsistenciaAmbulatoria() {
     })
   }
 
+  const esTardia = (fechaHoraCita, minutosTolerancia) => {
+    const fechaCita = new Date(fechaHoraCita)
+    const ahora = new Date()
+
+    const limite = new Date(fechaCita.getTime() + minutosTolerancia * 60000)
+
+    return ahora > limite
+  }
+
   const badgeEstado = (estado) => {
     switch (estado) {
       case 'EN_PROCESO':
@@ -161,7 +178,7 @@ function RegistroAsistenciaAmbulatoria() {
   // Acciones
   // ============================
   const llegadaAtencion = async (cita) => {
-    if(yaPasoHora(cita.appoinmentDate) && showTardia?.razon == null){ 
+    if(esTardia(cita.appoinmentDate, MINUTOS_TOLERANCIA_LLEGADA) && showTardia?.razon == null){ 
       setShowTardia({ citaId: cita.id, tipoRazon: 'EXTERNA', razones: EXTERNAL_REASONS })
       return;
     }
@@ -196,7 +213,7 @@ function RegistroAsistenciaAmbulatoria() {
   }
 
   const iniciarAtencion = async (cita) => {
-    if(yaPasoHora(cita.appoinmentDate) && showTardia?.razon == null && cita.llegadaTardia == null){
+    if (esTardia(cita.appoinmentDate, MINUTOS_TOLERANCIA_ATENCION) && showTardia?.razon == null && cita.llegadaTardia == null){
       setShowTardia({ citaId: cita.id, tipoRazon: 'INTERNA', razones: INTERNAL_REASONS })
       return; 
     }
@@ -255,11 +272,12 @@ function RegistroAsistenciaAmbulatoria() {
       </h2>
 
       <div className="overflow-x-auto rounded-lg shadow">
-        <select className="mb-4 p-2 border rounded" value={verTodo} onChange={(e) => setVerTodo(e.target.value === 'true')}>
+        <select className={`mb-4 p-2 border rounded ${loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-white hover:bg-gray-100'}`} value={verTodo} onChange={(e) => setVerTodo(e.target.value === 'true')} disabled={loading}>
           <option value={false}>Ver mis citas</option>
           <option value={true}>Ver todas las citas</option>
         </select>
-        <table className="min-w-full bg-white">
+        {loading ? <Loader /> : (
+          <table className="min-w-full bg-white">
           <thead className="bg-gray-100 text-gray-700 text-sm uppercase">
             <tr>
               <th className="px-4 py-3 text-left">Hora</th>
@@ -308,7 +326,7 @@ function RegistroAsistenciaAmbulatoria() {
                   )}
 
                   {cita.estadoSesion === 'PENDIENTE_DE_LLEGADA' &&
-                    yaPasoHora(cita.appoinmentDate) && canNoLlego && (
+                    esTardia(cita.appoinmentDate, MINUTOS_TOLERANCIA_LLEGADA) && canNoLlego && (
                       <button onClick={() => marcarNoLlegado(cita)} className="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-sm" >
                         No llegó
                       </button>
@@ -347,6 +365,7 @@ function RegistroAsistenciaAmbulatoria() {
             ))}
           </tbody>
         </table>
+      )}
       </div>
     </div>
   )
