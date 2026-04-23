@@ -1,6 +1,9 @@
 import { Fragment, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { obtenerCitasConsolidadas, registrarFinalizacionCitaAmbulatoria, registrarInicioCitaAmbulatoria, registrarllegadaCitaAmbulatoria, registrarNoLLegadaCitaAmbulatoria } from '../../api/rehabilitacion/registroCitasAmbulatorias'
+import SockJS from 'sockjs-client'
+import { Client } from '@stomp/stompjs'
+import { toast } from 'react-toastify'
 
 const EXTERNAL_REASONS = [
   'CALAMIDAD DOMESTICA',
@@ -43,6 +46,7 @@ function RegistroAsistenciaAmbulatoria() {
   const stateLogin = useSelector(state => state.login)
   const roles = stateLogin?.decodeToken?.authorities?.split(',') || []
   const hasRole = (...rolesToCheck) => rolesToCheck.some(role => roles.includes(role))
+  const rutaRehabilitacion = window.env.VITE_URL_MIROCERVICE_REHABILITACION;
 
   const canLlegada = hasRole('ROLE_ADMINISTRADOR', 'ROLE_FACTURACION_REHABILITACION','ROLE_JEFE_REHABILITACION')
   const canIniciar = hasRole('ROLE_ADMINISTRADOR','ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')
@@ -67,6 +71,64 @@ function RegistroAsistenciaAmbulatoria() {
     }
     fetchCitas()
   }, [verTodo])
+
+  useEffect(() => {
+    if (!canIniciar) return;
+
+    const socket = new SockJS(`${rutaRehabilitacion}ws`);
+
+    const stompClient = new Client({
+      webSocketFactory: () => socket, 
+      reconnectDelay: 5000,
+
+      onConnect: () => {
+        
+        const fisioterapeutaId = stateLogin?.decodeToken?.sub; 
+        console.log('Suscribiéndose a canal de llegadas para fisioterapeuta ID:', fisioterapeutaId)
+        stompClient.subscribe(`/topic/llegadas/${fisioterapeutaId}`, (message) => {
+          const data = JSON.parse(message.body);
+
+          toast.info(`Llegó el paciente ${data.nombreCompletoPaciente} a la cita de las ${data.horaProgramada}`, {
+            position: "top-center",
+            autoClose: false,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setCitas(prev =>
+            prev.map(c => {
+              const fechaCita = new Date(c.appoinmentDate).getTime();
+              const fechaData = new Date(`${data.fechaProgramada}T${data.horaProgramada}`).getTime();
+
+              return (
+                c.patientId === data.documentoPaciente &&
+                fechaCita === fechaData
+              )
+                ? { ...c, estadoSesion: 'LLEGADA' }
+                : c;
+            })
+          );
+
+          const mensaje = `Llegó ${data.nombreCompletoPaciente}`;
+
+          const speech = new SpeechSynthesisUtterance(mensaje);
+          speech.lang= 'es-CO';
+          speech.rate = 1;
+          speech.pitch = 1;
+
+          window.speechSynthesis.speak(speech);
+
+        });
+      }
+    });
+    stompClient.activate();
+    return () => {
+      stompClient.deactivate();
+    }
+
+  }, [])
 
   // ============================
   // Utils
@@ -113,6 +175,7 @@ function RegistroAsistenciaAmbulatoria() {
         horaProgramada: cita.appoinmentDate.split('T')[1].substring(0, 8),
         especialidad: cita.speciality,
         profesional: cita.doctor,
+        docMedico: cita.docMedico,
         categoriaMotivoLlegadaTardia: 'EXTERNA',
         llegadaTardia: showTardia?.razon || null
       }
@@ -202,6 +265,7 @@ function RegistroAsistenciaAmbulatoria() {
               <th className="px-4 py-3 text-left">Hora</th>
               <th className="px-4 py-3 text-left">Paciente</th>
               <th className="px-4 py-3 text-left">Especialidad</th>
+              <th className='px-4 py-3 text-left'>Medico</th>
               <th className="px-4 py-3 text-left">EPS</th>
               <th className="px-4 py-3 text-center">Estado</th>
               <th className="px-4 py-3 text-center">Acciones</th>
@@ -210,12 +274,12 @@ function RegistroAsistenciaAmbulatoria() {
 
           <tbody className="divide-y">
             {citas.map(cita => (
-              console.log('Cita:', cita),
               <Fragment key={cita.id}>
               <tr className="hover:bg-gray-50">
                 <td className="px-4 py-3">{obtenerHora(cita.appoinmentDate)}</td>
                 <td className="px-4 py-3 font-medium">{cita.patientName}</td>
                 <td className="px-4 py-3">{cita.speciality}</td>
+                <td className="px-4 py-3">{cita.doctor}</td>
                 <td className="px-4 py-3 text-sm">{cita.eps}</td>
                 <td className="px-4 py-3 text-center">
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badgeEstado(cita.estadoSesion)}`}>
