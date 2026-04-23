@@ -23,7 +23,7 @@ jobs:
               run: |
                 IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/microservices:frontentsolutionv2-image
                 VERSION_TAG=${GITHUB_REF_NAME}
-                docker build -t $IMAGE_NAME-$VERSION_TAG -t $IMAGE_NAME-latest .
+                docker build --build-arg VERSION=$VERSION_TAG -t $IMAGE_NAME-$VERSION_TAG -t $IMAGE_NAME-latest .
 
             - name: Push Docker image
               run: |
