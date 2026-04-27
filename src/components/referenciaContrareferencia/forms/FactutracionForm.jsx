@@ -16,8 +16,6 @@ export default function FacturacionForm({ facturacion, onSaved }) {
 
     const [formData, setFormData] = useState({
         trasladoId: '',
-        fechaPrefactura: '',
-        prefactura: '',
         produccion: '',
         fechaFactura: '',
         factura: '',
@@ -157,8 +155,6 @@ export default function FacturacionForm({ facturacion, onSaved }) {
         if (facturacion) {
             setFormData({
                 trasladoId: facturacion.trasladoId || '',
-                fechaPrefactura: facturacion.fechaPrefactura?.slice(0, 16) || '',
-                prefactura: facturacion.prefactura || '',
                 produccion: facturacion.produccion || '',
                 fechaFactura: facturacion.fechaFactura?.slice(0, 16) || '',
                 factura: facturacion.factura || '',
@@ -175,8 +171,6 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                 .slice(0, 16);
             setFormData({
                 trasladoId: '',
-                fechaPrefactura: local,
-                prefactura: '',
                 produccion: '',
                 fechaFactura: local,
                 factura: '',
@@ -254,16 +248,6 @@ export default function FacturacionForm({ facturacion, onSaved }) {
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                         <FontAwesomeIcon icon={faFile} className="text-sm w-4 h-4 " /> Datos de facturación
                     </p>
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha prefactura</label>
-                    <input type="datetime-local" value={formData.fechaPrefactura} onChange={e => handleChange('fechaPrefactura', e.target.value)}
-                        className={INPUT_CLASS} required 
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Prefactura</label>
-                    <input type="text" value={formData.prefactura} onChange={e => handleChange('prefactura', e.target.value)} className={INPUT_CLASS}/>
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Producción</label>
