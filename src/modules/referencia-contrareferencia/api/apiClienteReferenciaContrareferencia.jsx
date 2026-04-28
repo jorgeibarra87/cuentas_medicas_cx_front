@@ -1,4 +1,4 @@
-import { createApiClient } from "../apiClientFactory";
+import { createApiClient } from "../../../api/apiClientFactory";
 
 const ruta = window.env.VITE_URL_API_GATEWAY;
 const micro = window.env.VITE_URL_REFERENCIA_CONTRAREFERENCIA;

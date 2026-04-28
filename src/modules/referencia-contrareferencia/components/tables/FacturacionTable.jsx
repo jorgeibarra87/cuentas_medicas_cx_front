@@ -2,8 +2,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookMedical, faDollar, faFileEdit, faFileAlt, faPencilAlt, faTruckMedical, faSearch, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Pagination from '../../Pagination';
-import { cambiarEstadoFactura, obtenerFacturas } from '../../../api/referenciaContrareferencia/facturacionService';
+import Pagination from '../../../../components/Pagination';
+import { cambiarEstadoFactura, obtenerFacturas } from '../../api/facturacionService';
 
 const PAGE_SIZE = 50; // máximo por página
 

@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faPlus, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
-import { guardarTraslado, actualizarTraslado } from '../../../api/referenciaContrareferencia/trasladosService';
-import { obtenerInformacionCompletaPaciente } from '../../../api/dinamica/genPacienService';
-import Loader from '../../Loader';
+import { guardarTraslado, actualizarTraslado } from '../../../referencia-contrareferencia/api/trasladosService';
+import { obtenerInformacionCompletaPaciente } from '../../../../api/dinamica/genPacienService';
+import Loader from '../../../../components/Loader';
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";

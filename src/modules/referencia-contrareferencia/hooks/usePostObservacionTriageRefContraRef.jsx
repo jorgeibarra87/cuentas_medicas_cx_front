@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { guardarObservacionTriage } from "../../api/referenciaContrareferencia/datosReferenciaService";
+import { guardarObservacionTriage } from "../../referencia-contrareferencia/api/datosReferenciaService";
 
 const usePostObservacionTriageRefContraRef = () => {
     const [isPutting, setIsPutting] = useState(false);

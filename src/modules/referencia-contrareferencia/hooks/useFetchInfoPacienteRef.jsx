@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { buscarInformacionUsuarioSecuencial } from "../../core/mappers/paciente.composite";
+import { buscarInformacionUsuarioSecuencial } from "../../../core/mappers/paciente.composite";
 
 const useFetchInfoPacienteRef = () => {
     const [infoPaciente, setInfoPaciente] = useState(null);

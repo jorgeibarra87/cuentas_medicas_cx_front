@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { agregarHospitalReferencia } from "../../api/referenciaContrareferencia/hospitalesReferenciaService";
+import { agregarHospitalReferencia } from "../../referencia-contrareferencia/api/hospitalesReferenciaService";
 
 const usePostHospitalRefContraRef = () => {
 

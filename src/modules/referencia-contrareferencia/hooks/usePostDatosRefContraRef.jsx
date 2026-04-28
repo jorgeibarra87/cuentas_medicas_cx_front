@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { guardarDatosReferencia } from "../../api/referenciaContrareferencia/datosReferenciaService";
+import { guardarDatosReferencia } from "../../referencia-contrareferencia/api/datosReferenciaService";
 
 const usePostDatosRefContraRef = () => {
     const [data, setData] = useState(null);

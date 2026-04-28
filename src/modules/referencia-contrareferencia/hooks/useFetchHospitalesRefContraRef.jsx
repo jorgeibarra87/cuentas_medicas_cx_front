@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { obtenerHospitalesReferencia } from '../../api/referenciaContrareferencia/hospitalesReferenciaService'
+import { obtenerHospitalesReferencia } from '../../referencia-contrareferencia/api/hospitalesReferenciaService'
 
 const useFetchHospitalesRefContraRef = () => {
   const [hospitales, setHospitales] = useState([])
