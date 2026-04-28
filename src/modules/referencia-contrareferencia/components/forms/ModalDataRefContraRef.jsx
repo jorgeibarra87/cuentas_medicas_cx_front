@@ -1,5 +1,5 @@
-import ListaColapsable from "../../utilities/ListaColapsable";
-import TextoColapsable from "../../utilities/TextoColapsable"
+import ListaColapsable from "../../../../components/utilities/ListaColapsable";
+import TextoColapsable from "../../../../components/utilities/TextoColapsable"
 
 export default function ModalDataRefContraRef({ handleClose, data }) {
     return (

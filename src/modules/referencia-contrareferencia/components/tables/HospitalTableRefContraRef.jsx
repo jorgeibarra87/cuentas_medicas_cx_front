@@ -1,6 +1,6 @@
 import { useState } from "react";
-import useFetchHospitalesRefContraRef from "../../../hooks/referenciaContrareferencia/useFetchHospitalesRefContraRef";
-import Loader from "../../Loader";
+import useFetchHospitalesRefContraRef from "../../hooks/useFetchHospitalesRefContraRef";
+import Loader from "../../../../components/Loader";
 import FormHospitalRefContraRef from "../forms/FormHospitalRefContraRef";
 import { Link } from "react-router-dom";
 

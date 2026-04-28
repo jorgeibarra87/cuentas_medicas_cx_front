@@ -1,16 +1,16 @@
 import { faCheckCircle, faCog, faExchangeAlt, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useFetchAdnIngresoTodos from "../../../hooks/dinamica/useFetchAdnIngresoTodos";
-import useFetchHospitalesRefContraRef from "../../../hooks/referenciaContrareferencia/useFetchHospitalesRefContraRef";
-import Loader from "../../Loader";
+import useFetchAdnIngresoTodos from "../../../../hooks/dinamica/useFetchAdnIngresoTodos";
+import useFetchHospitalesRefContraRef from "../../hooks/useFetchHospitalesRefContraRef";
+import Loader from "../../../../components/Loader";
 import Select from 'react-select';
-import usePostDatosRefContraRef from "../../../hooks/referenciaContrareferencia/usePostDatosRefContraRef";
+import usePostDatosRefContraRef from "../../hooks/usePostDatosRefContraRef";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import ModalDataRefContraRef from "./ModalDataRefContraRef";
-import { buscarDatosPorIdODocumento } from "../../../api/referenciaContrareferencia/datosReferenciaService";
-import useFetchInfoPacienteRef from "../../../hooks/referenciaContrareferencia/useFetchInfoPacienteRef";
+import { buscarDatosPorIdODocumento } from "../../api/datosReferenciaService";
+import useFetchInfoPacienteRef from "../../hooks/useFetchInfoPacienteRef";
 
 export default function FormDatos() {
 

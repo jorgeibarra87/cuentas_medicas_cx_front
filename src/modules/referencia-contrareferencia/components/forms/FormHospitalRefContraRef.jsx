@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import usePostHospitalRefContraRef from "../../../hooks/referenciaContrareferencia/usePostHospitalRefContraRef";
-import Loader from "../../Loader";
+import usePostHospitalRefContraRef from "../../hooks/usePostHospitalRefContraRef";
+import Loader from "../../../../components/Loader";
 import { toast } from "react-toastify";
 
 export default function FormHospitalRefContraRef({ onClose }) {

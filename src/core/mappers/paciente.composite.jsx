@@ -1,5 +1,5 @@
 import { obtenerInformacionGeneralPaciente } from "../../api/dinamica/genPacienService"
-import { buscarDatosPorIdODocumento } from "../../api/referenciaContrareferencia/datosReferenciaService";
+import { buscarDatosPorIdODocumento } from "../../modules/referencia-contrareferencia/api/datosReferenciaService";
 import { mapearPacienteDinamica, mapearPacienteReferencia } from "./paciente.mapper";
 
 export const buscarInformacionUsuarioSecuencial = async (documento) => {

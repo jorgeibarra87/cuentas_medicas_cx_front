@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExcel, faFilter, faTable, faSpinner, faChevronDown, faChevronRight, faAmbulance, faTruckMedical, faFileEdit, faFileAlt, faDollar, faBookMedical, faSearch
 } from '@fortawesome/free-solid-svg-icons';
-import { obtenerReporteTraslados } from '../../../api/referenciaContrareferencia/trasladosService';
+import { obtenerReporteTraslados } from '../../../referencia-contrareferencia/api/trasladosService';
 
 export default function ReporteTraslado() {
     const [fechaInicio, setFechaInicio] = useState('');

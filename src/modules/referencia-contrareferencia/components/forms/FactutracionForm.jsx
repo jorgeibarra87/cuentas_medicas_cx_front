@@ -2,9 +2,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faFile, faFileEdit, faMagnifyingGlass, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { guardarFactura, actualizarFactura } from '../../../api/referenciaContrareferencia/facturacionService';
-import { obtenerTraslados, obtenerTrasladoPorId } from '../../../api/referenciaContrareferencia/trasladosService';
-import { obtenerInformacionPacienteEgreso } from '../../../api/dinamica/genPacienService';
+import { guardarFactura, actualizarFactura } from '../../api/facturacionService';
+import { obtenerTraslados, obtenerTrasladoPorId } from '../../../referencia-contrareferencia/api/trasladosService';
+import { obtenerInformacionPacienteEgreso } from '../../../../api/dinamica/genPacienService';
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";
 

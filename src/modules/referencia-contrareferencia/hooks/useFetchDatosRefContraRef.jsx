@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { obtenerDatosPorPaginas } from "../../api/referenciaContrareferencia/datosReferenciaService";
+import { obtenerDatosPorPaginas } from "../../referencia-contrareferencia/api/datosReferenciaService";
 
 const useFetchDatosRefContraRef = (initialPage = 0, initialSize = 100) => {
     const [data, setData] = useState(null); // Lo inicializamos a null o un objeto vacío para Pages

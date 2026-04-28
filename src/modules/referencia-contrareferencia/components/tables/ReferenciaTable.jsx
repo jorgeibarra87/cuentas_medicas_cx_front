@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import useFetchDatosRefContraRef from "../../../hooks/referenciaContrareferencia/useFetchDatosRefContraRef";
-import Pagination from "../../Pagination";
-import Loader from "../../Loader";
-import { obtenerIngresosPorDocumentos } from "../../../api/dinamica/genPacienService";
-import { actualizarDatosReferenciaFechaActualizacionBusquedaIngresos, actualizarDatosReferenciaIngresos, buscarDatosPorIdODocumento, obtenerDatosEntreFechasRefContraReferencia } from "../../../api/referenciaContrareferencia/datosReferenciaService";
+import useFetchDatosRefContraRef from "../../hooks/useFetchDatosRefContraRef";
+import Pagination from "../../../../components/Pagination";
+import Loader from "../../../../components/Loader";
+import { obtenerIngresosPorDocumentos } from "../../../../api/dinamica/genPacienService";
+import { actualizarDatosReferenciaFechaActualizacionBusquedaIngresos, actualizarDatosReferenciaIngresos, buscarDatosPorIdODocumento, obtenerDatosEntreFechasRefContraReferencia } from "../../api/datosReferenciaService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenClip } from "@fortawesome/free-solid-svg-icons";
-import usePostObservacionTriageRefContraRef from "../../../hooks/referenciaContrareferencia/usePostObservacionTriageRefContraRef";
+import usePostObservacionTriageRefContraRef from "../../hooks/usePostObservacionTriageRefContraRef";
 import { toast } from "react-toastify";
 import * as XLSX from 'xlsx';
 import { useSelector } from "react-redux";
-import TextoColapsable from "../../utilities/TextoColapsable";
-import ListaColapsable from "../../utilities/ListaColapsable";
+import TextoColapsable from "../../../../components/utilities/TextoColapsable";
+import ListaColapsable from "../../../../components/utilities/ListaColapsable";
 
 export default function ReferenciaTable() {
 

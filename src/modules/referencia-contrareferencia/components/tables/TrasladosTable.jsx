@@ -2,8 +2,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBookMedical, faCheck, faDollar, faFileEdit, faFileAlt, faPencilAlt, faTruckMedical, faXmark, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Pagination from '../../Pagination';
-import { cambiarEstadoTraslado, obtenerTraslados } from '../../../api/referenciaContrareferencia/trasladosService';
+import Pagination from '../../../../components/Pagination';
+import { cambiarEstadoTraslado, obtenerTraslados } from '../../../referencia-contrareferencia/api/trasladosService';
 
 const PAGE_SIZE = 50; // máximo por página
 
