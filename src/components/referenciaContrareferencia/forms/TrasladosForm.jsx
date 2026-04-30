@@ -11,6 +11,7 @@ const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-
 export default function TrasladosForm({ traslado, onSaved }) {
 
     const [dataUsuario, setDatausuario] = useState(null);
+    const [camposAutocompletados, setCamposAutocompletados] = useState(false);
 
     const [formData, setFormData] = useState({
         fechaTraslado: '',
@@ -33,6 +34,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
     const [medicamentosTexto, setMedicamentosTexto] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const esEdicion = !!traslado;
+    const bloquearAutocompletados = !esEdicion && camposAutocompletados;
 
     const normalizar = (valor) =>
         String(valor || '').trim().toUpperCase();
@@ -114,6 +117,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
 
     useEffect(() => {
         if (traslado) {
+            setCamposAutocompletados(false);
             setFormData({
                 fechaTraslado: traslado.fechaTraslado?.slice(0, 16) || '',
                 nomPaciente: traslado.nomPaciente || '',
@@ -135,7 +139,11 @@ export default function TrasladosForm({ traslado, onSaved }) {
             setMedicamentosTexto((traslado.medicamentos || []).join(', '));
         } else {
             const now = new Date();
-            const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+            const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+
+            setCamposAutocompletados(false);
+            setDatausuario(null);
+
             setFormData({
                 fechaTraslado: local.toISOString().slice(0, 16),
                 nomPaciente: '',
@@ -199,6 +207,69 @@ export default function TrasladosForm({ traslado, onSaved }) {
 
     const buscarPaciente = async (ingreso) => {
         if (ingreso.length < 3) return;
+        setCamposAutocompletados(false);
+        setDatausuario(null);
+
+        // ✅ DATOS SIMULADOS
+        const datosSimulados = {
+            '5882823': {
+                documento: '98385877',
+                eps: 'NUEVA EMPRESA PROMOTORA DE SALUD SA - NUEVA EPS SUBSIDIADO',
+                servicio: 'URGENCIAS ADULTOS',
+                nomPaciente: 'JORGE EDUARDO PANTOJA YADUN'
+            },
+            '100235': {
+                documento: '2345678901',
+                eps: 'SURA',
+                servicio: 'MEDICINA INTERNA',
+                nomPaciente: 'MARIA GOMEZ'
+            },
+            '5853765': {
+                documento: '76027691',
+                eps: 'AIC',
+                servicio: 'UCI 3 36',
+                nomPaciente: 'MIGUEL ANGEL ANACONA'
+            },
+            '100237': {
+                documento: '87069640',
+                eps: 'COOSALUD',
+                servicio: 'PEDIATRIA',
+                nomPaciente: 'ANA LOPEZ'
+            },
+        };
+
+        const simulado = datosSimulados[ingreso];
+
+        if (simulado) {
+            handleChange('ingreso', ingreso);
+            handleChange('documento', simulado.documento);
+            handleChange('eps', simulado.eps);
+            handleChange('servicio', simulado.servicio);
+            handleChange('nomPaciente', simulado.nomPaciente);
+            setCamposAutocompletados(true);
+            return;
+        }
+        setCamposAutocompletados(false);
+
+        const manejarConfirmacion = async (ingreso) => {
+            const confirmar = window.confirm("El documento ingresado no contiene ingreso activo en el sistema. ¿Desea continuar con el traslado con esta información?");
+
+            if (!confirmar) {
+                handleChange('ingreso', '');
+            } else {
+                setDatausuario({
+                    ingreso,
+                    documento: '',
+                    nombreCompleto: '',
+                    entidad: '',
+                    servicio: 'SIN SERVICIO'
+                });
+            }
+        };
+    };
+
+    /* const buscarPaciente = async (ingreso) => {
+        if (ingreso.length < 3) return;
         setDatausuario(null);
         setLoading(true);
 
@@ -222,7 +293,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 pacNumDoc: 'SIN DOCUMENTO',
             });
         }
-    };
+    }; */
 
     useEffect(() => {
         if (dataUsuario && !traslado) {  //actualizar si NO es edición
@@ -272,8 +343,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     </label>
                     <input type="text" value={formData.nomPaciente}
                         onChange={e => handleChange('nomPaciente', e.target.value)}
-                        readOnly={dataUsuario?.nombreCompleto ? true : false}
-                        className={dataUsuario?.nombreCompleto ? INPUT_READONLY : INPUT_CLASS}
+                        readOnly={bloquearAutocompletados}
+                        className={bloquearAutocompletados ? INPUT_READONLY : INPUT_CLASS}
                         required
                     />
                 </div>
@@ -282,8 +353,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     <label className="block text-sm font-medium text-gray-700 mb-1"> Documento</label>
                     <input type="text" value={formData.documento}
                         onChange={e => handleChange('documento', e.target.value)}
-                        readOnly={dataUsuario ? true : false}
-                        className={dataUsuario ? INPUT_READONLY : INPUT_CLASS}
+                        readOnly={bloquearAutocompletados}
+                        className={bloquearAutocompletados ? INPUT_READONLY : INPUT_CLASS}
                         required
                     />
                 </div>
@@ -293,9 +364,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     <input type="text"
                         value={formData.eps}
                         onChange={e => handleChange('eps', e.target.value)}
-                        //className={INPUT_CLASS}
-                        readOnly={dataUsuario?.entidad ? true : false}
-                        className={dataUsuario?.entidad ? INPUT_READONLY : INPUT_CLASS}
+                        readOnly={bloquearAutocompletados}
+                        className={bloquearAutocompletados ? INPUT_READONLY : INPUT_CLASS}
                         required
                     />
                 </div>
@@ -305,8 +375,8 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     <input type="text"
                         value={formData.servicio}
                         onChange={e => handleChange('servicio', e.target.value)}
-                        readOnly={dataUsuario ? true : false}
-                        className={dataUsuario ? INPUT_READONLY : INPUT_CLASS}
+                        readOnly={bloquearAutocompletados}
+                        className={bloquearAutocompletados ? INPUT_READONLY : INPUT_CLASS}
                         required
                     />
                 </div>

@@ -1,6 +1,6 @@
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Login from '../auth/Login'
-import Error404 from '../Error404'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from '../auth/Login';
+import Error404 from '../Error404';
 import { useEffect, useState } from 'react';
 import RequireAuth from './RequireAuth';
 import { useDispatch, useSelector } from 'react-redux';
@@ -32,6 +32,8 @@ import ReporteTraslado from '../referenciaContrareferencia/pages/ReporteTraslado
 import HospitalTableRefContraRef from '../referenciaContrareferencia/tables/HospitalTableRefContraRef';
 import RegistroAsistenciaAmbulatoria from '../rehabilitacion/RegistroAsistenciaAmbulatoria';
 import GenSerRipsCambioSipEstado from '../facturacion/GenSerRipsCambioSipEstado';
+import ResumenExamenesPacientes from '../laboratorio/ResumenExamenesPacientes';
+import CirugiasPage from '../auditoria_cuentas_medicas/pages/CirugiasPage';
 
 export default function RutasConfig() {
 
@@ -55,7 +57,23 @@ export default function RutasConfig() {
         else {
             setIsLogged(false);
         }
-    }, [state])
+    }, [state]);
+
+    useEffect(() => {
+        const isDevMode = window.env?.VITE_DEV_MODE === "true";
+
+        if (isDevMode && !state.token) {
+            const tokenReal = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NzA2OTY0MCIsImF1dGhvcml0aWVzIjoiUk9MRV9BRE1JTklTVFJBRE9SIiwibmFtZV91c2VyIjoiSk9SR0UgQVJNQU5ETyBJQkFSUkEgUEFMQUNJT1MiLCJpYXQiOjE3NzU3Mzc4ODcsImV4cCI6MTc3NTczODQ4N30.sZ8Hq27bsosfrsNWnv6uq36bsqp4uP06sLMGdLSQn08";
+
+            dispatch({
+                type: "INICIAR_SESION",
+                payload: {
+                    jwt: tokenReal,
+                    refreshToken: "fake-refresh"
+                }
+            });
+        }
+    }, [dispatch, state.token]);
 
     return (
         <HashRouter>
@@ -119,12 +137,12 @@ export default function RutasConfig() {
                                 <Sidebar componente={indexRehabilitacion} />
                             </ProtectedWithIdle>
                         </RequireAuth>
-                    }/>
+                    } />
                     <Route path='tomaAsistencias' element={
                         <RequireAuth isLogged={isLogged} loading={loading}>
-                                <Sidebar componente={RegistroAsistenciaAmbulatoria} />
+                            <Sidebar componente={RegistroAsistenciaAmbulatoria} />
                         </RequireAuth>
-                    }/>
+                    } />
                 </Route>
                 <Route path="/sistemas">
                     <Route path='mantenimientochequeo' element={<RequireAuth isLogged={isLogged} loading={loading}>
@@ -158,13 +176,25 @@ export default function RutasConfig() {
                     <Route path='usuario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={OpcionesUsuario} /></RequireAuth>}></Route>
                 </Route>
                 <Route path='/referenciacontrareferencia'>
-                    <Route path='formulario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormDatos}/></RequireAuth>}/>
-                    <Route path='datos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReferenciaTable}/></RequireAuth>}/>
-                    <Route path='hospitales' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HospitalTableRefContraRef} /></RequireAuth>}/>
+                    <Route path='formulario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormDatos} /></RequireAuth>} />
+                    <Route path='datos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReferenciaTable} /></RequireAuth>} />
+                    <Route path='hospitales' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HospitalTableRefContraRef} /></RequireAuth>} />
                     <Route path='reporte' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReporteTraslado} /></RequireAuth>} />
+                </Route>
+                <Route path='/laboratorio'>
+                    <Route path='examenes' element={
+                        <RequireAuth isLogged={isLogged} loading={loading}>
+                            <ProtectedWithIdle>
+                                <Sidebar componente={ResumenExamenesPacientes} />
+                            </ProtectedWithIdle>
+                        </RequireAuth>}
+                    />
+                </Route>
+                <Route path='/auditoria'>
+                    <Route path='procedimientos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={CirugiasPage} /></RequireAuth>} />
                 </Route>
                 <Route path='*' element={<Error404 />} />
             </Routes>
         </HashRouter>
-    )
+    );
 }

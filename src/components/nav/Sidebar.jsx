@@ -115,6 +115,13 @@ export default function Sidebar({ componente: Componente }) {
             submenu: [
                 { nombre: 'Usuario', ruta: '/ajustes/usuario', roles: ['ROLE_ADMINISTRADOR']}
             ]
+        },
+        {
+            nombre: 'Auditoría',
+            roles: ['ROLE_ADMINISTRADOR', 'ROLE_AUDITORIA_CIRCUIAS'],
+            submenu: [
+                { nombre: 'Procedimientos', ruta: '/auditoria/procedimientos', roles: ['ROLE_ADMINISTRADOR', 'ROLE_AUDITORIA_CIRCUIAS'] }
+            ]
         }
         // Agrega más opciones de menú aquí si es necesario
     ];
