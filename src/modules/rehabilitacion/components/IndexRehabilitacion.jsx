@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import * as XLSX from 'xlsx';
-import useFetchIndicadoresFinalizados from '../../hooks/rehabilitacion/useFetchIndicadoresFinalizados';
-import useFetchEspecialidadReh from '../../hooks/rehabilitacion/useFetchEspecialidadReh';
-import Loader from '../Loader';
+import useFetchIndicadoresFinalizados from '../../../modules/rehabilitacion/hooks/useFetchIndicadoresFinalizados';
+import useFetchEspecialidadReh from '../../../modules/rehabilitacion/hooks/useFetchEspecialidadReh';
+import Loader from '../../../components/Loader';
 
 function IndexRehabilitacion() {
   const { data: dataI, loading: loadingI, error: errorI, fetchIndicadoresFinalizados } = useFetchIndicadoresFinalizados();

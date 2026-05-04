@@ -20,18 +20,10 @@ import AjustesMhc from '../monitorizacionHc/AjustesMhc';
 import FormManteEquipos from '../sistemas/FormManteEquipos';
 import AjustesSistemas from '../sistemas/AjustesSistemas';
 import ProtectedWithIdle from './ProtectedWithIdle';
-import indexRehabilitacion from '../rehabilitacion/IndexRehabilitacion';
 import ReportesIndex from '../monitorizacionHc/ReportesIndex';
-import FormDatos from '../../modules/referencia-contrareferencia/components/forms/FormDatos';
-import ReferenciaTable from '../../modules/referencia-contrareferencia/components/tables/ReferenciaTable';
-import TrasladosTotalPage from '../../modules/referencia-contrareferencia/components/pages/TrasladosTotalPage';
-import TrasladosPage from '../../modules/referencia-contrareferencia/components/pages/TrasladosPage';
-import FacturacionPage from '../../modules/referencia-contrareferencia/components/pages/FacturacionPage';
-import CuentasMedicasPage from '../../modules/referencia-contrareferencia/components/pages/CuentasMedicasPage';
-import ReporteTraslado from '../../modules/referencia-contrareferencia/components/pages/ReporteTraslado';
-import HospitalTableRefContraRef from '../../modules/referencia-contrareferencia/components/tables/HospitalTableRefContraRef';
-import RegistroAsistenciaAmbulatoria from '../rehabilitacion/RegistroAsistenciaAmbulatoria';
 import GenSerRipsCambioSipEstado from '../facturacion/GenSerRipsCambioSipEstado';
+import { getRehabilitacionRoutes } from '../../modules/rehabilitacion/routes';
+import { getReferenciacontrarreferenciaRoutes } from '../../modules/referencia-contrareferencia/routes';
 
 export default function RutasConfig() {
 
@@ -113,18 +105,7 @@ export default function RutasConfig() {
                     </RequireAuth>} />
                 </Route>
                 <Route path='/rehabilitacion'>
-                    <Route path='indicadores' element={
-                        <RequireAuth isLogged={isLogged} loading={loading}>
-                            <ProtectedWithIdle>
-                                <Sidebar componente={indexRehabilitacion} />
-                            </ProtectedWithIdle>
-                        </RequireAuth>
-                    }/>
-                    <Route path='tomaAsistencias' element={
-                        <RequireAuth isLogged={isLogged} loading={loading}>
-                                <Sidebar componente={RegistroAsistenciaAmbulatoria} />
-                        </RequireAuth>
-                    }/>
+                    {getRehabilitacionRoutes(isLogged, loading)}
                 </Route>
                 <Route path="/sistemas">
                     <Route path='mantenimientochequeo' element={<RequireAuth isLogged={isLogged} loading={loading}>
@@ -146,14 +127,7 @@ export default function RutasConfig() {
                     </RequireAuth>} />
                 </Route>
                 <Route path='/referenciacontrareferencia'>
-                    <Route path='formulario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormDatos} /></RequireAuth>} />
-                    <Route path='datos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReferenciaTable} /></RequireAuth>} />
-                    <Route path='hospitales' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HospitalTableRefContraRef} /></RequireAuth>} />
-                    <Route path='totaltraslados' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={TrasladosTotalPage} /></RequireAuth>} />
-                    <Route path='traslados' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={TrasladosPage} /></RequireAuth>} />
-                    <Route path='facturaciones' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FacturacionPage} /></RequireAuth>} />
-                    <Route path='cuentas-medicas' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={CuentasMedicasPage} /></RequireAuth>} />
-                    <Route path='reporte' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReporteTraslado} /></RequireAuth>} />
+                    {getReferenciacontrarreferenciaRoutes(isLogged, loading)}
                 </Route>
                 <Route path='/ajustes'>
                     <Route path='usuario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={OpcionesUsuario} /></RequireAuth>}></Route>
