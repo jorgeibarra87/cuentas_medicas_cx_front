@@ -78,7 +78,7 @@ export default function CirugiasPage() {
                         <div>
                             <h1 className="text-4xl font-bold text-gray-800 mb-1">
                                 <FontAwesomeIcon icon={faBookMedical} className="w-6 h-6 text-gray-700 pr-2" />
-                                Gestión de Procedimientos
+                                Gestión Auditoría Procedimientos Quirúrgicos
                             </h1>
                         </div>
                     </div>
