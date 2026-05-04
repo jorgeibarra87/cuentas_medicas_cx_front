@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { obtenerIndicadores } from "../../api/rehabilitacion/indicadoresService";
+import { obtenerIndicadores } from "../api/indicadoresService";
 
 const useFetchIndicadoresFinalizados = () => {
     const [data, setData] = useState([]);

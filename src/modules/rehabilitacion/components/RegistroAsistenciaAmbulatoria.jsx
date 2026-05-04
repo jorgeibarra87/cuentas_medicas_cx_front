@@ -1,10 +1,10 @@
 import { Fragment, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { obtenerCitasConsolidadas, registrarFinalizacionCitaAmbulatoria, registrarInicioCitaAmbulatoria, registrarllegadaCitaAmbulatoria, registrarNoLLegadaCitaAmbulatoria } from '../../api/rehabilitacion/registroCitasAmbulatorias'
+import { obtenerCitasConsolidadas, registrarFinalizacionCitaAmbulatoria, registrarInicioCitaAmbulatoria, registrarllegadaCitaAmbulatoria, registrarNoLLegadaCitaAmbulatoria } from '../../../modules/rehabilitacion/api/registroCitasAmbulatorias'
 import SockJS from 'sockjs-client'
 import { Client } from '@stomp/stompjs'
 import { toast } from 'react-toastify'
-import Loader from '../Loader'
+import Loader from '../../../components/Loader'
 
 const EXTERNAL_REASONS = [
   'CALAMIDAD DOMESTICA',

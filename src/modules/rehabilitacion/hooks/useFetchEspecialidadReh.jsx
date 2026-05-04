@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { obtenerEspecialidadesRehabilitacion } from '../../api/rehabilitacion/indicadoresService';
+import { obtenerEspecialidadesRehabilitacion } from '../api/indicadoresService';
 
+// 
 const useFetchEspecialidadReh = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true); // Se inicia en true
