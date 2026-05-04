@@ -11,8 +11,6 @@ import HumanizacionSolicitudes from '../humanizacion/HumanizacionSolicitudes';
 import OpcionesUsuario from '../ajustes/OpcionesUsuario';
 import UsuariosProceso from '../mesaDeProcesos/UsuariosProceso';
 import ProcesosSubprocesos from '../mesaDeProcesos/ProcesosSubprocesos';
-import SolicitudCama from '../solAsigCamas/SolicitudCama';
-import AsignacionCama from '../solAsigCamas/AsignacionCama';
 import { obtenerToken } from '../../actions/loginActions';
 import Tamizaje from '../tamizaje/Tamizaje';
 import FormPreguntas from '../monitorizacionHc/FormPreguntas';
@@ -64,10 +62,6 @@ export default function RutasConfig() {
                             <Sidebar componente={UpdateInnProduc} />
                         </ProtectedWithIdle>
                     </RequireAuth>} />
-                </Route>
-                <Route path='/asginacioncamas'>
-                    <Route path='solicitud' element={<RequireAuth isLogged={isLogged} loading={loading}> <Sidebar componente={SolicitudCama} /></RequireAuth>} />
-                    <Route path='' element={<RequireAuth isLogged={isLogged} loading={loading}> <Sidebar componente={AsignacionCama} /></RequireAuth>} />
                 </Route>
                 <Route path='/mesaprocesos'>
                     <Route path='usuarioprocesos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={UsuariosProceso} /></RequireAuth>} />
