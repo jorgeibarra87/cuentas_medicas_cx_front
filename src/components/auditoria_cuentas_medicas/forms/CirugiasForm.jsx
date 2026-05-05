@@ -151,19 +151,19 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                         <input type="text" value={formData.medicoNombre} onChange={e => handleChange('medicoNombre', e.target.value)} className={INPUT_CLASS} />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Anestesiólogo</label>
-                        <input type="text" value={formData.anestesiologoNombre} onChange={e => handleChange('anestesiologoNombre', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Ayudante 1</label>
-                        <input type="text" value={formData.ayudante1} onChange={e => handleChange('ayudante1', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Ayudante 2</label>
-                        <input type="text" value={formData.ayudante2} onChange={e => handleChange('ayudante2', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Entidad</label>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Anestesiólogo</label>
+                         <input type="text" value={formData.anestesiologoNombre} onChange={e => handleChange('anestesiologoNombre', e.target.value)} className={INPUT_CLASS} />
+                     </div>
+                     <div>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Ayudante 1</label>
+                         <input type="text" value={formData.ayudante1} onChange={e => handleChange('ayudante1', e.target.value)} className={INPUT_CLASS} />
+                     </div>
+                     <div>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Ayudante 2</label>
+                         <input type="text" value={formData.ayudante2} onChange={e => handleChange('ayudante2', e.target.value)} className={INPUT_CLASS} />
+                     </div>
+                     <div>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Entidad</label>
                         <input type="text" value={formData.entidadSaludNombre} onChange={e => handleChange('entidadSaludNombre', e.target.value)} className={INPUT_CLASS} />
                     </div>
                     <div>
@@ -183,34 +183,34 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                         <input type="text" value={formData.horaCargue} readOnly className={INPUT_READONLY} />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Auditoría %</label>
-                        <input type="text" value={formData.auditoriaPorcentaje} onChange={e => handleChange('auditoriaPorcentaje', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Novedad</label>
-                        <input type="text" value={formData.novedadDesc} onChange={e => handleChange('novedadDesc', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Autorización</label>
-                        <input type="text" value={formData.autorizacion} onChange={e => handleChange('autorizacion', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Imágenes Dx</label>
-                        <input type="text" value={formData.imagenesDx} onChange={e => handleChange('imagenesDx', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                        <input type="text" value={formData.estadoAuditoria} onChange={e => handleChange('estadoAuditoria', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Causa Objeción</label>
-                        <input type="text" value={formData.causaObjecion} onChange={e => handleChange('causaObjecion', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Rev Supervision</label>
-                        <input type="text" value={formData.revSupervision} onChange={e => handleChange('revSupervision', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div className="md:col-span-2">
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Auditoría %</label>
+                         <input type="text" value={formData.auditoriaPorcentaje} onChange={e => handleChange('auditoriaPorcentaje', e.target.value)} className={INPUT_CLASS} />
+                     </div>
+                     <div>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Novedad</label>
+                         <input type="text" value={formData.novedadDesc} onChange={e => handleChange('novedadDesc', e.target.value)} className={INPUT_CLASS} />
+                     </div>
+                     <div>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Autorización</label>
+                         <input type="text" value={formData.autorizacion} onChange={e => handleChange('autorizacion', e.target.value)} className={INPUT_CLASS} />
+                     </div>
+                     <div>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Imágenes Dx</label>
+                         <input type="text" value={formData.imagenesDx} onChange={e => handleChange('imagenesDx', e.target.value)} className={INPUT_CLASS} />
+                     </div>
+                     <div>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                         <input type="text" value={formData.estadoAuditoria} onChange={e => handleChange('estadoAuditoria', e.target.value)} className={INPUT_CLASS} />
+                     </div>
+                     <div>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Causa Objeción</label>
+                         <input type="text" value={formData.causaObjecion} onChange={e => handleChange('causaObjecion', e.target.value)} className={INPUT_CLASS} />
+                     </div>
+                     <div>
+                         <label className="block text-sm font-medium text-gray-700 mb-1">Rev Supervision</label>
+                         <input type="text" value={formData.revSupervision} onChange={e => handleChange('revSupervision', e.target.value)} className={INPUT_CLASS} />
+                     </div>
+                     <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Observación Auditoría</label>
                         <textarea rows={3} value={formData.observacionAuditoria} onChange={e => handleChange('observacionAuditoria', e.target.value)} className={INPUT_CLASS} />
                     </div>
