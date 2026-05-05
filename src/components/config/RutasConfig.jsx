@@ -1,27 +1,22 @@
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Login from '../auth/Login'
-import Error404 from '../Error404'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import RequireAuth from './RequireAuth';
 import { useDispatch, useSelector } from 'react-redux';
-import Sidebar from '../../shared/components/Sidebar';
-import UpdateInnProduc from '../innProduc/UpdateInnProduc';
+import { getAppRoutes } from '../../shared/routes';
+import { getDinamicaRoutes } from '../../modules/dinamica/routes';
 import FormSolDocumento from '../forgetpass/FormSolDocumento';
 import HumanizacionSolicitudes from '../humanizacion/HumanizacionSolicitudes';
-import OpcionesUsuario from '../ajustes/OpcionesUsuario';
-import UsuariosProceso from '../mesaDeProcesos/UsuariosProceso';
-import ProcesosSubprocesos from '../mesaDeProcesos/ProcesosSubprocesos';
 import { obtenerToken } from '../../actions/loginActions';
-import Tamizaje from '../tamizaje/Tamizaje';
-import FormPreguntas from '../monitorizacionHc/FormPreguntas';
-import AjustesMhc from '../monitorizacionHc/AjustesMhc';
-import FormManteEquipos from '../sistemas/FormManteEquipos';
-import AjustesSistemas from '../sistemas/AjustesSistemas';
-import ProtectedWithIdle from './ProtectedWithIdle';
-import ReportesIndex from '../monitorizacionHc/ReportesIndex';
-import GenSerRipsCambioSipEstado from '../facturacion/GenSerRipsCambioSipEstado';
+import Tamizaje from '../../modules/nutricion/components/tamizaje/Tamizaje';
+
+import FormManteEquipos from '../../modules/sistemas/components/FormManteEquipos';
+import AjustesSistemas from '../../modules/sistemas/components/AjustesSistemas';
+import { getMonitorizacionHcRoutes } from '../../modules/monitorizacionHc/routes';
+import GenSerRipsCambioSipEstado from '../../modules/facturacion/GenSerRipsCambioSipEstado';
 import { getRehabilitacionRoutes } from '../../modules/rehabilitacion/routes';
 import { getReferenciacontrarreferenciaRoutes } from '../../modules/referencia-contrareferencia/routes';
+import { getNutricionRoutes } from '../../modules/nutricion/routes';
+import { getSistemasRoutes } from '../../modules/sistemas/routes';
+import { getFacturacionRoutes } from '../../modules/facturacion/routes';
 
 export default function RutasConfig() {
 
@@ -50,83 +45,17 @@ export default function RutasConfig() {
     return (
         <HashRouter>
             <Routes>
-                <Route path='/' element={<RequireAuth isLogged={isLogged} loading={loading}>
-                    <ProtectedWithIdle>
-                        <Sidebar />
-                    </ProtectedWithIdle>
-                </RequireAuth>} />
-                <Route path='/login' element={isLogged ? <Navigate to='/' /> : <Login />} />
-                <Route path='/innProduc'>
-                    <Route path='update' element={<RequireAuth isLogged={isLogged} loading={loading}>
-                        <ProtectedWithIdle>
-                            <Sidebar componente={UpdateInnProduc} />
-                        </ProtectedWithIdle>
-                    </RequireAuth>} />
-                </Route>
-                <Route path='/mesaprocesos'>
-                    <Route path='usuarioprocesos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={UsuariosProceso} /></RequireAuth>} />
-                    <Route path='procesosysubprocesos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ProcesosSubprocesos} /></RequireAuth>} />
-                </Route>
-                <Route path='/nutricion'>
-                    <Route path='tamizaje' element={<RequireAuth isLogged={isLogged} loading={loading}>
-                        <ProtectedWithIdle>
-                            <Sidebar componente={Tamizaje} />
-                        </ProtectedWithIdle>
-                    </RequireAuth>} />
-                </Route>
+                {getAppRoutes(isLogged, loading)}
+                <Route path='/dinamica'> {getDinamicaRoutes(isLogged, loading)} </Route>
+                <Route path='/referenciacontrareferencia'> {getReferenciacontrarreferenciaRoutes(isLogged, loading)} </Route>
+                <Route path='/rehabilitacion'> {getRehabilitacionRoutes(isLogged, loading)}</Route>
+                <Route path='/nutricion'>{getNutricionRoutes(isLogged, loading)} </Route>
+                <Route path='/monitorizacionhc'> {getMonitorizacionHcRoutes(isLogged, loading)} </Route>
+                <Route path="/sistemas">{getSistemasRoutes(isLogged, loading)}</Route>
+                <Route path='/facturacion'>{getFacturacionRoutes(isLogged, loading)}</Route>
                 <Route path='/password'>
                     <Route path='documento' element={<FormSolDocumento />} />
                 </Route>
-                <Route path='/humanizacion'>
-                    <Route path='solicitudes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={HumanizacionSolicitudes} /></RequireAuth>} />
-                </Route>
-                <Route path='/monitorizacionhc'>
-                    <Route path='preguntas/:tipo' element={
-                        <RequireAuth isLogged={isLogged} loading={loading} >
-                            <ProtectedWithIdle>
-                                <Sidebar componente={FormPreguntas} />
-                            </ProtectedWithIdle>
-                        </RequireAuth>}
-                    />
-                    <Route path='reportes' element={<RequireAuth isLogged={isLogged} loading={loading}>
-                        <ProtectedWithIdle>
-                            <Sidebar componente={ReportesIndex} />
-                        </ProtectedWithIdle></RequireAuth>} />
-                    <Route path='ajustes' element={<RequireAuth isLogged={isLogged} loading={loading}>
-                        <ProtectedWithIdle>
-                            <Sidebar componente={AjustesMhc} />
-                        </ProtectedWithIdle>
-                    </RequireAuth>} />
-                </Route>
-                <Route path='/rehabilitacion'>
-                    {getRehabilitacionRoutes(isLogged, loading)}
-                </Route>
-                <Route path="/sistemas">
-                    <Route path='mantenimientochequeo' element={<RequireAuth isLogged={isLogged} loading={loading}>
-                        <ProtectedWithIdle>
-                            <Sidebar componente={FormManteEquipos} />
-                        </ProtectedWithIdle>
-                    </RequireAuth>} />
-                    <Route path='ajustes' element={<RequireAuth isLogged={isLogged} loading={loading}>
-                        <ProtectedWithIdle>
-                            <Sidebar componente={AjustesSistemas} />
-                        </ProtectedWithIdle>
-                    </RequireAuth>} />
-                </Route>
-                <Route path='/facturacion'>
-                    <Route path='cambioestadoips' element={<RequireAuth isLogged={isLogged} loading={loading}>
-                        <ProtectedWithIdle>
-                            <Sidebar componente={GenSerRipsCambioSipEstado} />
-                        </ProtectedWithIdle>
-                    </RequireAuth>} />
-                </Route>
-                <Route path='/referenciacontrareferencia'>
-                    {getReferenciacontrarreferenciaRoutes(isLogged, loading)}
-                </Route>
-                <Route path='/ajustes'>
-                    <Route path='usuario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={OpcionesUsuario} /></RequireAuth>}></Route>
-                </Route>
-                <Route path='*' element={<Error404 />} />
             </Routes>
         </HashRouter>
     )

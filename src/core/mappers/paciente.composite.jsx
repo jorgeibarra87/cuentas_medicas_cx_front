@@ -1,4 +1,4 @@
-import { obtenerInformacionGeneralPaciente } from "../../api/dinamica/genPacienService"
+import { obtenerInformacionGeneralPaciente } from "../../modules/dinamica/api/genPacienService"
 import { buscarDatosPorIdODocumento } from "../../modules/referencia-contrareferencia/api/datosReferenciaService";
 import { mapearPacienteDinamica, mapearPacienteReferencia } from "./paciente.mapper";
 

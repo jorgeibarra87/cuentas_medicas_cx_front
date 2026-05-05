@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import useFetchDatosRefContraRef from "../../hooks/useFetchDatosRefContraRef";
-import Pagination from "../../../../components/Pagination";
-import Loader from "../../../../components/Loader";
-import { obtenerIngresosPorDocumentos } from "../../../../api/dinamica/genPacienService";
+import Pagination from "../../../../shared/components/Pagination";
+import Loader from "../../../../shared/components/Loader";
+import { obtenerIngresosPorDocumentos } from "../../../../modules/dinamica/api/genPacienService";
 import { actualizarDatosReferenciaFechaActualizacionBusquedaIngresos, actualizarDatosReferenciaIngresos, buscarDatosPorIdODocumento, obtenerDatosEntreFechasRefContraReferencia } from "../../api/datosReferenciaService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenClip } from "@fortawesome/free-solid-svg-icons";

@@ -2,7 +2,7 @@ import { useEffect, useState, Fragment } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight, faAmbulance, faTruckMedical, faFileEdit, faFileAlt, faDollar, faBookMedical, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-import Pagination from '../../../../components/Pagination';
+import Pagination from '../../../../shared/components/Pagination';
 import { obtenerTrasladosCompletos } from '../../../referencia-contrareferencia/api/trasladosService';
 
 const PAGE_SIZE = 50; // máximo por página
