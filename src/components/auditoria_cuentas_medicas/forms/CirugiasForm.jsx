@@ -23,13 +23,21 @@ export default function CirugiasForm({ cirugia, onSaved }) {
         especialidadNombre: '',
         medicoNombre: '',
         anestesiologoNombre: '',
+        ayudante1: '',
+        ayudante2: '',
+        auditoriaPorcentaje: '',
+        novedadDesc: '',
+        autorizacion: '',
+        imagenesDx: '',
+        estadoAuditoria: '',
+        causaObjecion: '',
+        revSupervision: '',
         fechaSolicitud: '',
         fechaCargue: '',
         horaCargue: '',
         fechaResultado: '',
         entidadSaludNombre: '',
         regimen: '',
-        liquidacion: '',
         observacionAuditoria: ''
     });
 
@@ -69,13 +77,21 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                 especialidadNombre: cirugia.especialidadNombre || '',
                 medicoNombre: cirugia.medicoNombre || '',
                 anestesiologoNombre: cirugia.anestesiologoNombre || '',
+                ayudante1: cirugia.ayudante1 || '',
+                ayudante2: cirugia.ayudante2 || '',
+                auditoriaPorcentaje: cirugia.auditoriaPorcentaje || '',
+                novedadDesc: cirugia.novedadDesc || '',
+                autorizacion: cirugia.autorizacion || '',
+                imagenesDx: cirugia.imagenesDx || '',
+                estadoAuditoria: cirugia.estadoAuditoria || '',
+                causaObjecion: cirugia.causaObjecion || '',
+                revSupervision: cirugia.revSupervision || '',
                 fechaSolicitud: cirugia.fechaSolicitud || '',
                 fechaCargue: cirugia.fechaCargue || '',
                 horaCargue: cirugia.horaCargue || '',
                 fechaResultado: cirugia.fechaResultado || '',
                 entidadSaludNombre: cirugia.entidadSaludNombre || '',
                 regimen: cirugia.regimen || '',
-                liquidacion: cirugia.liquidacion || '',
                 observacionAuditoria: cirugia.observacionAuditoria || ''
             });
         }
@@ -139,6 +155,14 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                         <input type="text" value={formData.anestesiologoNombre} onChange={e => handleChange('anestesiologoNombre', e.target.value)} className={INPUT_CLASS} />
                     </div>
                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Ayudante 1</label>
+                        <input type="text" value={formData.ayudante1} onChange={e => handleChange('ayudante1', e.target.value)} className={INPUT_CLASS} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Ayudante 2</label>
+                        <input type="text" value={formData.ayudante2} onChange={e => handleChange('ayudante2', e.target.value)} className={INPUT_CLASS} />
+                    </div>
+                    <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Entidad</label>
                         <input type="text" value={formData.entidadSaludNombre} onChange={e => handleChange('entidadSaludNombre', e.target.value)} className={INPUT_CLASS} />
                     </div>
@@ -159,8 +183,32 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                         <input type="text" value={formData.horaCargue} readOnly className={INPUT_READONLY} />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Liquidación</label>
-                        <input type="text" value={formData.liquidacion} onChange={e => handleChange('liquidacion', e.target.value)} className={INPUT_CLASS} />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Auditoría %</label>
+                        <input type="text" value={formData.auditoriaPorcentaje} onChange={e => handleChange('auditoriaPorcentaje', e.target.value)} className={INPUT_CLASS} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Novedad</label>
+                        <input type="text" value={formData.novedadDesc} onChange={e => handleChange('novedadDesc', e.target.value)} className={INPUT_CLASS} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Autorización</label>
+                        <input type="text" value={formData.autorizacion} onChange={e => handleChange('autorizacion', e.target.value)} className={INPUT_CLASS} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Imágenes Dx</label>
+                        <input type="text" value={formData.imagenesDx} onChange={e => handleChange('imagenesDx', e.target.value)} className={INPUT_CLASS} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                        <input type="text" value={formData.estadoAuditoria} onChange={e => handleChange('estadoAuditoria', e.target.value)} className={INPUT_CLASS} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Causa Objeción</label>
+                        <input type="text" value={formData.causaObjecion} onChange={e => handleChange('causaObjecion', e.target.value)} className={INPUT_CLASS} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Rev Supervision</label>
+                        <input type="text" value={formData.revSupervision} onChange={e => handleChange('revSupervision', e.target.value)} className={INPUT_CLASS} />
                     </div>
                     <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Observación Auditoría</label>
