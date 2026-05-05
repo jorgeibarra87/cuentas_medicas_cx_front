@@ -1,11 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookMedical, faPencilAlt, faSearch, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBookMedical, faPencilAlt, faSearch, faCalendarAlt, faDatabase } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import Pagination from '../../Pagination';
-import { importarCirugias, obtenerCirugias, actualizarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
+import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
 import { toast } from 'react-toastify';
 
 const PAGE_SIZE = 50;
+const MAX_MESES_RANGO = 3;
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed text-gray-500";
@@ -15,22 +16,47 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalElementos, setTotalElementos] = useState(0);
     const [fontSize, setFontSize] = useState(10);
 
     const [fechaInicio, setFechaInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
     const [importando, setImportando] = useState(false);
+    const [buscando, setBuscando] = useState(false);
     const [importResult, setImportResult] = useState(null);
 
     const aumentarTexto = () => setFontSize(prev => Math.min(prev + 1, 16));
     const reducirTexto = () => setFontSize(prev => Math.max(prev - 1, 8));
 
-    const loadData = async () => {
+    const validarRangoFechas = () => {
+        if (!fechaInicio || !fechaFin) {
+            toast.error('Debes seleccionar ambas fechas');
+            return false;
+        }
+        const inicio = new Date(fechaInicio);
+        const fin = new Date(fechaFin);
+        const diffMeses = (fin.getFullYear() - inicio.getFullYear()) * 12 + (fin.getMonth() - inicio.getMonth());
+        if (diffMeses > MAX_MESES_RANGO) {
+            toast.error(`El rango de fechas no puede superar ${MAX_MESES_RANGO} meses`);
+            return false;
+        }
+        if (fin < inicio) {
+            toast.error('La fecha fin debe ser mayor o igual a la fecha inicio');
+            return false;
+        }
+        return true;
+    };
+
+    const loadData = async (pagina = page) => {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugias();
-            setData(response);
+            const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, pagina, PAGE_SIZE);
+            console.log('loadData response:', response);
+            setData(response.contenido || []);
+            setTotalPages(response.totalPaginas || 0);
+            setTotalElementos(response.totalElementos || 0);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -38,12 +64,34 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         }
     };
 
+    const loadDataSinFiltro = async (pagina = 0) => {
+        setLoading(true);
+        setError('');
+        try {
+            const response = await obtenerCirugiasPageable(null, null, pagina, PAGE_SIZE);
+            console.log('loadDataSinFiltro response:', response);
+            setData(response.contenido || []);
+            setTotalPages(response.totalPaginas || 0);
+            setTotalElementos(response.totalElementos || 0);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleBuscar = async (e) => {
+        e.preventDefault();
+        if (!validarRangoFechas()) return;
+        setBuscando(true);
+        setPage(0);
+        await loadData(0);
+        setBuscando(false);
+    };
+
     const handleImportar = async (e) => {
         e.preventDefault();
-        if (!fechaInicio || !fechaFin) {
-            toast.error('Debes seleccionar ambas fechas');
-            return;
-        }
+        if (!validarRangoFechas()) return;
 
         const rangoFechas = `${fechaInicio} - ${fechaFin}`;
         setImportando(true);
@@ -53,7 +101,8 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         try {
             const result = await importarCirugias(rangoFechas);
             setImportResult(result);
-            await loadData();
+            setPage(0);
+            await loadDataSinFiltro(0);
             toast.success('Importación completada');
         } catch (err) {
             setError(err.message);
@@ -66,24 +115,26 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const handleActualizarCampo = async (id, campo, valor) => {
         try {
             await actualizarCirugia(id, { [campo]: valor });
-            await loadData();
+            await loadDataSinFiltro(page);
             toast.success('Campo actualizado');
         } catch (err) {
             toast.error('Error al actualizar: ' + err.message);
         }
     };
 
-    useEffect(() => { loadData(); }, [reloadFlag]);
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+        loadData(newPage);
+    };
 
-    const totalPages = Math.ceil(data.length / PAGE_SIZE);
-    const paginatedData = data.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+    useEffect(() => { loadDataSinFiltro(0); }, [reloadFlag]);
 
     if (loading) return <p className="text-center py-4">Cargando...</p>;
     if (error) return <p className="text-red-600 text-center py-4">Error: {error}</p>;
 
     return (
         <div className="bg-white shadow-md rounded-lg p-2 w-full max-w-none">
-            <form onSubmit={handleImportar} className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <form onSubmit={handleBuscar} className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="flex flex-wrap items-end gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -113,11 +164,20 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                     </div>
                     <button
                         type="submit"
+                        disabled={buscando}
+                        className="px-6 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-all shadow-md disabled:opacity-50"
+                    >
+                        <FontAwesomeIcon icon={faSearch} className="mr-2" />
+                        {buscando ? 'Buscando...' : 'Buscar'}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleImportar}
                         disabled={importando}
                         className="px-6 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-all shadow-md disabled:opacity-50"
                     >
-                        <FontAwesomeIcon icon={faSearch} className="mr-2" />
-                        {importando ? 'Importando...' : 'Cargar'}
+                        <FontAwesomeIcon icon={faDatabase} className="mr-2" />
+                        {importando ? 'Cargando...' : 'Cargar'}
                     </button>
                 </div>
 
@@ -134,7 +194,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
             </form>
 
             <div className="flex justify-end items-center mb-2 space-x-2">
-                <span className="text-sm text-gray-500">{data.length} registro(s)</span>
+                <span className="text-sm text-gray-500">{totalElementos} registro(s)</span>
                 <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A-</button>
                 <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
             </div>
@@ -173,7 +233,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {paginatedData.map(t => (
+                        {data.map(t => (
                             <tr key={t.id} className="border-b hover:bg-gray-50">
                                 <td className="border-r px-1 py-0.5">{t.id}</td>
                                 <td className="border-r px-1 py-0.5">{t.tipoProcedimiento}</td>
@@ -219,7 +279,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                 </table>
             </div>
             <div className="p-2 border-t bg-gray-50">
-                <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+                <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
             </div>
         </div>
     );
