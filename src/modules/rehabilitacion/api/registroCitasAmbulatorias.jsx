@@ -1,4 +1,4 @@
-import { obtenerCitasRehabilitacionPorMedico } from "../../../api/dinamica/citasRehabilitacion";
+import { obtenerCitasRehabilitacionPorMedico } from "../../../modules/dinamica/api/citasRehabilitacion";
 import apiClientRehabilitacion from "./apiClientRehabilitacion";
 
 export const registrarllegadaCitaAmbulatoria = async (body) => {

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import imgLogoDinamica from '../../img/logo-dg.png';
-import { usePutChangePassword } from '../../hooks/sistemas/usePutChangePassword';
+import { usePutChangePassword } from '../../modules/sistemas/hooks/usePutChangePassword';
 import { toast } from 'react-toastify';
-import Loader from '../Loader';
+import Loader from '../../shared/components/Loader';
 
 const formInitial = {
   username: '',

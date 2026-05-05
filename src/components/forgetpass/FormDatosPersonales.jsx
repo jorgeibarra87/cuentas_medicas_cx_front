@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useSolicitudRecuperacionContrasena } from '../../hooks/sistemas/useSolicitudRecuperacionContrasena';
+import { useSolicitudRecuperacionContrasena } from '../../modules/sistemas/hooks/useSolicitudRecuperacionContrasena';
 import { toast } from 'react-toastify';
-import Loader from '../Loader';
+import Loader from '../../shared/components/Loader';
 import FormChangePass from './FormChangePass';
 import PropTypes from 'prop-types';
 

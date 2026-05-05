@@ -4,7 +4,7 @@ import { obtenerCitasConsolidadas, registrarFinalizacionCitaAmbulatoria, registr
 import SockJS from 'sockjs-client'
 import { Client } from '@stomp/stompjs'
 import { toast } from 'react-toastify'
-import Loader from '../../../components/Loader'
+import Loader from '../../../shared/components/Loader'
 
 const EXTERNAL_REASONS = [
   'CALAMIDAD DOMESTICA',

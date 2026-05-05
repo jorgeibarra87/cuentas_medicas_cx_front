@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import imgLogoDinamica from '../../img/logo-dg.png';
-import useFetchInfoContactoGenUsuario from '../../hooks/dinamica/useFetchInfoContactoGenUsuario';
-import Loader from '../Loader';
+import useFetchInfoContactoGenUsuario from '../../modules/dinamica/hooks/useFetchInfoContactoGenUsuario';
+import Loader from '../../shared/components/Loader';
 import { toast } from 'react-toastify';
 import FormDatosPersonales from './FormDatosPersonales';
 

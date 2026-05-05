@@ -1,8 +1,8 @@
 import { faCheckCircle, faCog, faExchangeAlt, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useFetchAdnIngresoTodos from "../../../../hooks/dinamica/useFetchAdnIngresoTodos";
+import useFetchAdnIngresoTodos from "../../../../modules/dinamica/hooks/useFetchAdnIngresoTodos";
 import useFetchHospitalesRefContraRef from "../../hooks/useFetchHospitalesRefContraRef";
-import Loader from "../../../../components/Loader";
+import Loader from "../../../../shared/components/Loader";
 import Select from 'react-select';
 import usePostDatosRefContraRef from "../../hooks/usePostDatosRefContraRef";
 import { useEffect, useState } from "react";
