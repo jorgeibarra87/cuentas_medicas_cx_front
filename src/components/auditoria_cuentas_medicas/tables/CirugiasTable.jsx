@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faSearch, faCalendarAlt, faDatabase } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Pagination from '../../Pagination';
 import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
 import { useSelector } from 'react-redux';
@@ -10,9 +10,8 @@ const PAGE_SIZE = 50;
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed text-gray-500";
-const INPUT_INLINE = "border border-blue-400 bg-white px-1 py-0.5 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
-const SELECT_INLINE = "border border-blue-400 bg-white px-1 py-0.5 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
-const CELL_EDITABLE = "cursor-pointer hover:bg-blue-50 transition-colors";
+const INPUT_INLINE = "border border-blue-400 bg-white px-1 py-0.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SELECT_INLINE = "border border-blue-400 bg-white px-1 py-0.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 const OPCIONES_AUTORIZACION = ['', 'Sí', 'No', 'Pendiente'];
 const OPCIONES_ESTADO = ['', 'Pendiente', 'Hecho', 'Ok', 'No facturable', 'Adición', 'Nulo', 'Facturable', 'Revisión', 'Hecho pendiente', 'Adición pendiente'];
@@ -37,13 +36,13 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
 
     const [busqueda, setBusqueda] = useState('');
 
-    const [edicionInline, setEdicionInline] = useState({});
-    const [guardando, setGuardando] = useState({});
-
-    const obtenerNombreUsuario = () => usuario?.name_user || '';
+    const [editId, setEditId] = useState(null);
+    const [editData, setEditData] = useState({});
 
     const aumentarTexto = () => setFontSize(prev => Math.min(prev + 1, 16));
     const reducirTexto = () => setFontSize(prev => Math.max(prev - 1, 8));
+
+    const obtenerNombreUsuario = () => usuario?.name_user || '';
 
     const validarFechas = (mesesMax) => {
         if (!fechaInicio || !fechaFin) {
@@ -125,77 +124,66 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         }
     };
 
-    const iniciarEdicion = (id, fila) => {
-        setEdicionInline(prev => ({
-            ...prev,
-            [id]: {
-                liquidacion: fila.liquidacion || '',
-                novedadDesc: fila.novedadDesc || '',
-                autorizacion: fila.autorizacion || '',
-                imagenesDx: fila.imagenesDx || '',
-                estadoAuditoria: fila.estadoAuditoria || '',
-                causaObjecion: fila.causaObjecion || '',
-            }
-        }));
-    };
+    const startEdit = useCallback((id, row) => {
+        setEditId(id);
+        setEditData({
+            liquidacion: row.liquidacion || '',
+            novedadDesc: row.novedadDesc || '',
+            autorizacion: row.autorizacion || '',
+            imagenesDx: row.imagenesDx || '',
+            estadoAuditoria: row.estadoAuditoria || '',
+            causaObjecion: row.causaObjecion || '',
+        });
+    }, []);
 
-    const cancelarEdicion = (id) => {
-        setEdicionInline(prev => {
-            const nuevo = { ...prev };
-            delete nuevo[id];
+    const cancelEdit = useCallback(() => {
+        setEditId(null);
+        setEditData({});
+    }, []);
+
+    const updateCell = useCallback((campo, valor) => {
+        setEditData(prev => {
+            const nuevo = { ...prev, [campo]: valor };
+            if (campo === 'liquidacion' && valor) {
+                nuevo.revSupervision = obtenerNombreUsuario();
+            }
             return nuevo;
         });
-    };
+    }, []);
 
-    const cambiarCelda = (id, campo, valor) => {
-        setEdicionInline(prev => {
-            const fila = { ...prev[id], [campo]: valor };
-            if (campo === 'liquidacion' && valor) {
-                fila.revSupervision = obtenerNombreUsuario();
-            }
-            return { ...prev, [id]: fila };
-        });
-    };
-
-    const guardarEdicion = async (id) => {
-        const datos = edicionInline[id];
-        if (!datos) return;
-
-        setGuardando(prev => ({ ...prev, [id]: true }));
+    const saveEdit = useCallback(async (id) => {
+        if (!editId || !editData.liquidacion && !editData.novedadDesc && !editData.autorizacion && !editData.imagenesDx && !editData.estadoAuditoria && !editData.causaObjecion) {
+            cancelEdit();
+            return;
+        }
         try {
             const payload = {
-                liquidacion: datos.liquidacion,
-                novedadDesc: datos.novedadDesc,
-                autorizacion: datos.autorizacion,
-                imagenesDx: datos.imagenesDx,
-                estadoAuditoria: datos.estadoAuditoria,
-                causaObjecion: datos.causaObjecion,
+                liquidacion: editData.liquidacion,
+                novedadDesc: editData.novedadDesc,
+                autorizacion: editData.autorizacion,
+                imagenesDx: editData.imagenesDx,
+                estadoAuditoria: editData.estadoAuditoria,
+                causaObjecion: editData.causaObjecion,
             };
-            if (datos.revSupervision) {
-                payload.revSupervision = datos.revSupervision;
+            if (editData.revSupervision) {
+                payload.revSupervision = editData.revSupervision;
             }
             await actualizarCirugia(id, payload);
             toast.success('Registro actualizado');
-            cancelarEdicion(id);
+            cancelEdit();
             await loadDataSinFiltro(page);
         } catch (err) {
             toast.error('Error al actualizar: ' + err.message);
-        } finally {
-            setGuardando(prev => {
-                const nuevo = { ...prev };
-                delete nuevo[id];
-                return nuevo;
-            });
         }
-    };
+    }, [editId, editData, page]);
 
-    const handleBlurGuardar = async (id) => {
-        setTimeout(async () => {
-            if (edicionInline[id]) {
-                await guardarEdicion(id);
+    const handleBlurGuardar = useCallback((id) => {
+        setTimeout(() => {
+            if (editId === id) {
+                saveEdit(id);
             }
-        }, 150);
-    };
+        }, 200);
+    }, [editId, saveEdit]);
 
     const handlePageChange = (newPage) => {
         setPage(newPage);
@@ -215,59 +203,6 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     };
 
     useEffect(() => { loadDataSinFiltro(page); }, [reloadFlag]);
-
-    const renderCelda = (t, campo, valor, placeholder) => {
-        const editando = edicionInline[t.id];
-        if (editando) {
-            return (
-                <input
-                    value={editando[campo]}
-                    onChange={e => cambiarCelda(t.id, campo, e.target.value)}
-                    onBlur={() => handleBlurGuardar(t.id)}
-                    className={INPUT_INLINE}
-                    placeholder={placeholder || ''}
-                    autoFocus
-                />
-            );
-        }
-        return (
-            <span
-                onDoubleClick={() => iniciarEdicion(t.id, t)}
-                className={CELL_EDITABLE}
-                title="Doble clic para editar"
-            >
-                {valor || ''}
-            </span>
-        );
-    };
-
-    const renderSelect = (t, campo, valor, opciones) => {
-        const editando = edicionInline[t.id];
-        if (editando) {
-            return (
-                <select
-                    value={editando[campo]}
-                    onChange={e => {
-                        cambiarCelda(t.id, campo, e.target.value);
-                        setTimeout(() => guardarEdicion(t.id), 50);
-                    }}
-                    className={SELECT_INLINE}
-                    autoFocus
-                >
-                    {opciones.map(op => <option key={op} value={op}>{op || ''}</option>)}
-                </select>
-            );
-        }
-        return (
-            <span
-                onDoubleClick={() => iniciarEdicion(t.id, t)}
-                className={CELL_EDITABLE}
-                title="Doble clic para editar"
-            >
-                {valor || ''}
-            </span>
-        );
-    };
 
     if (loading) return <p className="text-center py-4">Cargando...</p>;
     if (error) return <p className="text-red-600 text-center py-4">Error: {error}</p>;
@@ -392,41 +327,72 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map(t => (
-                            <tr key={t.id} className={`border-b hover:bg-gray-50 ${edicionInline[t.id] ? 'bg-yellow-50' : ''}`}>
-                                <td className="border-r px-1 py-0.5">{t.id}</td>
-                                <td className="border-r px-1 py-0.5">{t.tipoProcedimiento}</td>
-                                <td className="border-r px-1 py-0.5">{t.pacienteNumeroIdentificacion}</td>
-                                <td className="border-r px-1 py-0.5">{t.ingresoNumero}</td>
-                                <td className="border-r px-1 py-0.5">{t.cupsCodigo}</td>
-                                <td className="border-r px-1 py-0.5">{t.procedCod}</td>
-                                <td className="border-r px-1 py-0.5">{t.intervencion}</td>
-                                <td className="border-r px-1 py-0.5">{t.especialidadNombre}</td>
-                                <td className="border-r px-1 py-0.5">{t.medicoNombre}</td>
-                                <td className="border-r px-1 py-0.5">{t.fechaSolicitud}</td>
-                                <td className="border-r px-1 py-0.5">{t.fechaCargue}</td>
-                                <td className="border-r px-1 py-0.5">{t.horaCargue}</td>
-                                <td className="border-r px-1 py-0.5">{t.regimen}</td>
-                                <td className="border-r px-1 py-0.5">{t.entidadSaludNombre}</td>
-                                <td className="border-r px-1 py-0.5">{t.gqx}</td>
-                                <td className="border-r px-1 py-0.5">{t.anestesiologoNombre}</td>
-                                <td className="border-r px-1 py-0.5">{t.ayudante1}</td>
-                                <td className="border-r px-1 py-0.5">{t.ayudante2}</td>
-                                <td className="border-r px-1 py-0.5">{renderCelda(t, 'liquidacion', t.liquidacion, '100%, 75%...')}</td>
-                                <td className="border-r px-1 py-0.5">{renderCelda(t, 'novedadDesc', t.novedadDesc, 'cx, anes...')}</td>
-                                <td className="border-r px-1 py-0.5">{renderSelect(t, 'autorizacion', t.autorizacion, OPCIONES_AUTORIZACION)}</td>
-                                <td className="border-r px-1 py-0.5">{renderCelda(t, 'imagenesDx', t.imagenesDx)}</td>
-                                <td className="border-r px-1 py-0.5">{renderSelect(t, 'estadoAuditoria', t.estadoAuditoria, OPCIONES_ESTADO)}</td>
-                                <td className="border-r px-1 py-0.5">{renderCelda(t, 'causaObjecion', t.causaObjecion)}</td>
-                                <td className="border-r px-1 py-0.5">{t.revSupervision}</td>
-                                <td className="border-r px-1 py-0.5">{t.observacionAuditoria}</td>
-                                <td className="px-3 py-2">
-                                    <button onClick={() => onEdit(t)}>
-                                        <FontAwesomeIcon icon={faPencilAlt} className="w-4 h-4 text-blue-600 cursor-pointer hover:-translate-y-1 transition duration-300" />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {data.map(t => {
+                            const isEditing = editId === t.id;
+                            return (
+                                <tr key={t.id} className={`border-b hover:bg-gray-50 ${isEditing ? 'bg-yellow-50' : ''}`}>
+                                    <td className="border-r px-1 py-0.5">{t.id}</td>
+                                    <td className="border-r px-1 py-0.5">{t.tipoProcedimiento}</td>
+                                    <td className="border-r px-1 py-0.5">{t.pacienteNumeroIdentificacion}</td>
+                                    <td className="border-r px-1 py-0.5">{t.ingresoNumero}</td>
+                                    <td className="border-r px-1 py-0.5">{t.cupsCodigo}</td>
+                                    <td className="border-r px-1 py-0.5">{t.procedCod}</td>
+                                    <td className="border-r px-1 py-0.5">{t.intervencion}</td>
+                                    <td className="border-r px-1 py-0.5">{t.especialidadNombre}</td>
+                                    <td className="border-r px-1 py-0.5">{t.medicoNombre}</td>
+                                    <td className="border-r px-1 py-0.5">{t.fechaSolicitud}</td>
+                                    <td className="border-r px-1 py-0.5">{t.fechaCargue}</td>
+                                    <td className="border-r px-1 py-0.5">{t.horaCargue}</td>
+                                    <td className="border-r px-1 py-0.5">{t.regimen}</td>
+                                    <td className="border-r px-1 py-0.5">{t.entidadSaludNombre}</td>
+                                    <td className="border-r px-1 py-0.5">{t.gqx}</td>
+                                    <td className="border-r px-1 py-0.5">{t.anestesiologoNombre}</td>
+                                    <td className="border-r px-1 py-0.5">{t.ayudante1}</td>
+                                    <td className="border-r px-1 py-0.5">{t.ayudante2}</td>
+                                    <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
+                                        {isEditing ? (
+                                            <input value={editData.liquidacion} onChange={e => updateCell('liquidacion', e.target.value)} onBlur={() => handleBlurGuardar(t.id)} className={INPUT_INLINE} placeholder="100%, 75%..." autoFocus />
+                                        ) : (t.liquidacion || '')}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
+                                        {isEditing ? (
+                                            <input value={editData.novedadDesc} onChange={e => updateCell('novedadDesc', e.target.value)} onBlur={() => handleBlurGuardar(t.id)} className={INPUT_INLINE} placeholder="cx, anes..." autoFocus />
+                                        ) : (t.novedadDesc || '')}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
+                                        {isEditing ? (
+                                            <select value={editData.autorizacion} onChange={e => { updateCell('autorizacion', e.target.value); setTimeout(() => saveEdit(t.id), 50); }} className={SELECT_INLINE} autoFocus>
+                                                {OPCIONES_AUTORIZACION.map(op => <option key={op} value={op}>{op || ''}</option>)}
+                                            </select>
+                                        ) : (t.autorizacion || '')}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
+                                        {isEditing ? (
+                                            <input value={editData.imagenesDx} onChange={e => updateCell('imagenesDx', e.target.value)} onBlur={() => handleBlurGuardar(t.id)} className={INPUT_INLINE} autoFocus />
+                                        ) : (t.imagenesDx || '')}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
+                                        {isEditing ? (
+                                            <select value={editData.estadoAuditoria} onChange={e => { updateCell('estadoAuditoria', e.target.value); setTimeout(() => saveEdit(t.id), 50); }} className={SELECT_INLINE} autoFocus>
+                                                {OPCIONES_ESTADO.map(op => <option key={op} value={op}>{op || ''}</option>)}
+                                            </select>
+                                        ) : (t.estadoAuditoria || '')}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
+                                        {isEditing ? (
+                                            <input value={editData.causaObjecion} onChange={e => updateCell('causaObjecion', e.target.value)} onBlur={() => handleBlurGuardar(t.id)} className={INPUT_INLINE} autoFocus />
+                                        ) : (t.causaObjecion || '')}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5">{t.revSupervision || ''}</td>
+                                    <td className="border-r px-1 py-0.5">{t.observacionAuditoria || ''}</td>
+                                    <td className="px-3 py-2">
+                                        <button onClick={() => onEdit(t)}>
+                                            <FontAwesomeIcon icon={faPencilAlt} className="w-4 h-4 text-blue-600 cursor-pointer hover:-translate-y-1 transition duration-300" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                         {data.length === 0 && (
                             <tr>
                                 <td colSpan={27} className="text-center py-4 text-gray-500">
