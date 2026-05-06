@@ -30,9 +30,20 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const aumentarTexto = () => setFontSize(prev => Math.min(prev + 1, 16));
     const reducirTexto = () => setFontSize(prev => Math.max(prev - 1, 8));
 
-    const validarFechas = () => {
+    const validarFechas = (mesesMax) => {
         if (!fechaInicio || !fechaFin) {
             toast.error('Debes seleccionar fecha de inicio y fecha fin');
+            return false;
+        }
+        const inicio = new Date(fechaInicio);
+        const fin = new Date(fechaFin);
+        const diffMeses = (fin.getFullYear() - inicio.getFullYear()) * 12 + (fin.getMonth() - inicio.getMonth());
+        if (diffMeses > mesesMax) {
+            toast.error(`El rango máximo permitido es de ${mesesMax} mes${mesesMax > 1 ? 'es' : ''}`);
+            return false;
+        }
+        if (fin < inicio) {
+            toast.error('La fecha fin debe ser mayor o igual a la fecha inicio');
             return false;
         }
         return true;
@@ -70,7 +81,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
 
     const handleBuscar = async (e) => {
         e.preventDefault();
-        if (!validarFechas()) return;
+        if (!validarFechas(3)) return;
         setBuscando(true);
         setPage(0);
         await loadData(0);
@@ -79,7 +90,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
 
     const handleImportar = async (e) => {
         e.preventDefault();
-        if (!validarFechas()) return;
+        if (!validarFechas(1)) return;
 
         setImportando(true);
         setError('');
