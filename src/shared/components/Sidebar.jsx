@@ -38,7 +38,7 @@ export default function Sidebar({ componente: Componente }) {
             nombre: 'InnoProduc',
             roles: ['ROLE_ADMINISTRADOR'], // Define los roles para esta opción
             submenu: [
-                { nombre: 'Actualizar', ruta: '/innProduc/update', roles: ['ROLE_ADMINISTRADOR', 'ROLE_INNPRODUC'] }, // Roles permitidos para esta subopción
+                { nombre: 'Actualizar', ruta: '/dinamica/innProduc/update', roles: ['ROLE_ADMINISTRADOR', 'ROLE_INNPRODUC'] }, // Roles permitidos para esta subopción
             ]
         },
         {

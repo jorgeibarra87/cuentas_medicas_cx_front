@@ -1,0 +1,1 @@
+export { getDinamicaRoutes } from "./routes";
