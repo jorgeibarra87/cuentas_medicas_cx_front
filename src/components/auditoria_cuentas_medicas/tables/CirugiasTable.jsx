@@ -1,16 +1,25 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookMedical, faPencilAlt, faSearch, faCalendarAlt, faDatabase } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faSearch, faCalendarAlt, faDatabase, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import Pagination from '../../Pagination';
 import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const PAGE_SIZE = 50;
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed text-gray-500";
+const INPUT_INLINE = "border border-transparent bg-transparent px-1 py-0.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white";
+const SELECT_INLINE = "border border-transparent bg-transparent px-1 py-0.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white";
+
+const OPCIONES_AUTORIZACION = ['', 'Sí', 'No', 'Pendiente'];
+const OPCIONES_ESTADO = ['', 'Pendiente', 'Hecho', 'Ok', 'No facturable', 'Adición', 'Nulo', 'Facturable', 'Revisión', 'Hecho pendiente', 'Adición pendiente'];
 
 export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
+    const statelogin = useSelector((state) => state.login);
+    const usuario = statelogin.decodeToken;
+
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -26,6 +35,11 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const [importResult, setImportResult] = useState(null);
 
     const [busqueda, setBusqueda] = useState('');
+
+    const [edicionInline, setEdicionInline] = useState({});
+    const [guardando, setGuardando] = useState({});
+
+    const obtenerNombreUsuario = () => usuario?.name_user || '';
 
     const aumentarTexto = () => setFontSize(prev => Math.min(prev + 1, 16));
     const reducirTexto = () => setFontSize(prev => Math.max(prev - 1, 8));
@@ -110,13 +124,67 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         }
     };
 
-    const handleActualizarCampo = async (id, campo, valor) => {
+    const iniciarEdicion = (id, fila) => {
+        setEdicionInline(prev => ({
+            ...prev,
+            [id]: {
+                liquidacion: fila.liquidacion || '',
+                novedadDesc: fila.novedadDesc || '',
+                autorizacion: fila.autorizacion || '',
+                imagenesDx: fila.imagenesDx || '',
+                estadoAuditoria: fila.estadoAuditoria || '',
+                causaObjecion: fila.causaObjecion || '',
+            }
+        }));
+    };
+
+    const cancelarEdicion = (id) => {
+        setEdicionInline(prev => {
+            const nuevo = { ...prev };
+            delete nuevo[id];
+            return nuevo;
+        });
+    };
+
+    const cambiarCelda = (id, campo, valor) => {
+        setEdicionInline(prev => {
+            const fila = { ...prev[id], [campo]: valor };
+            if (campo === 'liquidacion' && valor) {
+                fila.revSupervision = obtenerNombreUsuario();
+            }
+            return { ...prev, [id]: fila };
+        });
+    };
+
+    const guardarEdicion = async (id) => {
+        const datos = edicionInline[id];
+        if (!datos) return;
+
+        setGuardando(prev => ({ ...prev, [id]: true }));
         try {
-            await actualizarCirugia(id, { [campo]: valor });
+            const payload = {
+                liquidacion: datos.liquidacion,
+                novedadDesc: datos.novedadDesc,
+                autorizacion: datos.autorizacion,
+                imagenesDx: datos.imagenesDx,
+                estadoAuditoria: datos.estadoAuditoria,
+                causaObjecion: datos.causaObjecion,
+            };
+            if (datos.revSupervision) {
+                payload.revSupervision = datos.revSupervision;
+            }
+            await actualizarCirugia(id, payload);
+            toast.success('Registro actualizado');
+            cancelarEdicion(id);
             await loadDataSinFiltro(page);
-            toast.success('Campo actualizado');
         } catch (err) {
             toast.error('Error al actualizar: ' + err.message);
+        } finally {
+            setGuardando(prev => {
+                const nuevo = { ...prev };
+                delete nuevo[id];
+                return nuevo;
+            });
         }
     };
 
@@ -262,41 +330,84 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map(t => (
-                            <tr key={t.id} className="border-b hover:bg-gray-50">
-                                <td className="border-r px-1 py-0.5">{t.id}</td>
-                                <td className="border-r px-1 py-0.5">{t.tipoProcedimiento}</td>
-                                <td className="border-r px-1 py-0.5">{t.pacienteNumeroIdentificacion}</td>
-                                <td className="border-r px-1 py-0.5">{t.ingresoNumero}</td>
-                                <td className="border-r px-1 py-0.5">{t.cupsCodigo}</td>
-                                <td className="border-r px-1 py-0.5">{t.procedCod}</td>
-                                <td className="border-r px-1 py-0.5">{t.intervencion}</td>
-                                <td className="border-r px-1 py-0.5">{t.especialidadNombre}</td>
-                                <td className="border-r px-1 py-0.5">{t.medicoNombre}</td>
-                                <td className="border-r px-1 py-0.5">{t.fechaSolicitud}</td>
-                                <td className="border-r px-1 py-0.5">{t.fechaCargue}</td>
-                                <td className="border-r px-1 py-0.5">{t.horaCargue}</td>
-                                <td className="border-r px-1 py-0.5">{t.regimen}</td>
-                                <td className="border-r px-1 py-0.5">{t.entidadSaludNombre}</td>
-                                <td className="border-r px-1 py-0.5">{t.gqx}</td>
-                                <td className="border-r px-1 py-0.5">{t.anestesiologoNombre}</td>
-                                <td className="border-r px-1 py-0.5">{t.ayudante1}</td>
-                                <td className="border-r px-1 py-0.5">{t.ayudante2}</td>
-                                <td className="border-r px-1 py-0.5">{t.liquidacion}</td>
-                                <td className="border-r px-1 py-0.5">{t.novedadDesc}</td>
-                                <td className="border-r px-1 py-0.5">{t.autorizacion}</td>
-                                <td className="border-r px-1 py-0.5">{t.imagenesDx}</td>
-                                <td className="border-r px-1 py-0.5">{t.estadoAuditoria}</td>
-                                <td className="border-r px-1 py-0.5">{t.causaObjecion}</td>
-                                <td className="border-r px-1 py-0.5">{t.revSupervision}</td>
-                                <td className="border-r px-1 py-0.5">{t.observacionAuditoria}</td>
-                                <td className="px-3 py-2">
-                                    <button onClick={() => onEdit(t)}>
-                                        <FontAwesomeIcon icon={faPencilAlt} className="w-4 h-4 text-blue-600 cursor-pointer hover:-translate-y-1 transition duration-300" />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {data.map(t => {
+                            const editando = edicionInline[t.id];
+                            const estaGuardando = guardando[t.id];
+                            return (
+                                <tr key={t.id} className={`border-b hover:bg-gray-50 ${editando ? 'bg-yellow-50' : ''}`}>
+                                    <td className="border-r px-1 py-0.5">{t.id}</td>
+                                    <td className="border-r px-1 py-0.5">{t.tipoProcedimiento}</td>
+                                    <td className="border-r px-1 py-0.5">{t.pacienteNumeroIdentificacion}</td>
+                                    <td className="border-r px-1 py-0.5">{t.ingresoNumero}</td>
+                                    <td className="border-r px-1 py-0.5">{t.cupsCodigo}</td>
+                                    <td className="border-r px-1 py-0.5">{t.procedCod}</td>
+                                    <td className="border-r px-1 py-0.5">{t.intervencion}</td>
+                                    <td className="border-r px-1 py-0.5">{t.especialidadNombre}</td>
+                                    <td className="border-r px-1 py-0.5">{t.medicoNombre}</td>
+                                    <td className="border-r px-1 py-0.5">{t.fechaSolicitud}</td>
+                                    <td className="border-r px-1 py-0.5">{t.fechaCargue}</td>
+                                    <td className="border-r px-1 py-0.5">{t.horaCargue}</td>
+                                    <td className="border-r px-1 py-0.5">{t.regimen}</td>
+                                    <td className="border-r px-1 py-0.5">{t.entidadSaludNombre}</td>
+                                    <td className="border-r px-1 py-0.5">{t.gqx}</td>
+                                    <td className="border-r px-1 py-0.5">{t.anestesiologoNombre}</td>
+                                    <td className="border-r px-1 py-0.5">{t.ayudante1}</td>
+                                    <td className="border-r px-1 py-0.5">{t.ayudante2}</td>
+                                    <td className="border-r px-1 py-0.5">
+                                        {editando ? (
+                                            <input value={editando.liquidacion} onChange={e => cambiarCelda(t.id, 'liquidacion', e.target.value)} className={INPUT_INLINE} placeholder="100%, 75%..." />
+                                        ) : t.liquidacion}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5">
+                                        {editando ? (
+                                            <input value={editando.novedadDesc} onChange={e => cambiarCelda(t.id, 'novedadDesc', e.target.value)} className={INPUT_INLINE} placeholder="cx, anes..." />
+                                        ) : t.novedadDesc}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5">
+                                        {editando ? (
+                                            <select value={editando.autorizacion} onChange={e => cambiarCelda(t.id, 'autorizacion', e.target.value)} className={SELECT_INLINE}>
+                                                {OPCIONES_AUTORIZACION.map(op => <option key={op} value={op}>{op || ''}</option>)}
+                                            </select>
+                                        ) : t.autorizacion}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5">
+                                        {editando ? (
+                                            <input value={editando.imagenesDx} onChange={e => cambiarCelda(t.id, 'imagenesDx', e.target.value)} className={INPUT_INLINE} />
+                                        ) : t.imagenesDx}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5">
+                                        {editando ? (
+                                            <select value={editando.estadoAuditoria} onChange={e => cambiarCelda(t.id, 'estadoAuditoria', e.target.value)} className={SELECT_INLINE}>
+                                                {OPCIONES_ESTADO.map(op => <option key={op} value={op}>{op || ''}</option>)}
+                                            </select>
+                                        ) : t.estadoAuditoria}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5">
+                                        {editando ? (
+                                            <input value={editando.causaObjecion} onChange={e => cambiarCelda(t.id, 'causaObjecion', e.target.value)} className={INPUT_INLINE} />
+                                        ) : t.causaObjecion}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5">{t.revSupervision}</td>
+                                    <td className="border-r px-1 py-0.5">{t.observacionAuditoria}</td>
+                                    <td className="px-1 py-0.5 flex items-center gap-1 justify-center">
+                                        {editando ? (
+                                            <>
+                                                <button onClick={() => guardarEdicion(t.id)} disabled={estaGuardando} className="text-green-600 hover:text-green-800 disabled:opacity-50">
+                                                    <FontAwesomeIcon icon={faCheck} className="w-4 h-4" />
+                                                </button>
+                                                <button onClick={() => cancelarEdicion(t.id)} disabled={estaGuardando} className="text-red-600 hover:text-red-800 disabled:opacity-50">
+                                                    <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <button onClick={() => onEdit(t)}>
+                                                <FontAwesomeIcon icon={faPencilAlt} className="w-4 h-4 text-blue-600 cursor-pointer hover:-translate-y-1 transition duration-300" />
+                                            </button>
+                                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                         {data.length === 0 && (
                             <tr>
                                 <td colSpan={27} className="text-center py-4 text-gray-500">
