@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencilAlt, faSearch, faCalendarAlt, faDatabase, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faSearch, faCalendarAlt, faDatabase } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import Pagination from '../../Pagination';
 import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
@@ -10,8 +10,9 @@ const PAGE_SIZE = 50;
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed text-gray-500";
-const INPUT_INLINE = "border border-transparent bg-transparent px-1 py-0.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white";
-const SELECT_INLINE = "border border-transparent bg-transparent px-1 py-0.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white";
+const INPUT_INLINE = "border border-blue-400 bg-white px-1 py-0.5 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+const SELECT_INLINE = "border border-blue-400 bg-white px-1 py-0.5 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+const CELL_EDITABLE = "cursor-pointer hover:bg-blue-50 transition-colors";
 
 const OPCIONES_AUTORIZACION = ['', 'Sí', 'No', 'Pendiente'];
 const OPCIONES_ESTADO = ['', 'Pendiente', 'Hecho', 'Ok', 'No facturable', 'Adición', 'Nulo', 'Facturable', 'Revisión', 'Hecho pendiente', 'Adición pendiente'];
@@ -188,6 +189,14 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         }
     };
 
+    const handleBlurGuardar = async (id) => {
+        setTimeout(async () => {
+            if (edicionInline[id]) {
+                await guardarEdicion(id);
+            }
+        }, 150);
+    };
+
     const handlePageChange = (newPage) => {
         setPage(newPage);
         loadDataSinFiltro(newPage);
@@ -206,6 +215,59 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     };
 
     useEffect(() => { loadDataSinFiltro(page); }, [reloadFlag]);
+
+    const renderCelda = (t, campo, valor, placeholder) => {
+        const editando = edicionInline[t.id];
+        if (editando) {
+            return (
+                <input
+                    value={editando[campo]}
+                    onChange={e => cambiarCelda(t.id, campo, e.target.value)}
+                    onBlur={() => handleBlurGuardar(t.id)}
+                    className={INPUT_INLINE}
+                    placeholder={placeholder || ''}
+                    autoFocus
+                />
+            );
+        }
+        return (
+            <span
+                onDoubleClick={() => iniciarEdicion(t.id, t)}
+                className={CELL_EDITABLE}
+                title="Doble clic para editar"
+            >
+                {valor || ''}
+            </span>
+        );
+    };
+
+    const renderSelect = (t, campo, valor, opciones) => {
+        const editando = edicionInline[t.id];
+        if (editando) {
+            return (
+                <select
+                    value={editando[campo]}
+                    onChange={e => {
+                        cambiarCelda(t.id, campo, e.target.value);
+                        setTimeout(() => guardarEdicion(t.id), 50);
+                    }}
+                    className={SELECT_INLINE}
+                    autoFocus
+                >
+                    {opciones.map(op => <option key={op} value={op}>{op || ''}</option>)}
+                </select>
+            );
+        }
+        return (
+            <span
+                onDoubleClick={() => iniciarEdicion(t.id, t)}
+                className={CELL_EDITABLE}
+                title="Doble clic para editar"
+            >
+                {valor || ''}
+            </span>
+        );
+    };
 
     if (loading) return <p className="text-center py-4">Cargando...</p>;
     if (error) return <p className="text-red-600 text-center py-4">Error: {error}</p>;
@@ -330,84 +392,41 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map(t => {
-                            const editando = edicionInline[t.id];
-                            const estaGuardando = guardando[t.id];
-                            return (
-                                <tr key={t.id} className={`border-b hover:bg-gray-50 ${editando ? 'bg-yellow-50' : ''}`}>
-                                    <td className="border-r px-1 py-0.5">{t.id}</td>
-                                    <td className="border-r px-1 py-0.5">{t.tipoProcedimiento}</td>
-                                    <td className="border-r px-1 py-0.5">{t.pacienteNumeroIdentificacion}</td>
-                                    <td className="border-r px-1 py-0.5">{t.ingresoNumero}</td>
-                                    <td className="border-r px-1 py-0.5">{t.cupsCodigo}</td>
-                                    <td className="border-r px-1 py-0.5">{t.procedCod}</td>
-                                    <td className="border-r px-1 py-0.5">{t.intervencion}</td>
-                                    <td className="border-r px-1 py-0.5">{t.especialidadNombre}</td>
-                                    <td className="border-r px-1 py-0.5">{t.medicoNombre}</td>
-                                    <td className="border-r px-1 py-0.5">{t.fechaSolicitud}</td>
-                                    <td className="border-r px-1 py-0.5">{t.fechaCargue}</td>
-                                    <td className="border-r px-1 py-0.5">{t.horaCargue}</td>
-                                    <td className="border-r px-1 py-0.5">{t.regimen}</td>
-                                    <td className="border-r px-1 py-0.5">{t.entidadSaludNombre}</td>
-                                    <td className="border-r px-1 py-0.5">{t.gqx}</td>
-                                    <td className="border-r px-1 py-0.5">{t.anestesiologoNombre}</td>
-                                    <td className="border-r px-1 py-0.5">{t.ayudante1}</td>
-                                    <td className="border-r px-1 py-0.5">{t.ayudante2}</td>
-                                    <td className="border-r px-1 py-0.5">
-                                        {editando ? (
-                                            <input value={editando.liquidacion} onChange={e => cambiarCelda(t.id, 'liquidacion', e.target.value)} className={INPUT_INLINE} placeholder="100%, 75%..." />
-                                        ) : t.liquidacion}
-                                    </td>
-                                    <td className="border-r px-1 py-0.5">
-                                        {editando ? (
-                                            <input value={editando.novedadDesc} onChange={e => cambiarCelda(t.id, 'novedadDesc', e.target.value)} className={INPUT_INLINE} placeholder="cx, anes..." />
-                                        ) : t.novedadDesc}
-                                    </td>
-                                    <td className="border-r px-1 py-0.5">
-                                        {editando ? (
-                                            <select value={editando.autorizacion} onChange={e => cambiarCelda(t.id, 'autorizacion', e.target.value)} className={SELECT_INLINE}>
-                                                {OPCIONES_AUTORIZACION.map(op => <option key={op} value={op}>{op || ''}</option>)}
-                                            </select>
-                                        ) : t.autorizacion}
-                                    </td>
-                                    <td className="border-r px-1 py-0.5">
-                                        {editando ? (
-                                            <input value={editando.imagenesDx} onChange={e => cambiarCelda(t.id, 'imagenesDx', e.target.value)} className={INPUT_INLINE} />
-                                        ) : t.imagenesDx}
-                                    </td>
-                                    <td className="border-r px-1 py-0.5">
-                                        {editando ? (
-                                            <select value={editando.estadoAuditoria} onChange={e => cambiarCelda(t.id, 'estadoAuditoria', e.target.value)} className={SELECT_INLINE}>
-                                                {OPCIONES_ESTADO.map(op => <option key={op} value={op}>{op || ''}</option>)}
-                                            </select>
-                                        ) : t.estadoAuditoria}
-                                    </td>
-                                    <td className="border-r px-1 py-0.5">
-                                        {editando ? (
-                                            <input value={editando.causaObjecion} onChange={e => cambiarCelda(t.id, 'causaObjecion', e.target.value)} className={INPUT_INLINE} />
-                                        ) : t.causaObjecion}
-                                    </td>
-                                    <td className="border-r px-1 py-0.5">{t.revSupervision}</td>
-                                    <td className="border-r px-1 py-0.5">{t.observacionAuditoria}</td>
-                                    <td className="px-1 py-0.5 flex items-center gap-1 justify-center">
-                                        {editando ? (
-                                            <>
-                                                <button onClick={() => guardarEdicion(t.id)} disabled={estaGuardando} className="text-green-600 hover:text-green-800 disabled:opacity-50">
-                                                    <FontAwesomeIcon icon={faCheck} className="w-4 h-4" />
-                                                </button>
-                                                <button onClick={() => cancelarEdicion(t.id)} disabled={estaGuardando} className="text-red-600 hover:text-red-800 disabled:opacity-50">
-                                                    <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <button onClick={() => onEdit(t)}>
-                                                <FontAwesomeIcon icon={faPencilAlt} className="w-4 h-4 text-blue-600 cursor-pointer hover:-translate-y-1 transition duration-300" />
-                                            </button>
-                                        )}
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                        {data.map(t => (
+                            <tr key={t.id} className={`border-b hover:bg-gray-50 ${edicionInline[t.id] ? 'bg-yellow-50' : ''}`}>
+                                <td className="border-r px-1 py-0.5">{t.id}</td>
+                                <td className="border-r px-1 py-0.5">{t.tipoProcedimiento}</td>
+                                <td className="border-r px-1 py-0.5">{t.pacienteNumeroIdentificacion}</td>
+                                <td className="border-r px-1 py-0.5">{t.ingresoNumero}</td>
+                                <td className="border-r px-1 py-0.5">{t.cupsCodigo}</td>
+                                <td className="border-r px-1 py-0.5">{t.procedCod}</td>
+                                <td className="border-r px-1 py-0.5">{t.intervencion}</td>
+                                <td className="border-r px-1 py-0.5">{t.especialidadNombre}</td>
+                                <td className="border-r px-1 py-0.5">{t.medicoNombre}</td>
+                                <td className="border-r px-1 py-0.5">{t.fechaSolicitud}</td>
+                                <td className="border-r px-1 py-0.5">{t.fechaCargue}</td>
+                                <td className="border-r px-1 py-0.5">{t.horaCargue}</td>
+                                <td className="border-r px-1 py-0.5">{t.regimen}</td>
+                                <td className="border-r px-1 py-0.5">{t.entidadSaludNombre}</td>
+                                <td className="border-r px-1 py-0.5">{t.gqx}</td>
+                                <td className="border-r px-1 py-0.5">{t.anestesiologoNombre}</td>
+                                <td className="border-r px-1 py-0.5">{t.ayudante1}</td>
+                                <td className="border-r px-1 py-0.5">{t.ayudante2}</td>
+                                <td className="border-r px-1 py-0.5">{renderCelda(t, 'liquidacion', t.liquidacion, '100%, 75%...')}</td>
+                                <td className="border-r px-1 py-0.5">{renderCelda(t, 'novedadDesc', t.novedadDesc, 'cx, anes...')}</td>
+                                <td className="border-r px-1 py-0.5">{renderSelect(t, 'autorizacion', t.autorizacion, OPCIONES_AUTORIZACION)}</td>
+                                <td className="border-r px-1 py-0.5">{renderCelda(t, 'imagenesDx', t.imagenesDx)}</td>
+                                <td className="border-r px-1 py-0.5">{renderSelect(t, 'estadoAuditoria', t.estadoAuditoria, OPCIONES_ESTADO)}</td>
+                                <td className="border-r px-1 py-0.5">{renderCelda(t, 'causaObjecion', t.causaObjecion)}</td>
+                                <td className="border-r px-1 py-0.5">{t.revSupervision}</td>
+                                <td className="border-r px-1 py-0.5">{t.observacionAuditoria}</td>
+                                <td className="px-3 py-2">
+                                    <button onClick={() => onEdit(t)}>
+                                        <FontAwesomeIcon icon={faPencilAlt} className="w-4 h-4 text-blue-600 cursor-pointer hover:-translate-y-1 transition duration-300" />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
                         {data.length === 0 && (
                             <tr>
                                 <td colSpan={27} className="text-center py-4 text-gray-500">
