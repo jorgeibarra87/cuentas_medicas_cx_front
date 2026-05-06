@@ -19,7 +19,8 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const [totalElementos, setTotalElementos] = useState(0);
     const [fontSize, setFontSize] = useState(10);
 
-    const [fecha, setFecha] = useState('');
+    const [fechaInicio, setFechaInicio] = useState('');
+    const [fechaFin, setFechaFin] = useState('');
     const [importando, setImportando] = useState(false);
     const [buscando, setBuscando] = useState(false);
     const [importResult, setImportResult] = useState(null);
@@ -29,9 +30,9 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const aumentarTexto = () => setFontSize(prev => Math.min(prev + 1, 16));
     const reducirTexto = () => setFontSize(prev => Math.max(prev - 1, 8));
 
-    const validarFecha = () => {
-        if (!fecha) {
-            toast.error('Debes seleccionar una fecha');
+    const validarFechas = () => {
+        if (!fechaInicio || !fechaFin) {
+            toast.error('Debes seleccionar fecha de inicio y fecha fin');
             return false;
         }
         return true;
@@ -41,7 +42,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(fecha || null, busqueda || null, pagina, PAGE_SIZE);
+            const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, busqueda || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -56,7 +57,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(null, busqueda || null, pagina, PAGE_SIZE);
+            const response = await obtenerCirugiasPageable(null, null, busqueda || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -69,7 +70,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
 
     const handleBuscar = async (e) => {
         e.preventDefault();
-        if (!validarFecha()) return;
+        if (!validarFechas()) return;
         setBuscando(true);
         setPage(0);
         await loadData(0);
@@ -78,14 +79,14 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
 
     const handleImportar = async (e) => {
         e.preventDefault();
-        if (!validarFecha()) return;
+        if (!validarFechas()) return;
 
         setImportando(true);
         setError('');
         setImportResult(null);
 
         try {
-            const result = await importarCirugias(fecha);
+            const result = await importarCirugias(fechaInicio, fechaFin);
             setImportResult(result);
             setPage(0);
             await loadDataSinFiltro(0);
@@ -137,12 +138,25 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             <FontAwesomeIcon icon={faCalendarAlt} className="mr-1" />
-                            Fecha
+                            Fecha Inicio
                         </label>
                         <input
                             type="date"
-                            value={fecha}
-                            onChange={e => setFecha(e.target.value)}
+                            value={fechaInicio}
+                            onChange={e => setFechaInicio(e.target.value)}
+                            className={INPUT_CLASS}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <FontAwesomeIcon icon={faCalendarAlt} className="mr-1" />
+                            Fecha Fin
+                        </label>
+                        <input
+                            type="date"
+                            value={fechaFin}
+                            onChange={e => setFechaFin(e.target.value)}
                             className={INPUT_CLASS}
                             required
                         />
@@ -225,7 +239,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                             <th className="px-2 py-0.5 font-semibold">Anestesiólogo</th>
                             <th className="px-2 py-0.5 font-semibold">Ayudante 1</th>
                             <th className="px-2 py-0.5 font-semibold">Ayudante 2</th>
-                            <th className="px-2 py-0.5 font-semibold">Auditoría %</th>
+                            <th className="px-2 py-0.5 font-semibold">Liquidación</th>
                             <th className="px-2 py-0.5 font-semibold">Novedad</th>
                             <th className="px-2 py-0.5 font-semibold">Autorización</th>
                             <th className="px-2 py-0.5 font-semibold">Imágenes Dx</th>
@@ -257,7 +271,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                                 <td className="border-r px-1 py-0.5">{t.anestesiologoNombre}</td>
                                 <td className="border-r px-1 py-0.5">{t.ayudante1}</td>
                                 <td className="border-r px-1 py-0.5">{t.ayudante2}</td>
-                                <td className="border-r px-1 py-0.5">{t.auditoriaPorcentaje}</td>
+                                <td className="border-r px-1 py-0.5">{t.liquidacion}</td>
                                 <td className="border-r px-1 py-0.5">{t.novedadDesc}</td>
                                 <td className="border-r px-1 py-0.5">{t.autorizacion}</td>
                                 <td className="border-r px-1 py-0.5">{t.imagenesDx}</td>

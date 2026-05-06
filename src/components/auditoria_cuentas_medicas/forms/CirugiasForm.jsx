@@ -7,6 +7,10 @@ import { toast } from 'react-toastify';
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";
+const SELECT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white";
+
+const OPCIONES_AUTORIZACION = ['', 'Sí', 'No', 'Pendiente'];
+const OPCIONES_ESTADO = ['', 'Pendiente', 'Hecho', 'Ok', 'No facturable', 'Adición', 'Nulo', 'Facturable', 'Revisión', 'Hecho pendiente', 'Adición pendiente'];
 
 export default function CirugiasForm({ cirugia, onSaved }) {
     const statelogin = useSelector((state) => state.login);
@@ -25,7 +29,7 @@ export default function CirugiasForm({ cirugia, onSaved }) {
         anestesiologoNombre: '',
         ayudante1: '',
         ayudante2: '',
-        auditoriaPorcentaje: '',
+        liquidacion: '',
         novedadDesc: '',
         autorizacion: '',
         imagenesDx: '',
@@ -79,7 +83,7 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                 anestesiologoNombre: cirugia.anestesiologoNombre || '',
                 ayudante1: cirugia.ayudante1 || '',
                 ayudante2: cirugia.ayudante2 || '',
-                auditoriaPorcentaje: cirugia.auditoriaPorcentaje || '',
+                liquidacion: cirugia.liquidacion || '',
                 novedadDesc: cirugia.novedadDesc || '',
                 autorizacion: cirugia.autorizacion || '',
                 imagenesDx: cirugia.imagenesDx || '',
@@ -128,7 +132,7 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Cups</label>
-                        <input type="text" value={formData.cupsCodigo} readOnly className={INPUT_READONLY} />
+                        <input type="text" value={formData.cupsCodigo} onChange={e => handleChange('cupsCodigo', e.target.value)} className={INPUT_CLASS} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Proced.Cod</label>
@@ -183,33 +187,37 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                         <input type="text" value={formData.horaCargue} readOnly className={INPUT_READONLY} />
                     </div>
                     <div>
-                         <label className="block text-sm font-medium text-gray-700 mb-1">Auditoría %</label>
-                         <input type="text" value={formData.auditoriaPorcentaje} onChange={e => handleChange('auditoriaPorcentaje', e.target.value)} className={INPUT_CLASS} />
-                     </div>
-                     <div>
-                         <label className="block text-sm font-medium text-gray-700 mb-1">Novedad</label>
-                         <input type="text" value={formData.novedadDesc} onChange={e => handleChange('novedadDesc', e.target.value)} className={INPUT_CLASS} />
-                     </div>
-                     <div>
-                         <label className="block text-sm font-medium text-gray-700 mb-1">Autorización</label>
-                         <input type="text" value={formData.autorizacion} onChange={e => handleChange('autorizacion', e.target.value)} className={INPUT_CLASS} />
-                     </div>
-                     <div>
-                         <label className="block text-sm font-medium text-gray-700 mb-1">Imágenes Dx</label>
-                         <input type="text" value={formData.imagenesDx} onChange={e => handleChange('imagenesDx', e.target.value)} className={INPUT_CLASS} />
-                     </div>
-                     <div>
-                         <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                         <input type="text" value={formData.estadoAuditoria} onChange={e => handleChange('estadoAuditoria', e.target.value)} className={INPUT_CLASS} />
-                     </div>
-                     <div>
-                         <label className="block text-sm font-medium text-gray-700 mb-1">Causa Objeción</label>
-                         <input type="text" value={formData.causaObjecion} onChange={e => handleChange('causaObjecion', e.target.value)} className={INPUT_CLASS} />
-                     </div>
-                     <div>
-                         <label className="block text-sm font-medium text-gray-700 mb-1">Rev Supervision</label>
-                         <input type="text" value={formData.revSupervision} onChange={e => handleChange('revSupervision', e.target.value)} className={INPUT_CLASS} />
-                     </div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Liquidación</label>
+                        <input type="text" value={formData.liquidacion} onChange={e => handleChange('liquidacion', e.target.value)} className={INPUT_CLASS} placeholder="100%, 75%, 50%, 0%, etc." />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Novedad</label>
+                        <input type="text" value={formData.novedadDesc} onChange={e => handleChange('novedadDesc', e.target.value)} className={INPUT_CLASS} placeholder="cx, anes, ayud, etc." />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Autorización</label>
+                        <select value={formData.autorizacion} onChange={e => handleChange('autorizacion', e.target.value)} className={SELECT_CLASS}>
+                            {OPCIONES_AUTORIZACION.map(op => <option key={op} value={op}>{op || 'Seleccionar'}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Imágenes Dx</label>
+                        <input type="text" value={formData.imagenesDx} onChange={e => handleChange('imagenesDx', e.target.value)} className={INPUT_CLASS} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                        <select value={formData.estadoAuditoria} onChange={e => handleChange('estadoAuditoria', e.target.value)} className={SELECT_CLASS}>
+                            {OPCIONES_ESTADO.map(op => <option key={op} value={op}>{op || 'Seleccionar'}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Causa Objeción</label>
+                        <input type="text" value={formData.causaObjecion} onChange={e => handleChange('causaObjecion', e.target.value)} className={INPUT_CLASS} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Rev Supervision</label>
+                        <input type="text" value={formData.revSupervision} onChange={e => handleChange('revSupervision', e.target.value)} className={INPUT_CLASS} />
+                    </div>
                      <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Observación Auditoría</label>
                         <textarea rows={3} value={formData.observacionAuditoria} onChange={e => handleChange('observacionAuditoria', e.target.value)} className={INPUT_CLASS} />

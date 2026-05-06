@@ -1,9 +1,9 @@
 import apiClientCirugias from "./apiClienteCirugias";
 
-export const importarCirugias = async (fecha) => {
+export const importarCirugias = async (fechaInicio, fechaFin) => {
     try {
         const response = await apiClientCirugias.post('/cirugias/importar/bd', null, {
-            params: { fecha }
+            params: { fechaInicio, fechaFin }
         });
         return response.data;
     } catch (error) {
@@ -12,10 +12,11 @@ export const importarCirugias = async (fecha) => {
     }
 }
 
-export const obtenerCirugiasPageable = async (fecha, busqueda, page, size) => {
+export const obtenerCirugiasPageable = async (fechaInicio, fechaFin, busqueda, page, size) => {
     try {
         const params = { page, size };
-        if (fecha) params.fecha = fecha;
+        if (fechaInicio) params.fechaInicio = fechaInicio;
+        if (fechaFin) params.fechaFin = fechaFin;
         if (busqueda) params.busqueda = busqueda;
         const response = await apiClientCirugias.get('/cirugias', { params });
         return response.data;
