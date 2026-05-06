@@ -152,10 +152,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     }, []);
 
     const saveEdit = useCallback(async (id) => {
-        if (!editId || !editData.liquidacion && !editData.novedadDesc && !editData.autorizacion && !editData.imagenesDx && !editData.estadoAuditoria && !editData.causaObjecion) {
-            cancelEdit();
-            return;
-        }
+        if (!editId) return;
         try {
             const payload = {
                 liquidacion: editData.liquidacion,
@@ -177,13 +174,15 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         }
     }, [editId, editData, page]);
 
-    const handleBlurGuardar = useCallback((id) => {
-        setTimeout(() => {
-            if (editId === id) {
-                saveEdit(id);
-            }
-        }, 200);
-    }, [editId, saveEdit]);
+    const handleKeyDown = useCallback((e, id) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveEdit(id);
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            cancelEdit();
+        }
+    }, [saveEdit, cancelEdit]);
 
     const handlePageChange = (newPage) => {
         setPage(newPage);
@@ -351,12 +350,12 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                                     <td className="border-r px-1 py-0.5">{t.ayudante2}</td>
                                     <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
                                         {isEditing ? (
-                                            <input value={editData.liquidacion} onChange={e => updateCell('liquidacion', e.target.value)} onBlur={() => handleBlurGuardar(t.id)} className={INPUT_INLINE} placeholder="100%, 75%..." autoFocus />
+                                            <input value={editData.liquidacion} onChange={e => updateCell('liquidacion', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={INPUT_INLINE} placeholder="100%, 75%..." autoFocus />
                                         ) : (t.liquidacion || '')}
                                     </td>
                                     <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
                                         {isEditing ? (
-                                            <input value={editData.novedadDesc} onChange={e => updateCell('novedadDesc', e.target.value)} onBlur={() => handleBlurGuardar(t.id)} className={INPUT_INLINE} placeholder="cx, anes..." autoFocus />
+                                            <input value={editData.novedadDesc} onChange={e => updateCell('novedadDesc', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={INPUT_INLINE} placeholder="cx, anes..." autoFocus />
                                         ) : (t.novedadDesc || '')}
                                     </td>
                                     <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
@@ -368,7 +367,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                                     </td>
                                     <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
                                         {isEditing ? (
-                                            <input value={editData.imagenesDx} onChange={e => updateCell('imagenesDx', e.target.value)} onBlur={() => handleBlurGuardar(t.id)} className={INPUT_INLINE} autoFocus />
+                                            <input value={editData.imagenesDx} onChange={e => updateCell('imagenesDx', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={INPUT_INLINE} autoFocus />
                                         ) : (t.imagenesDx || '')}
                                     </td>
                                     <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
@@ -380,7 +379,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                                     </td>
                                     <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
                                         {isEditing ? (
-                                            <input value={editData.causaObjecion} onChange={e => updateCell('causaObjecion', e.target.value)} onBlur={() => handleBlurGuardar(t.id)} className={INPUT_INLINE} autoFocus />
+                                            <input value={editData.causaObjecion} onChange={e => updateCell('causaObjecion', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={INPUT_INLINE} autoFocus />
                                         ) : (t.causaObjecion || '')}
                                     </td>
                                     <td className="border-r px-1 py-0.5">{t.revSupervision || ''}</td>
