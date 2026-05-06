@@ -53,7 +53,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setError('');
         try {
             const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, pagina, PAGE_SIZE);
-            console.log('loadData response:', response);
+            //console.log('loadData response:', response);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -69,7 +69,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setError('');
         try {
             const response = await obtenerCirugiasPageable(null, null, pagina, PAGE_SIZE);
-            console.log('loadDataSinFiltro response:', response);
+            //console.log('loadDataSinFiltro response:', response);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -124,10 +124,10 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
 
     const handlePageChange = (newPage) => {
         setPage(newPage);
-        loadData(newPage);
+        loadDataSinFiltro(newPage);
     };
 
-    useEffect(() => { loadDataSinFiltro(0); }, [reloadFlag]);
+    useEffect(() => { loadDataSinFiltro(page); }, [reloadFlag]);
 
     if (loading) return <p className="text-center py-4">Cargando...</p>;
     if (error) return <p className="text-red-600 text-center py-4">Error: {error}</p>;
