@@ -16,6 +16,17 @@ export default function CirugiasForm({ cirugia, onSaved }) {
     const statelogin = useSelector((state) => state.login);
     const usuario = statelogin.decodeToken;
 
+    const obtenerNombreUsuario = () => {
+        const token = localStorage.getItem('tokenhusjp');
+        if (!token) return '';
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload.nombre || payload.sub || payload.userName || '';
+        } catch {
+            return '';
+        }
+    };
+
     const [formData, setFormData] = useState({
         tipoProcedimiento: '',
         pacienteNumeroIdentificacion: '',
@@ -188,7 +199,10 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Liquidación</label>
-                        <input type="text" value={formData.liquidacion} onChange={e => handleChange('liquidacion', e.target.value)} className={INPUT_CLASS} placeholder="100%, 75%, 50%, 0%, etc." />
+                        <input type="text" value={formData.liquidacion} onChange={e => {
+                            handleChange('liquidacion', e.target.value);
+                            if (e.target.value) handleChange('revSupervision', obtenerNombreUsuario());
+                        }} className={INPUT_CLASS} placeholder="100%, 75%, 50%, 0%, etc." />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Novedad</label>
@@ -216,7 +230,7 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Rev Supervision</label>
-                        <input type="text" value={formData.revSupervision} onChange={e => handleChange('revSupervision', e.target.value)} className={INPUT_CLASS} />
+                        <input type="text" value={formData.revSupervision} readOnly className={INPUT_READONLY} />
                     </div>
                      <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Observación Auditoría</label>
