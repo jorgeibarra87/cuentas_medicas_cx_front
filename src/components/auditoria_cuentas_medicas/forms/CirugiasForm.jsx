@@ -17,14 +17,7 @@ export default function CirugiasForm({ cirugia, onSaved }) {
     const usuario = statelogin.decodeToken;
 
     const obtenerNombreUsuario = () => {
-        const token = localStorage.getItem('tokenhusjp');
-        if (!token) return '';
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            return payload.nombre || payload.sub || payload.userName || '';
-        } catch {
-            return '';
-        }
+        return usuario?.name_user || '';
     };
 
     const [formData, setFormData] = useState({
