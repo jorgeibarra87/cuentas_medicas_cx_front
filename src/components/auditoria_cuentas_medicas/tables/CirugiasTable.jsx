@@ -6,7 +6,6 @@ import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia } from '..
 import { toast } from 'react-toastify';
 
 const PAGE_SIZE = 50;
-const MAX_MESES_RANGO = 3;
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed text-gray-500";
@@ -20,8 +19,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const [totalElementos, setTotalElementos] = useState(0);
     const [fontSize, setFontSize] = useState(10);
 
-    const [fechaInicio, setFechaInicio] = useState('');
-    const [fechaFin, setFechaFin] = useState('');
+    const [fecha, setFecha] = useState('');
     const [importando, setImportando] = useState(false);
     const [buscando, setBuscando] = useState(false);
     const [importResult, setImportResult] = useState(null);
@@ -31,20 +29,9 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const aumentarTexto = () => setFontSize(prev => Math.min(prev + 1, 16));
     const reducirTexto = () => setFontSize(prev => Math.max(prev - 1, 8));
 
-    const validarRangoFechas = () => {
-        if (!fechaInicio || !fechaFin) {
-            toast.error('Debes seleccionar ambas fechas');
-            return false;
-        }
-        const inicio = new Date(fechaInicio);
-        const fin = new Date(fechaFin);
-        const diffMeses = (fin.getFullYear() - inicio.getFullYear()) * 12 + (fin.getMonth() - inicio.getMonth());
-        if (diffMeses > MAX_MESES_RANGO) {
-            toast.error(`El rango de fechas no puede superar ${MAX_MESES_RANGO} meses`);
-            return false;
-        }
-        if (fin < inicio) {
-            toast.error('La fecha fin debe ser mayor o igual a la fecha inicio');
+    const validarFecha = () => {
+        if (!fecha) {
+            toast.error('Debes seleccionar una fecha');
             return false;
         }
         return true;
@@ -54,7 +41,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, busqueda || null, pagina, PAGE_SIZE);
+            const response = await obtenerCirugiasPageable(fecha || null, busqueda || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -69,7 +56,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(null, null, busqueda || null, pagina, PAGE_SIZE);
+            const response = await obtenerCirugiasPageable(null, busqueda || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -82,7 +69,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
 
     const handleBuscar = async (e) => {
         e.preventDefault();
-        if (!validarRangoFechas()) return;
+        if (!validarFecha()) return;
         setBuscando(true);
         setPage(0);
         await loadData(0);
@@ -91,15 +78,14 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
 
     const handleImportar = async (e) => {
         e.preventDefault();
-        if (!validarRangoFechas()) return;
+        if (!validarFecha()) return;
 
-        const rangoFechas = `${fechaInicio} - ${fechaFin}`;
         setImportando(true);
         setError('');
         setImportResult(null);
 
         try {
-            const result = await importarCirugias(rangoFechas);
+            const result = await importarCirugias(fecha);
             setImportResult(result);
             setPage(0);
             await loadDataSinFiltro(0);
@@ -151,25 +137,12 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             <FontAwesomeIcon icon={faCalendarAlt} className="mr-1" />
-                            Fecha Inicio
+                            Fecha
                         </label>
                         <input
                             type="date"
-                            value={fechaInicio}
-                            onChange={e => setFechaInicio(e.target.value)}
-                            className={INPUT_CLASS}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            <FontAwesomeIcon icon={faCalendarAlt} className="mr-1" />
-                            Fecha Fin
-                        </label>
-                        <input
-                            type="date"
-                            value={fechaFin}
-                            onChange={e => setFechaFin(e.target.value)}
+                            value={fecha}
+                            onChange={e => setFecha(e.target.value)}
                             className={INPUT_CLASS}
                             required
                         />

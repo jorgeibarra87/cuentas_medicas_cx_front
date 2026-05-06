@@ -12,10 +12,10 @@ const convertirFechaAFechaCargue = (fecha) => {
     return fecha;
 };
 
-export const importarCirugias = async (rangoFechas) => {
+export const importarCirugias = async (fecha) => {
     try {
         const response = await apiClientCirugias.post('/cirugias/importar/bd', null, {
-            params: { fechaInicio: rangoFechas.split(' - ')[0], fechaFin: rangoFechas.split(' - ')[1] }
+            params: { fecha: convertirFechaAFechaCargue(fecha) }
         });
         return response.data;
     } catch (error) {
@@ -24,11 +24,10 @@ export const importarCirugias = async (rangoFechas) => {
     }
 }
 
-export const obtenerCirugiasPageable = async (fechaInicio, fechaFin, busqueda, page, size) => {
+export const obtenerCirugiasPageable = async (fecha, busqueda, page, size) => {
     try {
         const params = { page, size };
-        if (fechaInicio) params.fechaInicio = convertirFechaAFechaCargue(fechaInicio);
-        if (fechaFin) params.fechaFin = convertirFechaAFechaCargue(fechaFin);
+        if (fecha) params.fecha = convertirFechaAFechaCargue(fecha);
         if (busqueda) params.busqueda = busqueda;
         const response = await apiClientCirugias.get('/cirugias', { params });
         return response.data;
