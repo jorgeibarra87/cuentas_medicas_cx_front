@@ -26,6 +26,8 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const [buscando, setBuscando] = useState(false);
     const [importResult, setImportResult] = useState(null);
 
+    const [busqueda, setBusqueda] = useState('');
+
     const aumentarTexto = () => setFontSize(prev => Math.min(prev + 1, 16));
     const reducirTexto = () => setFontSize(prev => Math.max(prev - 1, 8));
 
@@ -52,8 +54,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, pagina, PAGE_SIZE);
-            //console.log('loadData response:', response);
+            const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, busqueda || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -68,8 +69,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(null, null, pagina, PAGE_SIZE);
-            //console.log('loadDataSinFiltro response:', response);
+            const response = await obtenerCirugiasPageable(null, null, busqueda || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -125,6 +125,18 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const handlePageChange = (newPage) => {
         setPage(newPage);
         loadDataSinFiltro(newPage);
+    };
+
+    const handleBusquedaSubmit = (e) => {
+        e.preventDefault();
+        setPage(0);
+        loadDataSinFiltro(0);
+    };
+
+    const handleLimpiarBusqueda = () => {
+        setBusqueda('');
+        setPage(0);
+        loadDataSinFiltro(0);
     };
 
     useEffect(() => { loadDataSinFiltro(page); }, [reloadFlag]);
@@ -193,10 +205,29 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                 )}
             </form>
 
-            <div className="flex justify-end items-center mb-2 space-x-2">
-                <span className="text-sm text-gray-500">{totalElementos} registro(s)</span>
-                <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A-</button>
-                <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+            <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
+                <form onSubmit={handleBusquedaSubmit} className="flex items-center gap-2">
+                    <input
+                        type="text"
+                        value={busqueda}
+                        onChange={e => setBusqueda(e.target.value)}
+                        placeholder="Paciente, ingreso, CUPS o médico..."
+                        className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <button type="submit" className="px-3 py-1.5 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 transition-all">
+                        <FontAwesomeIcon icon={faSearch} />
+                    </button>
+                    {busqueda && (
+                        <button type="button" onClick={handleLimpiarBusqueda} className="px-3 py-1.5 bg-gray-300 text-gray-700 text-sm font-semibold rounded hover:bg-gray-400 transition-all">
+                            Limpiar
+                        </button>
+                    )}
+                </form>
+                <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-500">{totalElementos} registro(s)</span>
+                    <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A-</button>
+                    <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>
+                </div>
             </div>
 
             <div style={{ height: 'calc(100vh - 400px)', overflow: 'scroll', scrollbarWidth: 'thin', scrollbarColor: '#cbd5e1 #f1f5f9' }}>
@@ -271,7 +302,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                         {data.length === 0 && (
                             <tr>
                                 <td colSpan={27} className="text-center py-4 text-gray-500">
-                                    No hay procedimientos registrados.
+                                    {busqueda ? 'No se encontraron resultados para "' + busqueda + '".' : 'No hay procedimientos registrados.'}
                                 </td>
                             </tr>
                         )}
