@@ -12,12 +12,14 @@ export const importarCirugias = async (fechaInicio, fechaFin) => {
     }
 }
 
-export const obtenerCirugiasPageable = async (fechaInicio, fechaFin, busqueda, page, size) => {
+export const obtenerCirugiasPageable = async (fechaInicio, fechaFin, busqueda, tipo, entidadId, page, size) => {
     try {
         const params = { page, size };
         if (fechaInicio) params.fechaInicio = fechaInicio;
         if (fechaFin) params.fechaFin = fechaFin;
         if (busqueda) params.busqueda = busqueda;
+        if (tipo) params.tipo = tipo;
+        if (entidadId) params.entidadId = entidadId;
         const response = await apiClientCirugias.get('/cirugias', { params });
         return response.data;
     } catch (error) {

@@ -35,6 +35,8 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const [importResult, setImportResult] = useState(null);
 
     const [busqueda, setBusqueda] = useState('');
+    const [filtroTipo, setFiltroTipo] = useState('');
+    const [filtroEntidad, setFiltroEntidad] = useState('');
 
     const [editId, setEditId] = useState(null);
     const [editData, setEditData] = useState({});
@@ -67,7 +69,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, busqueda || null, pagina, PAGE_SIZE);
+            const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, busqueda || null, filtroTipo || null, filtroEntidad || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -82,7 +84,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(null, null, busqueda || null, pagina, PAGE_SIZE);
+            const response = await obtenerCirugiasPageable(null, null, busqueda || null, filtroTipo || null, filtroEntidad || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -268,7 +270,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
             </form>
 
             <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
-                <form onSubmit={handleBusquedaSubmit} className="flex items-center gap-2">
+                <form onSubmit={handleBusquedaSubmit} className="flex items-center gap-2 flex-wrap">
                     <input
                         type="text"
                         value={busqueda}
@@ -284,6 +286,22 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                             Limpiar
                         </button>
                     )}
+                    <div className="flex items-center gap-2 ml-4">
+                        <select value={filtroTipo} onChange={e => { setFiltroTipo(e.target.value); setPage(0); loadDataSinFiltro(0); }} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Todos los tipos</option>
+                            <option value="CIRUGIA">Cirugía</option>
+                            <option value="ENDOSCOPIA">Endoscopía</option>
+                        </select>
+                        <select value={filtroEntidad} onChange={e => { setFiltroEntidad(e.target.value); setPage(0); loadDataSinFiltro(0); }} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Todas las entidades</option>
+                            <option value="1">Nueva EPS</option>
+                            <option value="2">FAMISANAR</option>
+                            <option value="3">COOSALUD</option>
+                            <option value="4">SALUD TOTAL</option>
+                            <option value="5">EMSSANAR</option>
+                            <option value="6">MALLARCO</option>
+                        </select>
+                    </div>
                 </form>
                 <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-500">{totalElementos} registro(s)</span>
