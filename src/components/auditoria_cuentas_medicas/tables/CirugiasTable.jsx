@@ -358,9 +358,9 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                                             <input value={editData.novedadDesc} onChange={e => updateCell('novedadDesc', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={INPUT_INLINE} placeholder="cx, anes..." autoFocus />
                                         ) : (t.novedadDesc || '')}
                                     </td>
-                                    <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
+                                    <td className="border-r px-1 py-0.5" onDoubleClick={(e) => { e.preventDefault(); startEdit(t.id, t); }}>
                                         {isEditing ? (
-                                            <select value={editData.autorizacion} onChange={e => { updateCell('autorizacion', e.target.value); setTimeout(() => saveEdit(t.id), 50); }} className={SELECT_INLINE} autoFocus>
+                                            <select value={editData.autorizacion} onChange={e => updateCell('autorizacion', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={SELECT_INLINE} autoFocus>
                                                 {OPCIONES_AUTORIZACION.map(op => <option key={op} value={op}>{op || ''}</option>)}
                                             </select>
                                         ) : (t.autorizacion || '')}
@@ -370,9 +370,9 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                                             <input value={editData.imagenesDx} onChange={e => updateCell('imagenesDx', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={INPUT_INLINE} autoFocus />
                                         ) : (t.imagenesDx || '')}
                                     </td>
-                                    <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
+                                    <td className="border-r px-1 py-0.5" onDoubleClick={(e) => { e.preventDefault(); startEdit(t.id, t); }}>
                                         {isEditing ? (
-                                            <select value={editData.estadoAuditoria} onChange={e => { updateCell('estadoAuditoria', e.target.value); setTimeout(() => saveEdit(t.id), 50); }} className={SELECT_INLINE} autoFocus>
+                                            <select value={editData.estadoAuditoria} onChange={e => updateCell('estadoAuditoria', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={SELECT_INLINE} autoFocus>
                                                 {OPCIONES_ESTADO.map(op => <option key={op} value={op}>{op || ''}</option>)}
                                             </select>
                                         ) : (t.estadoAuditoria || '')}
