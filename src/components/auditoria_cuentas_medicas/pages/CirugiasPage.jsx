@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CirugiasForm from '../forms/CirugiasForm';
 import CirugiasTable from '../tables/CirugiasTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faBookMedical, faFileEdit, faFile } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faBookMedical, faFileEdit, faFile, faChartBar } from '@fortawesome/free-solid-svg-icons';
 
 export default function CirugiasPage() {
+    const navigate = useNavigate();
     const [modo, setModo] = useState('lista');
     const [selectedCirugia, setSelectedCirugia] = useState(null);
     const [reloadFlag, setReloadFlag] = useState(0);
@@ -81,6 +83,13 @@ export default function CirugiasPage() {
                                 Gestión Auditoría Procedimientos Quirúrgicos
                             </h1>
                         </div>
+                        <button
+                            onClick={() => navigate('/auditoria/reportes')}
+                            className="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-md flex items-center gap-2"
+                        >
+                            <FontAwesomeIcon icon={faChartBar} />
+                            Ver Reportes
+                        </button>
                     </div>
 
                     <CirugiasTable

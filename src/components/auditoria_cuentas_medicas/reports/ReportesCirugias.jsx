@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartBar, faFileAlt } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faFileAlt, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { obtenerReporteAnual } from '../../../api/auditoria_cuentas_medicas/reportesService';
 import { toast } from 'react-toastify';
@@ -8,6 +9,7 @@ import { toast } from 'react-toastify';
 const NOMBRES_MESES = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
 export default function ReportesCirugias() {
+    const navigate = useNavigate();
     const [anio, setAnio] = useState('2026');
     const [reporte, setReporte] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -71,10 +73,19 @@ export default function ReportesCirugias() {
     return (
         <div className="p-4">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-800">
-                    <FontAwesomeIcon icon={faChartBar} className="mr-2" />
-                    Reportes y Estadísticas
-                </h2>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => navigate('/auditoria/procedimientos')}
+                        className="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-md flex items-center gap-2"
+                    >
+                        <FontAwesomeIcon icon={faArrowLeft} />
+                        Volver a Procedimientos
+                    </button>
+                    <h2 className="text-xl font-bold text-gray-800">
+                        <FontAwesomeIcon icon={faChartBar} className="mr-2" />
+                        Reportes y Estadísticas
+                    </h2>
+                </div>
                 <div className="flex items-center gap-2">
                     <label className="text-sm font-medium">Año:</label>
                     <select value={anio} onChange={e => setAnio(e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm">
