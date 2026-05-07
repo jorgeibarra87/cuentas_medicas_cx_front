@@ -203,15 +203,13 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         loadData(0);
     };
 
-    const handleFiltroChange = (filtro, valor) => {
-        if (filtro === 'tipo') {
-            setFiltroTipo(valor);
-        } else if (filtro === 'entidad') {
-            setFiltroEntidad(valor);
-        }
+    useEffect(() => {
         setPage(0);
+    }, [filtroTipo, filtroEntidad]);
+
+    useEffect(() => {
         loadData(0);
-    };
+    }, [filtroTipo, filtroEntidad]);
 
     useEffect(() => { loadDataSinFiltro(page); }, [reloadFlag]);
 
@@ -297,12 +295,12 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                         </button>
                     )}
                     <div className="flex items-center gap-2 ml-4">
-                        <select value={filtroTipo} onChange={e => handleFiltroChange('tipo', e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">Todos los tipos</option>
                             <option value="CIRUGIA">Cirugía</option>
                             <option value="ENDOSCOPIA">Endoscopía</option>
                         </select>
-                        <select value={filtroEntidad} onChange={e => handleFiltroChange('entidad', e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <select value={filtroEntidad} onChange={e => setFiltroEntidad(e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">Todas las entidades</option>
                             <option value="1">Nueva EPS</option>
                             <option value="2">FAMISANAR</option>
