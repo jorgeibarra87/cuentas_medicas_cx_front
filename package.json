@@ -28,7 +28,7 @@
     "react-select": "^5.8.1",
     "react-signature-canvas": "^1.1.0-alpha.2",
     "react-toastify": "^11.0.5",
-    "recharts": "^2.15.2",
+    "recharts": "^2.15.4",
     "redux": "^5.0.1",
     "sockjs-client": "^1.6.1",
     "soluciones-husjp": "file:",

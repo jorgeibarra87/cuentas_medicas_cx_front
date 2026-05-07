@@ -34,6 +34,7 @@ import RegistroAsistenciaAmbulatoria from '../rehabilitacion/RegistroAsistenciaA
 import GenSerRipsCambioSipEstado from '../facturacion/GenSerRipsCambioSipEstado';
 import ResumenExamenesPacientes from '../laboratorio/ResumenExamenesPacientes';
 import CirugiasPage from '../auditoria_cuentas_medicas/pages/CirugiasPage';
+import ReportesCirugias from '../auditoria_cuentas_medicas/reports/ReportesCirugias';
 
 export default function RutasConfig() {
 
@@ -192,6 +193,7 @@ export default function RutasConfig() {
                 </Route>
                 <Route path='/auditoria'>
                     <Route path='procedimientos' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={CirugiasPage} /></RequireAuth>} />
+                    <Route path='reportes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReportesCirugias} /></RequireAuth>} />
                 </Route>
                 <Route path='*' element={<Error404 />} />
             </Routes>
