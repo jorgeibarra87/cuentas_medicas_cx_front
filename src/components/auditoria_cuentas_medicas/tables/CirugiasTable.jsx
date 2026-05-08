@@ -3,6 +3,7 @@ import { faPencilAlt, faSearch, faCalendarAlt, faDatabase } from '@fortawesome/f
 import { useEffect, useState, useCallback } from 'react';
 import Pagination from '../../Pagination';
 import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
+import { obtenerEntidadesSalud } from '../../../api/auditoria_cuentas_medicas/entidadesService';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
@@ -37,6 +38,8 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const [busqueda, setBusqueda] = useState('');
     const [filtroTipo, setFiltroTipo] = useState('');
     const [filtroEntidad, setFiltroEntidad] = useState('');
+    const [busquedaEntidad, setBusquedaEntidad] = useState('');
+    const [entidades, setEntidades] = useState([]);
 
     const [editId, setEditId] = useState(null);
     const [editData, setEditData] = useState({});
@@ -211,6 +214,18 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         loadData(0);
     }, [filtroTipo, filtroEntidad]);
 
+    useEffect(() => {
+        const cargarEntidades = async () => {
+            try {
+                const lista = await obtenerEntidadesSalud();
+                setEntidades(lista.filter(e => e.estado === true));
+            } catch (err) {
+                console.error('Error al cargar entidades:', err);
+            }
+        };
+        cargarEntidades();
+    }, []);
+
     useEffect(() => { loadDataSinFiltro(page); }, [reloadFlag]);
 
     if (loading) return <p className="text-center py-4">Cargando...</p>;
@@ -302,13 +317,21 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                         </select>
                         <select value={filtroEntidad} onChange={e => setFiltroEntidad(e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">Todas las entidades</option>
-                            <option value="1">Nueva EPS</option>
-                            <option value="2">FAMISANAR</option>
-                            <option value="3">COOSALUD</option>
-                            <option value="4">SALUD TOTAL</option>
-                            <option value="5">EMSSANAR</option>
-                            <option value="6">MALLARCO</option>
+                            {entidades
+                                .filter(e => !busquedaEntidad || e.nombre.toLowerCase().includes(busquedaEntidad.toLowerCase()))
+                                .map(e => (
+                                    <option key={e.id} value={e.id}>{e.nombre}</option>
+                                ))}
                         </select>
+                        {entidades.length > 5 && (
+                            <input
+                                type="text"
+                                value={busquedaEntidad}
+                                onChange={e => setBusquedaEntidad(e.target.value)}
+                                placeholder="Buscar entidad..."
+                                className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        )}
                     </div>
                 </form>
                 <div className="flex items-center space-x-2">
