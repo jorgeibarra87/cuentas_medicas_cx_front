@@ -5,12 +5,14 @@ import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import { appMenu } from '../menu';
 import { filtrarMenu } from '../menu/filterMenu';
+import SidebarItem from './SidebarItem';
 
 export default function Sidebar({ componente: Componente }) {
 
   const stateSidebar = useSelector(state => state.sidebar);
   const statelogin = useSelector(state => state.login);
   const usuario = statelogin.decodeToken;
+  const [abierto, setAbierto] = useState(null);
 
   const [submenuAbierto, setSubmenuAbierto] = useState(null);
   const location = useLocation();
@@ -47,38 +49,8 @@ export default function Sidebar({ componente: Componente }) {
           <Link to='/' className="sin-estilo">Soluciones HUSJP</Link>
         </div>
         <ul className="list-unstyled components">
-          {opcionesFiltradas.map((opcion) => (
-            <li key={opcion.nombre}>
-              <button className="dropdown-toggle w-full text-left px-3 py-2 text-white hover:bg-gray-200" onClick={() => toggleSubmenu(opcion.nombre)} >
-                {opcion.nombre}
-              </button>
-              {submenuAbierto === opcion.nombre && (
-                <ul className="list-unstyled pl-4">
-                  {opcion.submenu?.map((subopcion) => (
-                    <li key={subopcion.nombre}>
-                      {subopcion.submenuAdicional ? (
-                        <details className="pl-2">
-                          <summary className="cursor-pointer">{subopcion.nombre}</summary>
-                          <ul className="pl-4">
-                            {subopcion.submenuAdicional?.map((submenuadicional) => (
-                              <li key={submenuadicional.nombre}>
-                                <Link to={submenuadicional.ruta} className={`block px-2 py-1 ${isActive(submenuadicional.ruta)? 'bg-gray-300 font-semibold': 'hover:bg-gray-300'}`}>
-                                  {submenuadicional.nombre}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </details>
-                      ) : (
-                        <Link to={subopcion.ruta} className={`block px-2 py-1 ${ isActive(subopcion.ruta) ? 'bg-gray-300 font-semibold': 'hover:bg-gray-300'}`}>
-                          {subopcion.nombre}
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
+          {opcionesFiltradas.map(item => (
+            <SidebarItem key={item.nombre} item={item} isOpen={abierto === item.nombre} setOpen={() => setAbierto(abierto === item.nombre ? null : item.nombre)} />
           ))}
         </ul>
       </nav>
