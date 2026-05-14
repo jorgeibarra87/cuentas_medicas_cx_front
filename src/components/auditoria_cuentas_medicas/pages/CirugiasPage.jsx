@@ -24,6 +24,11 @@ export default function CirugiasPage() {
         setModo('editar');
     };
 
+    const handleNuevo = () => {
+        setSelectedCirugia(null);
+        setModo('crear');
+    };
+
     const handleSaved = () => {
         setModo('lista');
         setSelectedCirugia(null);
@@ -83,13 +88,22 @@ export default function CirugiasPage() {
                                 Gestión Auditoría Procedimientos Quirúrgicos
                             </h1>
                         </div>
-                        <button
-                            onClick={() => navigate('/auditoria/reportes')}
-                            className="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-md flex items-center gap-2"
-                        >
-                            <FontAwesomeIcon icon={faChartBar} />
-                            Ver Reportes
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handleNuevo}
+                                className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md flex items-center gap-2"
+                            >
+                                <FontAwesomeIcon icon={faPlus} />
+                                Nuevo Procedimiento
+                            </button>
+                            <button
+                                onClick={() => navigate('/auditoria/reportes')}
+                                className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md flex items-center gap-2"
+                            >
+                                <FontAwesomeIcon icon={faChartBar} />
+                                Ver Reportes
+                            </button>
+                        </div>
                     </div>
 
                     <CirugiasTable

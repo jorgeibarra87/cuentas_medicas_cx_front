@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faSearch, faCalendarAlt, faDatabase } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState, useCallback } from 'react';
 import Pagination from '../../Pagination';
-import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
+import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia, duplicarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
 import { obtenerEntidadesSalud } from '../../../api/auditoria_cuentas_medicas/entidadesService';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -15,7 +15,7 @@ const INPUT_INLINE = "border border-blue-400 bg-white px-1 py-0.5 w-full focus:o
 const SELECT_INLINE = "border border-blue-400 bg-white px-1 py-0.5 w-full focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 const OPCIONES_AUTORIZACION = ['', 'Sí', 'No', 'Pendiente'];
-const OPCIONES_ESTADO = ['', 'Pendiente', 'Hecho', 'Ok', 'No facturable', 'Adición', 'Nulo', 'Facturable', 'Revisión', 'Hecho pendiente', 'Adición pendiente'];
+const OPCIONES_ESTADO = ['', 'Pendiente', 'Hecho', 'Ok', 'No facturable', 'Adición', 'Nulo', 'Facturable', 'Revisión', 'Hecho pendiente', 'Adición pendiente', 'Cambio'];
 
 export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const statelogin = useSelector((state) => state.login);
@@ -169,8 +169,26 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
             if (editData.revSupervision) {
                 payload.revSupervision = editData.revSupervision;
             }
+
+            const esCambio = editData.estadoAuditoria === 'Cambio';
+            if (esCambio) {
+                const confirmado = window.confirm('¿Está seguro de marcar como Cambio? Se actualizará el registro y se creará un duplicado con estado Pendiente Cambio.');
+                if (!confirmado) {
+                    cancelEdit();
+                    return;
+                }
+                payload.estadoAuditoria = `Cambio-${id}`;
+            }
+
             await actualizarCirugia(id, payload);
-            toast.success('Registro actualizado');
+
+            if (esCambio) {
+                await duplicarCirugia(id, { ...payload, estadoAuditoria: `Pendiente Cambio-${id}` });
+                toast.success('Registro actualizado y duplicado creado');
+            } else {
+                toast.success('Registro actualizado');
+            }
+
             cancelEdit();
             await loadDataSinFiltro(page);
         } catch (err) {
@@ -342,10 +360,8 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                             <th className="px-2 py-0.5 font-semibold">Intervención</th>
                             <th className="px-2 py-0.5 font-semibold">Especialidad</th>
                             <th className="px-2 py-0.5 font-semibold">Médico</th>
-                            <th className="px-2 py-0.5 font-semibold">Fecha Solicitud</th>
                             <th className="px-2 py-0.5 font-semibold">Fecha Cargue</th>
                             <th className="px-2 py-0.5 font-semibold">Hora Cargue</th>
-                            <th className="px-2 py-0.5 font-semibold">Régimen</th>
                             <th className="px-2 py-0.5 font-semibold">Entidad</th>
                             <th className="px-2 py-0.5 font-semibold">GQX</th>
                             <th className="px-2 py-0.5 font-semibold">Anestesiólogo</th>
@@ -365,8 +381,15 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                     <tbody>
                         {data.map(t => {
                             const isEditing = editId === t.id;
+                            const cambioMatch = t.estadoAuditoria?.match(/Cambio-(\d+)/);
+                            const esCambioRelacionado = cambioMatch !== null;
+                            const filaClase = isEditing
+                                ? 'bg-yellow-50'
+                                : esCambioRelacionado
+                                    ? 'bg-blue-50 border-l-4 border-l-blue-400'
+                                    : '';
                             return (
-                                <tr key={t.id} className={`border-b hover:bg-gray-50 ${isEditing ? 'bg-yellow-50' : ''}`}>
+                                <tr key={t.id} className={`border-b hover:bg-gray-50 ${filaClase}`}>
                                     <td className="border-r px-1 py-0.5">{t.id}</td>
                                     <td className="border-r px-1 py-0.5">{t.tipoProcedimiento}</td>
                                     <td className="border-r px-1 py-0.5">{t.pacienteNumeroIdentificacion}</td>
@@ -376,10 +399,8 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                                     <td className="border-r px-1 py-0.5">{t.intervencion}</td>
                                     <td className="border-r px-1 py-0.5">{t.especialidadNombre}</td>
                                     <td className="border-r px-1 py-0.5">{t.medicoNombre}</td>
-                                    <td className="border-r px-1 py-0.5">{t.fechaSolicitud}</td>
                                     <td className="border-r px-1 py-0.5">{t.fechaCargue}</td>
                                     <td className="border-r px-1 py-0.5">{t.horaCargue}</td>
-                                    <td className="border-r px-1 py-0.5">{t.regimen}</td>
                                     <td className="border-r px-1 py-0.5">{t.entidadSaludNombre}</td>
                                     <td className="border-r px-1 py-0.5">{t.gqx}</td>
                                     <td className="border-r px-1 py-0.5">{t.anestesiologoNombre}</td>
@@ -412,7 +433,16 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                                             <select value={editData.estadoAuditoria} onChange={e => updateCell('estadoAuditoria', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={SELECT_INLINE} autoFocus>
                                                 {OPCIONES_ESTADO.map(op => <option key={op} value={op}>{op || ''}</option>)}
                                             </select>
-                                        ) : (t.estadoAuditoria || '')}
+                                        ) : (
+                                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${
+                                                t.estadoAuditoria?.startsWith('Cambio-') ? 'bg-orange-200 text-orange-800' :
+                                                t.estadoAuditoria?.startsWith('Pendiente Cambio') ? 'bg-blue-200 text-blue-800' :
+                                                t.estadoAuditoria === 'Ok' ? 'bg-green-200 text-green-800' :
+                                                t.estadoAuditoria === 'Hecho' ? 'bg-blue-200 text-blue-800' :
+                                                t.estadoAuditoria === 'No facturable' ? 'bg-red-200 text-red-800' :
+                                                'bg-gray-100 text-gray-700'
+                                            }`}>{t.estadoAuditoria || ''}</span>
+                                        )}
                                     </td>
                                     <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
                                         {isEditing ? (
@@ -431,7 +461,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                         })}
                         {data.length === 0 && (
                             <tr>
-                                <td colSpan={27} className="text-center py-4 text-gray-500">
+                                <td colSpan={25} className="text-center py-4 text-gray-500">
                                     {busqueda ? 'No se encontraron resultados para "' + busqueda + '".' : 'No hay procedimientos registrados.'}
                                 </td>
                             </tr>

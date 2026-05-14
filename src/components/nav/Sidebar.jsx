@@ -117,7 +117,7 @@ export default function Sidebar({ componente: Componente }) {
             ]
         },
         {
-            nombre: 'Auditoría',
+            nombre: 'Auditoría Cuentas Médicas',
             roles: ['ROLE_ADMINISTRADOR', 'ROLE_AUDITORIA_CIRCUIAS'],
             submenu: [
                 { nombre: 'Procedimientos', ruta: '/auditoria/procedimientos', roles: ['ROLE_ADMINISTRADOR', 'ROLE_AUDITORIA_CIRCUIAS'] }

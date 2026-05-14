@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faFile, faSave, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
-import { actualizarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
+import { actualizarCirugia, crearCirugia, duplicarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
 import { toast } from 'react-toastify';
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
@@ -10,9 +10,10 @@ const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-
 const SELECT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white";
 
 const OPCIONES_AUTORIZACION = ['', 'Sí', 'No', 'Pendiente'];
-const OPCIONES_ESTADO = ['', 'Pendiente', 'Hecho', 'Ok', 'No facturable', 'Adición', 'Nulo', 'Facturable', 'Revisión', 'Hecho pendiente', 'Adición pendiente'];
+const OPCIONES_ESTADO = ['', 'Pendiente', 'Hecho', 'Ok', 'No facturable', 'Adición', 'Nulo', 'Facturable', 'Revisión', 'Hecho pendiente', 'Adición pendiente', 'Cambio'];
 
 export default function CirugiasForm({ cirugia, onSaved }) {
+    const esCreacion = !cirugia;
     const statelogin = useSelector((state) => state.login);
     const usuario = statelogin.decodeToken;
 
@@ -40,12 +41,10 @@ export default function CirugiasForm({ cirugia, onSaved }) {
         estadoAuditoria: '',
         causaObjecion: '',
         revSupervision: '',
-        fechaSolicitud: '',
         fechaCargue: '',
         horaCargue: '',
         fechaResultado: '',
         entidadSaludNombre: '',
-        regimen: '',
         observacionAuditoria: ''
     });
 
@@ -61,8 +60,29 @@ export default function CirugiasForm({ cirugia, onSaved }) {
         setLoading(true);
         setError('');
         try {
-            await actualizarCirugia(cirugia.id, formData);
-            toast.success('Procedimiento actualizado correctamente');
+            if (esCreacion) {
+                await crearCirugia(formData);
+                toast.success('Procedimiento creado correctamente');
+            } else {
+                const esCambio = formData.estadoAuditoria === 'Cambio';
+                if (esCambio) {
+                    const confirmado = window.confirm('¿Está seguro de marcar como Cambio? Se actualizará el registro y se creará un duplicado con estado Pendiente Cambio.');
+                    if (!confirmado) {
+                        setLoading(false);
+                        return;
+                    }
+                }
+                const dataAEnviar = esCambio
+                    ? { ...formData, estadoAuditoria: `Cambio-${cirugia.id}` }
+                    : formData;
+                await actualizarCirugia(cirugia.id, dataAEnviar);
+                if (esCambio) {
+                    await duplicarCirugia(cirugia.id, { ...formData, estadoAuditoria: `Pendiente Cambio-${cirugia.id}` });
+                    toast.success('Procedimiento actualizado y duplicado creado');
+                } else {
+                    toast.success('Procedimiento actualizado correctamente');
+                }
+            }
             onSaved && onSaved();
         } catch (err) {
             setError(err.message);
@@ -94,12 +114,10 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                 estadoAuditoria: cirugia.estadoAuditoria || '',
                 causaObjecion: cirugia.causaObjecion || '',
                 revSupervision: cirugia.revSupervision || '',
-                fechaSolicitud: cirugia.fechaSolicitud || '',
                 fechaCargue: cirugia.fechaCargue || '',
                 horaCargue: cirugia.horaCargue || '',
                 fechaResultado: cirugia.fechaResultado || '',
                 entidadSaludNombre: cirugia.entidadSaludNombre || '',
-                regimen: cirugia.regimen || '',
                 observacionAuditoria: cirugia.observacionAuditoria || ''
             });
         }
@@ -124,15 +142,15 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-                        <input type="text" value={formData.tipoProcedimiento} readOnly className={INPUT_READONLY} />
+                        <input type="text" value={formData.tipoProcedimiento} onChange={e => handleChange('tipoProcedimiento', e.target.value)} readOnly={!esCreacion} className={esCreacion ? INPUT_CLASS : INPUT_READONLY} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Paciente</label>
-                        <input type="text" value={formData.pacienteNumeroIdentificacion} readOnly className={INPUT_READONLY} />
+                        <input type="text" value={formData.pacienteNumeroIdentificacion} onChange={e => handleChange('pacienteNumeroIdentificacion', e.target.value)} readOnly={!esCreacion} className={esCreacion ? INPUT_CLASS : INPUT_READONLY} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Ingreso</label>
-                        <input type="text" value={formData.ingresoNumero} readOnly className={INPUT_READONLY} />
+                        <input type="text" value={formData.ingresoNumero} onChange={e => handleChange('ingresoNumero', e.target.value)} readOnly={!esCreacion} className={esCreacion ? INPUT_CLASS : INPUT_READONLY} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Cups</label>
@@ -175,20 +193,16 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                         <input type="text" value={formData.entidadSaludNombre} onChange={e => handleChange('entidadSaludNombre', e.target.value)} className={INPUT_CLASS} />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Régimen</label>
-                        <input type="text" value={formData.regimen} onChange={e => handleChange('regimen', e.target.value)} className={INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Solicitud</label>
-                        <input type="text" value={formData.fechaSolicitud} readOnly className={INPUT_READONLY} />
-                    </div>
-                    <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Cargue</label>
-                        <input type="text" value={formData.fechaCargue} readOnly className={INPUT_READONLY} />
+                        <input type={esCreacion ? "date" : "text"} value={formData.fechaCargue} onChange={e => handleChange('fechaCargue', e.target.value)} readOnly={!esCreacion} className={esCreacion ? INPUT_CLASS : INPUT_READONLY} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Hora Cargue</label>
-                        <input type="text" value={formData.horaCargue} readOnly className={INPUT_READONLY} />
+                        <input type={esCreacion ? "time" : "text"} value={formData.horaCargue} onChange={e => handleChange('horaCargue', e.target.value)} readOnly={!esCreacion} className={esCreacion ? INPUT_CLASS : INPUT_READONLY} />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Resultado</label>
+                        <input type={esCreacion ? "date" : "text"} value={formData.fechaResultado} onChange={e => handleChange('fechaResultado', e.target.value)} className={INPUT_CLASS} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Liquidación</label>
@@ -223,7 +237,7 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Rev Supervision</label>
-                        <input type="text" value={formData.revSupervision} readOnly className={INPUT_READONLY} />
+                        <input type="text" value={formData.revSupervision} onChange={e => handleChange('revSupervision', e.target.value)} readOnly={!esCreacion} className={esCreacion ? INPUT_CLASS : INPUT_READONLY} />
                     </div>
                      <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Observación Auditoría</label>
@@ -237,7 +251,7 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                         disabled={loading}
                         className="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1 disabled:opacity-50"
                     >
-                        {loading ? 'Guardando...' : <><FontAwesomeIcon icon={faSave} className="mr-2" />Actualizar</>}
+                        {loading ? 'Guardando...' : <><FontAwesomeIcon icon={esCreacion ? faPlus : faSave} className="mr-2" />{esCreacion ? 'Crear' : 'Actualizar'}</>}
                     </button>
                 </div>
             </form>

@@ -57,3 +57,23 @@ export const obtenerCirugiaPorId = async (id) => {
         throw error;
     }
 }
+
+export const crearCirugia = async (cirugiaData) => {
+    try {
+        const response = await apiClientCirugias.post('/cirugias/desde-nombres', cirugiaData);
+        return response.data;
+    } catch (error) {
+        console.error('Error al crear la cirugía', error);
+        throw error;
+    }
+}
+
+export const duplicarCirugia = async (id, cirugiaData) => {
+    try {
+        const response = await apiClientCirugias.post(`/cirugias/${id}/duplicar`, cirugiaData);
+        return response.data;
+    } catch (error) {
+        console.error('Error al duplicar la cirugía', error);
+        throw error;
+    }
+}
