@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencilAlt, faSearch, faCalendarAlt, faDatabase } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faSearch, faCalendarAlt, faDatabase, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import * as XLSX from 'xlsx';
 import { useEffect, useState, useCallback } from 'react';
 import Pagination from '../../Pagination';
 import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia, duplicarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
@@ -223,6 +224,44 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         loadData(0);
     };
 
+    const handleExportarExcel = () => {
+        const headers = ['ID', 'Tipo', 'Paciente', 'Ingreso', 'Cups', 'Proced.Cod', 'Intervención', 'Especialidad', 'Médico', 'Fecha Cargue', 'Hora Cargue', 'Entidad', 'GQX', 'Anestesiólogo', 'Ayudante 1', 'Ayudante 2', 'Liquidación', 'Novedad', 'Autorización', 'Imágenes Dx', 'Estado', 'Causa Objeción', 'Rev Supervision', 'Observación'];
+
+        const filas = data.map(t => [
+            t.id,
+            t.tipoProcedimiento,
+            t.pacienteNumeroIdentificacion,
+            t.ingresoNumero,
+            t.cupsCodigo,
+            t.procedCod,
+            t.intervencion,
+            t.especialidadNombre,
+            t.medicoNombre,
+            t.fechaCargue,
+            t.horaCargue,
+            t.entidadSaludNombre,
+            t.gqx,
+            t.anestesiologoNombre,
+            t.ayudante1,
+            t.ayudante2,
+            t.liquidacion,
+            t.novedadDesc,
+            t.autorizacion,
+            t.imagenesDx,
+            t.estadoAuditoria,
+            t.causaObjecion,
+            t.revSupervision,
+            t.observacionAuditoria
+        ]);
+
+        const ws = XLSX.utils.aoa_to_sheet([headers, ...filas]);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Cirugias');
+
+        const fecha = new Date().toISOString().slice(0, 10);
+        XLSX.writeFile(wb, `cirugias_${fecha}.xlsx`);
+    };
+
     useEffect(() => {
         setPage(0);
     }, [filtroTipo, filtroEntidad]);
@@ -341,6 +380,10 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                     </div>
                 </form>
                 <div className="flex items-center space-x-2">
+                    <button onClick={handleExportarExcel} className="px-3 py-1.5 bg-green-700 text-white text-sm font-semibold rounded hover:bg-green-800 transition-all flex items-center gap-1">
+                        <FontAwesomeIcon icon={faFileExcel} />
+                        Exportar Excel
+                    </button>
                     <span className="text-sm text-gray-500">{totalElementos} registro(s)</span>
                     <button onClick={reducirTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A-</button>
                     <button onClick={aumentarTexto} className="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm font-bold">A+</button>

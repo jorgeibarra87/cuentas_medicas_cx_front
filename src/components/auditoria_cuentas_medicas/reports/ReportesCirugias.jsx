@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartBar, faFileAlt, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faFileAlt, faArrowLeft, faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import * as XLSX from 'xlsx';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { obtenerReporteAnual } from '../../../api/auditoria_cuentas_medicas/reportesService';
 import { toast } from 'react-toastify';
@@ -64,6 +65,42 @@ export default function ReportesCirugias() {
         return datos;
     };
 
+    const handleExportarExcel = () => {
+        const wb = XLSX.utils.book_new();
+
+        const h1 = ['Mes', 'Total'];
+        const f1 = datosMes.map(d => [d.mes, d.total]);
+        f1.push(['TOTAL', datosMes.reduce((s, d) => s + d.total, 0)]);
+        const ws1 = XLSX.utils.aoa_to_sheet([h1, ...f1]);
+        XLSX.utils.book_append_sheet(wb, ws1, 'Procedimientos x Mes');
+
+        const h2 = ['Mes', 'No Facturable', 'Adición', 'Hecho'];
+        const f2 = datosEstado.map(d => [d.mes, d['No_facturable'], d['Adición'], d['Hecho']]);
+        f2.push(['TOTAL',
+            datosEstado.reduce((s, d) => s + d['No_facturable'], 0),
+            datosEstado.reduce((s, d) => s + d['Adición'], 0),
+            datosEstado.reduce((s, d) => s + d['Hecho'], 0)
+        ]);
+        const ws2 = XLSX.utils.aoa_to_sheet([h2, ...f2]);
+        XLSX.utils.book_append_sheet(wb, ws2, 'Estado x Mes');
+
+        if (reporte?.porEspecialidad?.length > 0) {
+            const h3 = ['Especialidad', 'Total'];
+            const f3 = reporte.porEspecialidad.map(d => [d.especialidad, Number(d.total)]);
+            const ws3 = XLSX.utils.aoa_to_sheet([h3, ...f3]);
+            XLSX.utils.book_append_sheet(wb, ws3, 'Especialidad');
+        }
+
+        if (reporte?.porAuditor?.length > 0) {
+            const h4 = ['Auditor', 'Total Auditados'];
+            const f4 = reporte.porAuditor.map(d => [d.auditor, Number(d.total)]);
+            const ws4 = XLSX.utils.aoa_to_sheet([h4, ...f4]);
+            XLSX.utils.book_append_sheet(wb, ws4, 'Auditor');
+        }
+
+        XLSX.writeFile(wb, `reporte_cirugias_${anio}.xlsx`);
+    };
+
     const totalGeneral = reporte?.totalGeneral || 0;
     const datosMes = procesarDatosMes();
     const datosEstado = procesarEstadoPorMes();
@@ -74,24 +111,20 @@ export default function ReportesCirugias() {
         <div className="p-4">
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => navigate('/auditoria/procedimientos')}
-                        className="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-md flex items-center gap-2"
-                    >
-                        <FontAwesomeIcon icon={faArrowLeft} />
-                        Volver a Procedimientos
-                    </button>
-                    <h2 className="text-xl font-bold text-gray-800">
+                    <h2 className="text-4xl font-bold text-gray-800">
                         <FontAwesomeIcon icon={faChartBar} className="mr-2" />
                         Reportes y Estadísticas
                     </h2>
                 </div>
+                
                 <div className="flex items-center gap-2">
-                    <label className="text-sm font-medium">Año:</label>
-                    <select value={anio} onChange={e => setAnio(e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm">
-                        <option value="2026">2026</option>
-                        <option value="2025">2025</option>
-                    </select>
+                <button
+                    onClick={() => navigate('/auditoria/procedimientos')}
+                    className="px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-md flex items-center gap-2"
+                >
+                    <FontAwesomeIcon icon={faArrowLeft} />
+                    Volver a Procedimientos
+                </button>
                 </div>
             </div>
 
@@ -99,6 +132,17 @@ export default function ReportesCirugias() {
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
                     <p className="text-sm text-blue-600 font-medium">Total General</p>
                     <p className="text-3xl font-bold text-blue-800">{totalGeneral}</p>
+                </div>
+                <div className="flex items-center">
+                    <label className="ml-15 px-3 text-sm font-medium">Año:</label>
+                    <select value={anio} onChange={e => setAnio(e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm">
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                    </select>
+                    <button onClick={handleExportarExcel} className="ml-10 px-5 py-1.5 bg-green-700 text-white text-md font-semibold rounded hover:bg-green-800 transition-all flex items-center gap-1">
+                        <FontAwesomeIcon icon={faFileExcel} />
+                        Exportar Excel
+                    </button>
                 </div>
             </div>
 
