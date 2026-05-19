@@ -310,7 +310,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
                         <option value="NATALIA BASTIDAS">NATALIA BASTIDAS</option>
                         <option value="VIVIANA SANCHEZ">VIVIANA SANCHEZ</option>
                         <option value="LORENA RIVERA">LORENA RIVERA</option>
-                        <option value="SANTIAGO BOLAÑOS">SANTIAGO BOLAÑOS</option>
+                        <option value="YENNY CAMAYO COMETA">YENNY CAMAYO COMETA</option>
                     </select>
                 </div>
 
