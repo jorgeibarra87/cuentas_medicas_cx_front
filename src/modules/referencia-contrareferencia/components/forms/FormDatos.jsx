@@ -281,8 +281,9 @@ export default function FormDatos() {
                   <label className="block text-gray-700 text-sm font-bold mb-2">Aceptada / Rechazada:</label>
                   <select name="estado" className="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
                     <option value={null}>Elija una opción</option>
-                    <option value={true}>ACEPTADA</option>
-                    <option value={false}>RECHAZADA</option>
+                    <option value={"ACEPTADA"}>ACEPTADA</option>
+                    <option value={"RECHAZADA"}>RECHAZADA</option>
+                    <option value={"VITAL"}>VITAL</option>
                   </select>
                   <label className="block text-gray-700 text-sm font-bold mt-4 mb-2">Causa de rechazo:</label>
                   <input name="causaRechazo" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" type="text" />
@@ -292,6 +293,14 @@ export default function FormDatos() {
                   <input name="nombreMedicoRegistraDecision" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" type="text" required />
                   <label className="block text-gray-700 text-sm font-bold mt-4 mb-2">Causa de remisión a nivel lll:</label>
                   <input name="causaRemisionNivelLLL" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500" type="text" required />
+                </div>
+                <div className="w-full md:w-1/3 px-3">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">Pgp:</label>
+                  <select name="pgp" className="form-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value={null}>Elija una opción</option>
+                    <option value={true}>SI</option>
+                    <option value={false}>NO</option>
+                  </select>
                 </div>
               </div>
             </div>

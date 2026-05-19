@@ -1,0 +1,1 @@
+export {getMonitorizacionHcRoutes} from "./routes";

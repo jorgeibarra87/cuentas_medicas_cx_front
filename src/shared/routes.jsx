@@ -4,7 +4,7 @@ import Login from '../modules/auth/components/Login'
 import RequireAuth from '../components/config/RequireAuth'
 import ProtectedWithIdle from '../components/config/ProtectedWithIdle'
 import Sidebar from './components/Sidebar'
-import OpcionesUsuario from '../components/ajustes/OpcionesUsuario'
+import OpcionesUsuario from '../modules/ajustes/OpcionesUsuario'
 import Error404 from './components/Error404'
 
 export function getAppRoutes(isLogged, loading) {

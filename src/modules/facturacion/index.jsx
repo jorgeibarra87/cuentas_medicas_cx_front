@@ -1,0 +1,1 @@
+export {getFacturacionRoutes} from "./routes";

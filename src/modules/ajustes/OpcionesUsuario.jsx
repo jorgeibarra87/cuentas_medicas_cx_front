@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
-import useFetchUsuario from '../../modules/auth/hooks/useFetchUsuario';
+import useFetchUsuario from '../auth/hooks/useFetchUsuario';
 import Loader from '../../shared/components/Loader';
-import useFetchRol from '../../modules/auth/hooks/useFetchRol';
+import useFetchRol from '../auth/hooks/useFetchRol';
 import SincronizarUsuario from '../../shared/components/SincronizarUsuario';
-import useUpdateUsuarioRoles from '../../modules/auth/hooks/useUpdateUsuarioRoles';
+import useUpdateUsuarioRoles from '../auth/hooks/useUpdateUsuarioRoles';
 
 function OpcionesUsuario() {
   const { usuarios, loading: loadingU, error: errorU } = useFetchUsuario();

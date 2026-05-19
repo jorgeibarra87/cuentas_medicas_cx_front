@@ -8,7 +8,7 @@ import UpdateInnProduc from './components/innProduc/UpdateInnProduc'
 export function getDinamicaRoutes(isLogged, loading) {
     return (
         <>
-            <Route path='innProduct/update' element={<RequireAuth isLogged={isLogged} loading={loading}>
+            <Route path='innProduc/update' element={<RequireAuth isLogged={isLogged} loading={loading}>
                 <ProtectedWithIdle>
                     <Sidebar componente={UpdateInnProduc} />
                 </ProtectedWithIdle>

@@ -1,22 +1,16 @@
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAppRoutes } from '../../shared/routes';
-import { getDinamicaRoutes } from '../../modules/dinamica/routes';
-import FormSolDocumento from '../forgetpass/FormSolDocumento';
-import HumanizacionSolicitudes from '../humanizacion/HumanizacionSolicitudes';
 import { obtenerToken } from '../../actions/loginActions';
-import Tamizaje from '../../modules/nutricion/components/tamizaje/Tamizaje';
-
-import FormManteEquipos from '../../modules/sistemas/components/FormManteEquipos';
-import AjustesSistemas from '../../modules/sistemas/components/AjustesSistemas';
-import { getMonitorizacionHcRoutes } from '../../modules/monitorizacionHc/routes';
-import GenSerRipsCambioSipEstado from '../../modules/facturacion/GenSerRipsCambioSipEstado';
-import { getRehabilitacionRoutes } from '../../modules/rehabilitacion/routes';
-import { getReferenciacontrarreferenciaRoutes } from '../../modules/referencia-contrareferencia/routes';
-import { getNutricionRoutes } from '../../modules/nutricion/routes';
-import { getSistemasRoutes } from '../../modules/sistemas/routes';
-import { getFacturacionRoutes } from '../../modules/facturacion/routes';
+import FormSolDocumento from '../forgetpass/FormSolDocumento';
+import { getDinamicaRoutes } from '../../modules/dinamica';
+import { getAppRoutes } from '../../shared';
+import { getMonitorizacionHcRoutes } from '../../modules/monitorizacionHc';
+import { getRehabilitacionRoutes } from '../../modules/rehabilitacion';
+import { getReferenciacontrarreferenciaRoutes } from '../../modules/referencia-contrareferencia';
+import { getNutricionRoutes } from '../../modules/nutricion';
+import { getSistemasRoutes } from '../../modules/sistemas';
+import { getFacturacionRoutes } from '../../modules/facturacion';
 
 export default function RutasConfig() {
 
