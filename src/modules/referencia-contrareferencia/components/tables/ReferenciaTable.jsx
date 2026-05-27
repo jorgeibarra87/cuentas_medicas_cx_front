@@ -162,7 +162,7 @@ export default function ReferenciaTable() {
         "Escala Dolor /10": dato.escalaDolorVisual,
         "Requiere Aislamiento": dato.requiereAislamiento ? "Sí" : "No",
         "Urgencia Vital": dato.enviadaUrgenciaVital ? "Sí" : "No",
-        "Estado": dato.estado ? "ACEPTADA" : "RECHAZADA",
+        "Estado": dato.estado,
         "Causa Remisión Nivel III": dato.causaRemisionNivelLLL,
         "Causa Rechazo": dato.causaRechazo,
         "Médico que Registra Decisión": dato.nombreMedicoRegistraDecision,
@@ -314,7 +314,7 @@ export default function ReferenciaTable() {
                     <td className="text-center py-2 text-xs">{d.requiereAislamiento === true ? 'SI' : 'NO'}</td>
                     <td className="text-center py-2 text-xs">{d.enviadaUrgenciaVital === true ? 'SI' : 'NO'}</td>
                     <td className="text-center py-2 text-xs">{d.causaRemisionNivelLLL}</td>
-                    <td className="text-center py-2 text-xs">{d.estado === true ? 'ACEPTADA' : 'RECHAZADA'}</td>
+                    <td className="text-center py-2 text-xs">{d.estado}</td>
                     <td className="text-center py-2 text-xs">{d.id}</td>
                     <td className="text-center py-2 text-xs">{d.causaRechazo}</td>
                     <td className="text-center py-2 text-xs">{d.nombreMedicoRegistraDecision}</td>
