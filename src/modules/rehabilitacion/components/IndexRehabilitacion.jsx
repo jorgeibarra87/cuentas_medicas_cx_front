@@ -17,10 +17,63 @@ function IndexRehabilitacion() {
   const handleExport = () => {
     if (!dataI || dataI.items.length === 0) return;
 
-    const worksheet = XLSX.utils.json_to_sheet(dataI.items);
+    // 1. Mapeamos y formateamos los datos explícitamente
+    const formattedRows = dataI.items.map(item => {
+      return {
+        'ID': item.id,
+        'Fecha Programada': item.fechaProgramada,
+        'Hora Programada': item.horaProgramada,
+        'Documento': item.documentoPaciente,
+        'Paciente': item.nombreCompletoPaciente,
+        'Especialidad': item.especialidad?.replace('_', ' '),
+        'Profesional': item.profesional,
+        'Hora Llegada': item.tiempoLlegada ? item.tiempoLlegada.split('.')[0] : '', // Quita milisegundos incomodos
+        'Inicio Atención': item.inicioAtencion ? item.inicioAtencion.split('.')[0] : '',
+        'Fin Atención': item.finAtencion ? item.finAtencion.split('.')[0] : '',
+
+        // Enviamos el String de duración de forma normal
+        'Duración Atención': item.duracionAtencion || '00:00:00',
+        'Tiempo Espera': item.tiempoEsperaAtencion || '00:00:00',
+
+        'Estado': item.estadoSesion,
+        'Llegada Tardía': item.llegadaTardia ? 'SÍ' : 'NO' // Más estético que VERDADERO/FALSO
+      };
+    });
+
+    // 2. Crear la hoja con los encabezados limpios
+    const worksheet = XLSX.utils.json_to_sheet(formattedRows);
+
+    // 3. TRUCO DE MAGIA: Forzar a Excel a interpretar las duraciones como TIEMPO numérico
+    const range = XLSX.utils.decode_range(worksheet['!ref']);
+
+    for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+      // Columnas 10 y 11 correspondientes a 'Duración Atención' y 'Tiempo Espera' (Base 0: K y L)
+      [7, 8, 9, 10, 11].forEach(colIdx => {
+        const cellRef = XLSX.utils.encode_cell({ r: R, c: colIdx });
+        const cell = worksheet[cellRef];
+
+        if (cell && cell.v && typeof cell.v === 'string' && cell.v.includes(':')) {
+          const parts = cell.v.split(':');
+          const hours = parseInt(parts[0], 10);
+          const minutes = parseInt(parts[1], 10);
+          const seconds = parseInt(parts[2], 10);
+
+          // Convertir la hora a la fracción de día que usa Excel internamente (N)
+          const excelTimeFraction = (hours * 3600 + minutes * 60 + seconds) / 86400;
+
+          cell.t = 'n'; // Tipo numérico
+          cell.v = excelTimeFraction; // Valor puro para cálculo
+          cell.z = 'hh:mm:ss'; // Formato visual de hora en Excel
+        }
+      });
+    }
+
+    // 4. Construir y guardar el archivo
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-    XLSX.writeFile(workbook, 'reporte_rehabilitacion_' + new Date().toISOString().replace(/[:.-]/g, '') + '.xlsx');
+
+    const timestamp = new Date().toISOString().replace(/[:.-]/g, '').slice(0, 14);
+    XLSX.writeFile(workbook, `reporte_rehabilitacion_${timestamp}.xlsx`);
   };
 
   const handleChange = (e) => {

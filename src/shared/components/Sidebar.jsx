@@ -31,7 +31,7 @@ export default function Sidebar({ componente: Componente }) {
   // Auto-expandir menú según la ruta actual
   useEffect(() => {
     const match = opcionesFiltradas.find(op =>
-      op.submenu?.some(sub =>
+      op.children?.some(sub =>
         location.pathname.startsWith(sub.ruta)
       )
     );

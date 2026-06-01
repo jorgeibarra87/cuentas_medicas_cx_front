@@ -95,7 +95,6 @@ function RegistroAsistenciaAmbulatoria() {
         console.log('Suscribiéndose a canal de llegadas para fisioterapeuta ID:', fisioterapeutaId)
         stompClient.subscribe(`/topic/llegadas/${fisioterapeutaId}`, (message) => {
           const data = JSON.parse(message.body);
-
           toast.info(`Llegó el paciente ${data.nombreCompletoPaciente} a la cita de las ${data.horaProgramada}`, {
             position: "top-center",
             autoClose: false,
@@ -114,7 +113,7 @@ function RegistroAsistenciaAmbulatoria() {
                 c.patientId === data.documentoPaciente &&
                 fechaCita === fechaData
               )
-                ? { ...c, estadoSesion: 'LLEGADA' }
+                ? { ...c, estadoSesion: 'LLEGADA', id: data.id }
                 : c;
             })
           );
