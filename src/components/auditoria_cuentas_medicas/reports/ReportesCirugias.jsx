@@ -139,8 +139,8 @@ export default function ReportesCirugias() {
                         <option value="2026">2026</option>
                         <option value="2025">2025</option>
                     </select>
-                    <button onClick={handleExportarExcel} className="ml-10 px-5 py-1.5 bg-green-700 text-white text-md font-semibold rounded hover:bg-green-800 transition-all flex items-center gap-1">
-                        <FontAwesomeIcon icon={faFileExcel} />
+                    <button onClick={handleExportarExcel} className="ml-5 px-5 py-1.5 bg-green-700 text-white text-md font-semibold rounded hover:bg-green-800 transition-all flex items-center gap-2">
+                        <FontAwesomeIcon icon={faFileExcel} className="pr-2" />
                         Exportar Excel
                     </button>
                 </div>
