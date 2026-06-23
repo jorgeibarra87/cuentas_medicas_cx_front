@@ -23,13 +23,13 @@ jobs:
       - name: Build Docker image
         run: |
           IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution
-          VERSION_TAG=DEV-${GITHUB_SHA::7}
+          VERSION_TAG=dev-${GITHUB_SHA::7}
           docker build --build-arg VERSION=$VERSION_TAG -t $IMAGE_NAME-$VERSION_TAG .
 
       - name: Push Docker image
         run: |
           IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution
-          VERSION_TAG=DEV-${GITHUB_SHA::7}
+          VERSION_TAG=dev-${GITHUB_SHA::7}
           docker push $IMAGE_NAME-$VERSION_TAG
 
       - name: Logout from Docker Hub
@@ -43,7 +43,7 @@ jobs:
     steps:
       - name: Extract version (same tag)
         run: |
-          VERSION_TAG=DEV-${GITHUB_SHA::7}
+          VERSION_TAG=dev-${GITHUB_SHA::7}
           echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
       
       - name: Deploy to Kubernetes
