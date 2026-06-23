@@ -60,7 +60,7 @@ export default function RutasConfig() {
         }
     }, [state]);
 
-    useEffect(() => {
+    /* useEffect(() => {
         const isDevMode = window.env?.VITE_DEV_MODE === "true";
 
         if (isDevMode && !state.token) {
@@ -74,7 +74,7 @@ export default function RutasConfig() {
                 }
             });
         }
-    }, [dispatch, state.token]);
+    }, [dispatch, state.token]); */
 
     return (
         <HashRouter>

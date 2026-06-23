@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Pagination from '../../Pagination';
 import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia, duplicarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
 import { obtenerEntidadesSalud } from '../../../api/auditoria_cuentas_medicas/entidadesService';
+import { obtenerEspecialidades } from '../../../api/auditoria_cuentas_medicas/especialidadesService';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
@@ -39,7 +40,9 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const [busqueda, setBusqueda] = useState('');
     const [filtroTipo, setFiltroTipo] = useState('');
     const [filtroEntidad, setFiltroEntidad] = useState('');
+    const [filtroEspecialidad, setFiltroEspecialidad] = useState('');
     const [entidades, setEntidades] = useState([]);
+    const [especialidades, setEspecialidades] = useState([]);
 
     const [editId, setEditId] = useState(null);
     const [editData, setEditData] = useState({});
@@ -72,7 +75,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, busqueda || null, filtroTipo || null, filtroEntidad || null, pagina, PAGE_SIZE);
+            const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, busqueda || null, filtroTipo || null, filtroEntidad || null, filtroEspecialidad || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -87,7 +90,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(null, null, busqueda || null, filtroTipo || null, filtroEntidad || null, pagina, PAGE_SIZE);
+            const response = await obtenerCirugiasPageable(null, null, busqueda || null, filtroTipo || null, filtroEntidad || null, filtroEspecialidad || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -135,6 +138,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
             liquidacion: row.liquidacion || '',
             novedadDesc: row.novedadDesc || '',
             autorizacion: row.autorizacion || '',
+            observacionesAutorizacion: row.observacionesAutorizacion || '',
             imagenesDx: row.imagenesDx || '',
             estadoAuditoria: row.estadoAuditoria || '',
             causaObjecion: row.causaObjecion || '',
@@ -163,6 +167,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                 liquidacion: editData.liquidacion,
                 novedadDesc: editData.novedadDesc,
                 autorizacion: editData.autorizacion,
+                observacionesAutorizacion: editData.observacionesAutorizacion,
                 imagenesDx: editData.imagenesDx,
                 estadoAuditoria: editData.estadoAuditoria,
                 causaObjecion: editData.causaObjecion,
@@ -225,7 +230,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     };
 
     const handleExportarExcel = () => {
-        const headers = ['ID', 'Tipo', 'Paciente', 'Ingreso', 'Cups', 'Proced.Cod', 'Intervención', 'Especialidad', 'Médico', 'Fecha Cargue', 'Hora Cargue', 'Entidad', 'GQX', 'Anestesiólogo', 'Ayudante 1', 'Ayudante 2', 'Liquidación', 'Novedad', 'Autorización', 'Imágenes Dx', 'Estado', 'Causa Objeción', 'Rev Supervision', 'Observación'];
+        const headers = ['ID', 'Tipo', 'Paciente', 'Ingreso', 'Cups', 'Proced.Cod', 'Intervención', 'Especialidad', 'Médico', 'Fecha Cargue', 'Hora Cargue', 'Entidad', 'GQX', 'Anestesiólogo', 'Ayudante 1', 'Ayudante 2', 'Liquidación', 'Novedad', 'Autorización', 'Obs. Autorización', 'Imágenes Dx', 'Estado', 'Causa Objeción', 'Rev Supervision', 'Observación'];
 
         const filas = data.map(t => [
             t.id,
@@ -247,6 +252,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
             t.liquidacion,
             t.novedadDesc,
             t.autorizacion,
+            t.observacionesAutorizacion,
             t.imagenesDx,
             t.estadoAuditoria,
             t.causaObjecion,
@@ -264,11 +270,11 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
 
     useEffect(() => {
         setPage(0);
-    }, [filtroTipo, filtroEntidad]);
+    }, [filtroTipo, filtroEntidad, filtroEspecialidad]);
 
     useEffect(() => {
         loadData(0);
-    }, [filtroTipo, filtroEntidad]);
+    }, [filtroTipo, filtroEntidad, filtroEspecialidad]);
 
     useEffect(() => {
         const cargarEntidades = async () => {
@@ -280,6 +286,15 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
             }
         };
         cargarEntidades();
+        const cargarEspecialidades = async () => {
+            try {
+                const lista = await obtenerEspecialidades();
+                setEspecialidades(lista.filter(e => e.estado === true));
+            } catch (err) {
+                console.error('Error al cargar especialidades:', err);
+            }
+        };
+        cargarEspecialidades();
     }, []);
 
     useEffect(() => { loadDataSinFiltro(page); }, [reloadFlag]);
@@ -377,6 +392,12 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                                 <option key={e.id} value={e.id}>{e.nombre}</option>
                             ))}
                         </select>
+                        <select value={filtroEspecialidad} onChange={e => setFiltroEspecialidad(e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent max-w-48 truncate">
+                            <option value="">Todas las especialidades</option>
+                            {especialidades.map(e => (
+                                <option key={e.id} value={e.id}>{e.nombre}</option>
+                            ))}
+                        </select>
                     </div>
                 </form>
                 <div className="flex items-center space-x-2">
@@ -413,6 +434,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                             <th className="px-2 py-0.5 font-semibold">Liquidación</th>
                             <th className="px-2 py-0.5 font-semibold">Novedad</th>
                             <th className="px-2 py-0.5 font-semibold">Autorización</th>
+                            <th className="px-2 py-0.5 font-semibold">Obs. Autorización</th>
                             <th className="px-2 py-0.5 font-semibold">Imágenes Dx</th>
                             <th className="px-2 py-0.5 font-semibold">Estado</th>
                             <th className="px-2 py-0.5 font-semibold">Causa Objeción</th>
@@ -468,6 +490,11 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                                     </td>
                                     <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
                                         {isEditing ? (
+                                            <input value={editData.observacionesAutorizacion} onChange={e => updateCell('observacionesAutorizacion', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={INPUT_INLINE} autoFocus />
+                                        ) : (t.observacionesAutorizacion || '')}
+                                    </td>
+                                    <td className="border-r px-1 py-0.5" onDoubleClick={() => startEdit(t.id, t)}>
+                                        {isEditing ? (
                                             <input value={editData.imagenesDx} onChange={e => updateCell('imagenesDx', e.target.value)} onKeyDown={e => handleKeyDown(e, t.id)} className={INPUT_INLINE} autoFocus />
                                         ) : (t.imagenesDx || '')}
                                     </td>
@@ -504,7 +531,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                         })}
                         {data.length === 0 && (
                             <tr>
-                                <td colSpan={25} className="text-center py-4 text-gray-500">
+                                <td colSpan={26} className="text-center py-4 text-gray-500">
                                     {busqueda ? 'No se encontraron resultados para "' + busqueda + '".' : 'No hay procedimientos registrados.'}
                                 </td>
                             </tr>

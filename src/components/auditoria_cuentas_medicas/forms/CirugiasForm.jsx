@@ -37,6 +37,7 @@ export default function CirugiasForm({ cirugia, onSaved }) {
         liquidacion: '',
         novedadDesc: '',
         autorizacion: '',
+        observacionesAutorizacion: '',
         imagenesDx: '',
         estadoAuditoria: '',
         causaObjecion: '',
@@ -110,6 +111,7 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                 liquidacion: cirugia.liquidacion || '',
                 novedadDesc: cirugia.novedadDesc || '',
                 autorizacion: cirugia.autorizacion || '',
+                observacionesAutorizacion: cirugia.observacionesAutorizacion || '',
                 imagenesDx: cirugia.imagenesDx || '',
                 estadoAuditoria: cirugia.estadoAuditoria || '',
                 causaObjecion: cirugia.causaObjecion || '',
@@ -220,6 +222,10 @@ export default function CirugiasForm({ cirugia, onSaved }) {
                         <select value={formData.autorizacion} onChange={e => handleChange('autorizacion', e.target.value)} className={SELECT_CLASS}>
                             {OPCIONES_AUTORIZACION.map(op => <option key={op} value={op}>{op || 'Seleccionar'}</option>)}
                         </select>
+                    </div>
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Obs. Autorización</label>
+                        <textarea rows={3} value={formData.observacionesAutorizacion} onChange={e => handleChange('observacionesAutorizacion', e.target.value)} className={INPUT_CLASS} />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Imágenes Dx</label>
