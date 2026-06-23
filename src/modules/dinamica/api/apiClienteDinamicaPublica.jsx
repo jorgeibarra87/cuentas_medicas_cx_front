@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const ruta = window.env.VITE_URL_API_GATEWAY;
-const rutamicroservicioDinamica = window.env.VITE_URL_DINAMICA;
+const ruta = import.meta.envVITE_URL_API_GATEWAY;
+const rutamicroservicioDinamica = import.meta.envVITE_URL_DINAMICA;
 
 const apiClienteDinamicaPublica = axios.create({
   baseURL: `${ruta}${rutamicroservicioDinamica}/`,

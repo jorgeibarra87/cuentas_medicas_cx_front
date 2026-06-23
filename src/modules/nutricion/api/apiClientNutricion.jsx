@@ -1,7 +1,7 @@
 import { createApiClient } from "../../../shared/api/apiClientFactory";
 
-const ruta = window.env.VITE_URL_API_GATEWAY;
-const rutamicroservicionutricion = window.env.VITE_URL_NUTRICION;
+const ruta = import.meta.envVITE_URL_API_GATEWAY;
+const rutamicroservicionutricion = import.meta.envVITE_URL_NUTRICION;
 
 const apiClientNutricion = createApiClient(`${ruta}${rutamicroservicionutricion}/`);
 

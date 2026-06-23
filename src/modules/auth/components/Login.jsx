@@ -6,8 +6,8 @@ import { iniciarSesionAction } from "../../../actions/loginActions";
 import spinnerLoginText from "../../../shared/components/Loading";
 
 const initailForm = {username: "",password: "",};
-const ruta = window.env.VITE_URL_API_GATEWAY
-const rutamicroservicioauth = window.env.VITE_URL_AUTH
+const ruta = import.meta.envVITE_URL_API_GATEWAY
+const rutamicroservicioauth = import.meta.envVITE_URL_AUTH
 
 const Login = () => {
 

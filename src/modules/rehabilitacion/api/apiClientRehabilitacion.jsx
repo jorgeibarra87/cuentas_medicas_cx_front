@@ -1,8 +1,8 @@
 import axios from "axios";
 import { createApiClient } from "../../../shared/api/apiClientFactory";
 
-const ruta = window.env.VITE_URL_API_GATEWAY;
-const rutaMicroservicioRehabilitacion = window.env.VITE_URL_REHABILITACION;
+const ruta = import.meta.envVITE_URL_API_GATEWAY;
+const rutaMicroservicioRehabilitacion = import.meta.envVITE_URL_REHABILITACION;
 
 const apiClientRehabilitacion = createApiClient(`${ruta}${rutaMicroservicioRehabilitacion}`);
 
