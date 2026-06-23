@@ -1,9 +1,9 @@
-name: CI/CD Publis Docker image
+name: CI/CD Publish Docker image
 
 on:
   push:
     tags:
-    - "v*"
+      - "v*"
 
 jobs:
   build:
@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -23,16 +23,13 @@ jobs:
         run: |
           IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution
           VERSION_TAG=${GITHUB_REF_NAME}
-          docker build --build-arg VERSION=$VERSION_TAG -t $IMAGE_NAME-$VERSION_TAG .
+          docker build --build-arg VERSION=$VERSION_TAG -t $IMAGE_NAME:$VERSION_TAG .
 
       - name: Push Docker image
         run: |
           IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution
           VERSION_TAG=${GITHUB_REF_NAME}
-          docker push $IMAGE_NAME-$VERSION_TAG
-
-      - name: Logout from Docker Hub
-        run: docker logout
+          docker push $IMAGE_NAME:$VERSION_TAG
   
   deploy:
     name: CD - Deploy to Kubernetes
@@ -49,9 +46,9 @@ jobs:
         env:
           KUBECONFIG: /etc/rancher/k3s/k3s.yaml
         run: |
-          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution:${VERSION_TAG}
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution:${{ env.VERSION_TAG }}
 
-          echo "Deploying image: $IMAGE:$VERSION_TAG to Kubernetes cluster"
+          echo "Deploying image: $IMAGE to Kubernetes cluster"
 
           kubectl set image deployment/frontend-service frontend-service=$IMAGE -n prod
 
