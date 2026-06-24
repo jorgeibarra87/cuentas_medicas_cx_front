@@ -1,8 +1,7 @@
 import { createApiClient } from "../../../shared/api/apiClientFactory";
 // IMPORTAR CLAVES ENV DE VITE 
- const ruta = import.meta.envVITE_URL_API_GATEWAY
- const rutamicroservicioauth = import.meta.envVITE_URL_AUTH
+const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://localhost:8100";
 
-const apiClientAuthService = createApiClient(`${ruta}${rutamicroservicioauth}/`);
+const apiClientAuthService = createApiClient(`${ruta}/api-auth-service/`);
 
 export default apiClientAuthService;

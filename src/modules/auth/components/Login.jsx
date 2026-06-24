@@ -6,8 +6,7 @@ import { iniciarSesionAction } from "../../../actions/loginActions";
 import spinnerLoginText from "../../../shared/components/Loading";
 
 const initailForm = {username: "",password: "",};
-const ruta = import.meta.envVITE_URL_API_GATEWAY
-const rutamicroservicioauth = import.meta.envVITE_URL_AUTH
+const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://localhost:8100";
 
 const Login = () => {
 
@@ -40,7 +39,7 @@ const Login = () => {
         }
         spinnerLoginText("Por favor espere...");
         try{
-            const token2 = await  axios.post(`${ruta}${rutamicroservicioauth}/auth/login`, datos);
+            const token2 = await  axios.post(`${ruta}/api-auth-service/auth/login`, datos);
             dispatch(iniciarSesionAction(token2.data));
             // Swal.close();
             //navigate('/'); // Redirige al usuario a '/'
