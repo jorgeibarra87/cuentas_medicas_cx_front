@@ -29,6 +29,19 @@ export const obtenerCirugiasPageable = async (fechaInicio, fechaFin, busqueda, t
     }
 }
 
+export const exportarCirugias = async (fechaInicio, fechaFin) => {
+    try {
+        const params = {};
+        if (fechaInicio) params.fechaInicio = fechaInicio;
+        if (fechaFin) params.fechaFin = fechaFin;
+        const response = await apiClientCirugias.get('/cirugias/exportar', { params });
+        return response.data;
+    } catch (error) {
+        console.error('Error al exportar cirugías', error);
+        throw error;
+    }
+}
+
 export const obtenerCirugias = async () => {
     try {
         const response = await apiClientCirugias.get('/cirugias');

@@ -3,7 +3,7 @@ import { faPencilAlt, faSearch, faCalendarAlt, faDatabase, faFileExcel } from '@
 import * as XLSX from 'xlsx';
 import { useEffect, useState, useCallback } from 'react';
 import Pagination from '../../Pagination';
-import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia, duplicarCirugia } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
+import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia, duplicarCirugia, exportarCirugias } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
 import { obtenerEntidadesSalud } from '../../../api/auditoria_cuentas_medicas/entidadesService';
 import { obtenerEspecialidades } from '../../../api/auditoria_cuentas_medicas/especialidadesService';
 import { useSelector } from 'react-redux';
@@ -229,10 +229,22 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         loadData(0);
     };
 
-    const handleExportarExcel = () => {
+    const handleExportarExcel = async () => {
         const headers = ['ID', 'Tipo', 'Paciente', 'Ingreso', 'Cups', 'Proced.Cod', 'Intervención', 'Especialidad', 'Médico', 'Fecha Cargue', 'Hora Cargue', 'Entidad', 'GQX', 'Anestesiólogo', 'Ayudante 1', 'Ayudante 2', 'Liquidación', 'Novedad', 'Autorización', 'Obs. Autorización', 'Imágenes Dx', 'Estado', 'Causa Objeción', 'Rev Supervision', 'Observación'];
 
-        const filas = data.map(t => [
+        let datosExportar;
+        if (fechaInicio && fechaFin) {
+            try {
+                datosExportar = await exportarCirugias(fechaInicio, fechaFin);
+            } catch (err) {
+                toast.error('Error al obtener datos para exportar');
+                return;
+            }
+        } else {
+            datosExportar = data;
+        }
+
+        const filas = datosExportar.map(t => [
             t.id,
             t.tipoProcedimiento,
             t.pacienteNumeroIdentificacion,
@@ -265,7 +277,8 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         XLSX.utils.book_append_sheet(wb, ws, 'Cirugias');
 
         const fecha = new Date().toISOString().slice(0, 10);
-        XLSX.writeFile(wb, `cirugias_${fecha}.xlsx`);
+        const sufijo = fechaInicio && fechaFin ? `_${fechaInicio}_${fechaFin}` : '';
+        XLSX.writeFile(wb, `cirugias${sufijo}_${fecha}.xlsx`);
     };
 
     useEffect(() => {
