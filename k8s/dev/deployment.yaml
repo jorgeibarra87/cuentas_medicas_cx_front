@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-service
+  template:
+    metadata:
+      labels:
+        app: frontend-service
+    spec:
+      containers:
+        - name: frontend-service
+          image: frontend-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+          env:
+            - name: K8S_API_GATEWAY
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-service-config
+                  key: VITE_URL_API_GATEWAY
+          
+          command: ["/bin/sh", "-c"]
+          args: 
+            - |
+              sed -i "s|__VALOR_DE_LA_IP_DEL_GATEWAY__|${K8S_API_GATEWAY}|g" /usr/share/nginx/html/index.html
+              nginx -g 'daemon off;'
+          
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"

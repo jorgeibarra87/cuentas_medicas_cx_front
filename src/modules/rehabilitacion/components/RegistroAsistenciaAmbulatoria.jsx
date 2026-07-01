@@ -50,7 +50,7 @@ function RegistroAsistenciaAmbulatoria() {
   const stateLogin = useSelector(state => state.login)
   const roles = stateLogin?.decodeToken?.authorities?.split(',') || []
   const hasRole = (...rolesToCheck) => rolesToCheck.some(role => roles.includes(role))
-  const rutaRehabilitacion = window.env.VITE_URL_MIROCERVICE_REHABILITACION;
+  const rutaRehabilitacion = import.meta.env.VITE_URL_MIROCERVICE_REHABILITACION;
 
   const canLlegada = hasRole('ROLE_ADMINISTRADOR', 'ROLE_FACTURACION_REHABILITACION','ROLE_JEFE_REHABILITACION')
   const canIniciar = hasRole('ROLE_ADMINISTRADOR','ROLE_FISIOTERAPEUTA_REHABILITACION','ROLE_JEFE_REHABILITACION')

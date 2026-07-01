@@ -1,0 +1,56 @@
+name: CI/CD Publish Docker image
+
+on:
+  push:
+    branches:
+      - "dev"
+      - "develop"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build Docker image
+        run: |
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution
+          VERSION_TAG=dev-${GITHUB_SHA::7}
+          docker build --build-arg VERSION=$VERSION_TAG -t $IMAGE_NAME:$VERSION_TAG .
+
+      - name: Push Docker image
+        run: |
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution
+          VERSION_TAG=dev-${GITHUB_SHA::7}
+          docker push $IMAGE_NAME:$VERSION_TAG
+  
+  deploy:
+    name: CD - Deploy to Kubernetes
+    needs: build
+    runs-on: [self-hosted, linux, x64]
+
+    steps:
+      - name: Extract version (same tag)
+        run: |
+          VERSION_TAG=dev-${GITHUB_SHA::7}
+          echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
+      
+      - name: Deploy to Kubernetes
+        env:
+          KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+        run: |
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution:${VERSION_TAG}
+
+          echo "Deploying image: $IMAGE to Kubernetes cluster"
+
+          kubectl set image deployment/frontend-service frontend-service=$IMAGE -n dev
+
+          kubectl rollout status deployment/frontend-service -n dev

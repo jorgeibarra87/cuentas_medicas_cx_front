@@ -1,8 +1,7 @@
 import { createApiClient } from "../../../shared/api/apiClientFactory";
 
- const ruta = window.env.VITE_URL_API_GATEWAY
- const rutamicroservicioDinamica = window.env.VITE_URL_DINAMICA
+const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://localhost:8100";
 
-const apiClienteDinamica = createApiClient(`${ruta}${rutamicroservicioDinamica}/`)
+const apiClienteDinamica = createApiClient(`${ruta}/api-dinamica-service/`)
 
 export default apiClienteDinamica;

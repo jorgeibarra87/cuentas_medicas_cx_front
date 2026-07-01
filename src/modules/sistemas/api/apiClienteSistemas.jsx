@@ -1,7 +1,7 @@
 import { createApiClient } from "../../../shared/api/apiClientFactory";
 
- const ruta = window.env.VITE_URL_API_GATEWAY
- const rutamicroservicioSistemas = window.env.VITE_URL_SISTEMAS
+ const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://localhost:8100";
+ const rutamicroservicioSistemas = import.meta.env.VITE_URL_SISTEMAS
 
 const apiClienteSistemas = createApiClient(`${ruta}${rutamicroservicioSistemas}/`)
 

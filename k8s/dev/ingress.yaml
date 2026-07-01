@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: frontend.local 
+      http:
+        paths:
+          # REGLA 1: Todo lo que empiece con /api- se va al Gateway
+          - path: /api-
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-service
+                port:
+                  number: 8100 # El puerto de tu gateway en K8s
+
+          # REGLA 2: Todo lo demás (raíz) se va al Frontend
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
