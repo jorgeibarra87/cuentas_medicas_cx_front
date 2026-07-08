@@ -21,13 +21,13 @@ jobs:
       
       - name: Build Docker image
         run: |
-          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/frontend_solution
           VERSION_TAG=${GITHUB_REF_NAME}
           docker build --build-arg VERSION=$VERSION_TAG -t $IMAGE_NAME:$VERSION_TAG .
 
       - name: Push Docker image
         run: |
-          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/frontend_solution
           VERSION_TAG=${GITHUB_REF_NAME}
           docker push $IMAGE_NAME:$VERSION_TAG
   
@@ -46,7 +46,7 @@ jobs:
         env:
           KUBECONFIG: /etc/rancher/k3s/k3s.yaml
         run: |
-          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/frontend-solution:${{ env.VERSION_TAG }}
+          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/frontend_solution:${{ env.VERSION_TAG }}
 
           echo "Deploying image: $IMAGE to Kubernetes cluster"
 
