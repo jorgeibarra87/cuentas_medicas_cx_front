@@ -50,6 +50,6 @@ jobs:
 
           echo "Deploying image: $IMAGE to Kubernetes cluster"
 
-          kubectl set image deployment/frontend-service frontend-service=$IMAGE -n prod
+          kubectl set image deployment/frontend frontend=$IMAGE -n prod
 
-          kubectl rollout status deployment/frontend-service -n prod
+          kubectl rollout status deployment/frontend -n prod

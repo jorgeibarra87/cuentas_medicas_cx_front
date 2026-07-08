@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-service
+  name: frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend-service
+      app: frontend
   template:
     metadata:
       labels:
-        app: frontend-service
+        app: frontend
     spec:
       containers:
-        - name: frontend-service
-          image: frontend-service:latest
+        - name: frontend
+          image: frontend:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 80
@@ -22,7 +22,7 @@ spec:
             - name: K8S_API_GATEWAY
               valueFrom:
                 configMapKeyRef:
-                  name: frontend-service-config
+                  name: frontend-config
                   key: VITE_URL_API_GATEWAY
           
           command: ["/bin/sh", "-c"]
