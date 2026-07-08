@@ -1,8 +1,7 @@
 import { createApiClient } from "../../../shared/api/apiClientFactory";
 
 const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://localhost:8100";;
-const micro = import.meta.env.VITE_URL_REFERENCIA_CONTRAREFERENCIA;
 
-const apiClientReferenciaContrareferencia = createApiClient(`${ruta}${micro}/`);
+const apiClientReferenciaContrareferencia = createApiClient(`${ruta}/api-referencia/`);
 
 export default apiClientReferenciaContrareferencia;
