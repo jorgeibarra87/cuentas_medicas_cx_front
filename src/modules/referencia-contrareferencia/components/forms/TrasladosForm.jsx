@@ -1,9 +1,10 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowsRotate, faPlus, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faArrowsRotate, faPlus, faMagnifyingGlass, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
-import { guardarTraslado, actualizarTraslado } from '../../../referencia-contrareferencia/api/trasladosService';
+import { guardarTraslado, actualizarTraslado, verificarDuplicadoTraslado } from '../../../referencia-contrareferencia/api/trasladosService';
 import { obtenerInformacionCompletaPaciente } from '../../../../modules/dinamica/api/genPacienService';
 import Loader from '../../../../shared/components/Loader';
+import Modal from '../../../../shared/components/Modal';
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 w-full bg-gray-100 cursor-not-allowed text-gray-500";
@@ -33,6 +34,9 @@ export default function TrasladosForm({ traslado, onSaved }) {
     const [medicamentosTexto, setMedicamentosTexto] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showDuplicadoModal, setShowDuplicadoModal] = useState(false);
+    const [duplicadoData, setDuplicadoData] = useState(null);
+    const [pendingAction, setPendingAction] = useState(null); // 'guardar' | 'actualizar'
 
     useEffect(() => {
         if (traslado) {
@@ -85,18 +89,44 @@ export default function TrasladosForm({ traslado, onSaved }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Preparar payload para verificar duplicados
+        const payload = {
+            ...formData,
+            medicamentos: medicamentosTexto
+                .split(',')
+                .map(m => m.trim())
+                .filter(Boolean)
+        };
+
+        // Verificar duplicado antes de guardar (solo en creación, no en edición)
+        if (!traslado) {
+            setLoading(true);
+            try {
+                const duplicado = await verificarDuplicadoTraslado(payload);
+                if (duplicado) {
+                    // Hay duplicado - mostrar modal de confirmación
+                    setDuplicadoData(duplicado);
+                    setPendingAction('guardar');
+                    setShowDuplicadoModal(true);
+                    setLoading(false);
+                    return;
+                }
+            } catch (err) {
+                console.error('Error al verificar duplicado:', err);
+                // Si falla la verificación, continuamos con el guardado
+            }
+        }
+
+        // Si no hay duplicado o es edición, proceder a guardar
+        await ejecutarGuardado(payload);
+    };
+
+    const ejecutarGuardado = async (payload) => {
         setLoading(true);
         setError('');
 
         try {
-            const payload = {
-                ...formData,
-                medicamentos: medicamentosTexto
-                    .split(',')
-                    .map(m => m.trim())
-                    .filter(Boolean)
-            };
-
             if (traslado) {
                 await actualizarTraslado(traslado.id, payload);
             } else {
@@ -104,12 +134,34 @@ export default function TrasladosForm({ traslado, onSaved }) {
             }
 
             onSaved && onSaved();
+            setShowDuplicadoModal(false);
+            setDuplicadoData(null);
+            setPendingAction(null);
         } catch (err) {
             const backendMessage = err?.response?.data?.mensaje || err?.response?.data?.error;
             setError(backendMessage || err.message || 'Ocurrio un error al guardar el traslado.');
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleConfirmDuplicado = () => {
+        if (pendingAction === 'guardar') {
+            const payload = {
+                ...formData,
+                medicamentos: medicamentosTexto
+                    .split(',')
+                    .map(m => m.trim())
+                    .filter(Boolean)
+            };
+            ejecutarGuardado(payload);
+        }
+    };
+
+    const handleCancelDuplicado = () => {
+        setShowDuplicadoModal(false);
+        setDuplicadoData(null);
+        setPendingAction(null);
     };
 
     const buscarPaciente = async (ingreso) => {
@@ -131,11 +183,6 @@ export default function TrasladosForm({ traslado, onSaved }) {
 
         if (!confirmar) {
             handleChange('ingreso', '');
-        } else {
-            setDatausuario({
-                ingreso: 'SIN DOCUMENTO',
-                pacNumDoc: ingreso,
-            });
         }
     };
 
@@ -144,13 +191,14 @@ export default function TrasladosForm({ traslado, onSaved }) {
             handleChange('documento', dataUsuario.pacNumDoc || '');
             handleChange('ingreso', dataUsuario?.ingreso || '');
             handleChange('eps', dataUsuario?.entidad || '');
-            handleChange('servicio', dataUsuario?.servicio || 'SIN SERVICIO');
+            handleChange('servicio', dataUsuario?.servicio || '');
             handleChange('nomPaciente', dataUsuario?.nombreCompleto || '');
         }
     }, [dataUsuario, traslado]);
 
     return (
-        <div className="bg-white shadow-md rounded-lg p-2 mb-2">
+        <>
+            <div className="bg-white shadow-md rounded-lg p-2 mb-2">
             {loading && (<Loader />)}
 
             {error && (
@@ -164,7 +212,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 {/* ── SECCIÓN: Buscar paciente ── */}
                 <div className="col-span-2">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
-                        <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm w-4 h-4 text-black" /> Buscar paciente por Ingreso
+                        <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm w-4 h-4 text-black" /> Buscar paciente por Documento
                     </p>
                 </div>
 
@@ -172,6 +220,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     <label className="block text-sm font-medium text-gray-700 mb-1"> Documento</label>
                     <input type="text" value={formData.documento}
                         onChange={e => handleChange('documento', e.target.value)}
+                        placeholder="Ej: 1061234567"
                         readOnly={!!traslado}
                         onBlur={e => buscarPaciente(e.target.value)}
                         className={traslado ? INPUT_READONLY : INPUT_CLASS}
@@ -196,7 +245,6 @@ export default function TrasladosForm({ traslado, onSaved }) {
                     <input type="text"
                         value={formData.ingreso}
                         onChange={e => handleChange('ingreso', e.target.value)}
-                        placeholder="Ej: 1061234567"
                         // Solo editable al crear, bloqueado al editar
                         readOnly={dataUsuario ? true : false}
                         className={dataUsuario ? INPUT_READONLY : INPUT_CLASS}
@@ -355,5 +403,55 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 </div>
             </form>
         </div>
+
+        {showDuplicadoModal && duplicadoData && (
+            <Modal
+                isOpen={showDuplicadoModal}
+                onClose={handleCancelDuplicado}
+                title="Traslado duplicado detectado"
+                size="md"
+            >
+                <div className="space-y-4">
+                    <div className="flex items-start gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <FontAwesomeIcon icon={faExclamationTriangle} className="text-yellow-600 text-xl mt-1 flex-shrink-0" />
+                        <div className="text-sm text-yellow-800">
+                            <p className="font-semibold mb-2">Ya existe un traslado con esa información</p>
+                            <p className="mb-2">Verifique si la fecha del traslado es diferente para no generar duplicados.</p>
+                            <p className="font-medium">¿Desea continuar y crear el traslado?</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
+                        <p><span className="font-medium">Paciente:</span> {duplicadoData.nomPaciente}</p>
+                        <p><span className="font-medium">Documento:</span> {duplicadoData.documento}</p>
+                        <p><span className="font-medium">Ingreso:</span> {duplicadoData.ingreso || 'N/A'}</p>
+                        <p><span className="font-medium">EPS:</span> {duplicadoData.eps}</p>
+                        <p><span className="font-medium">Tipo traslado:</span> {duplicadoData.tipoTraslado}</p>
+                        <p><span className="font-medium">Servicio:</span> {duplicadoData.servicio}</p>
+                        <p><span className="font-medium">Destino:</span> {duplicadoData.destino}</p>
+                        <p><span className="font-medium">Ciudad:</span> {duplicadoData.ciudad}</p>
+                        <p><span className="font-medium">Fecha existente:</span> {duplicadoData.fechaTraslado ? new Date(duplicadoData.fechaTraslado).toLocaleString() : 'N/A'}</p>
+                        <p><span className="font-medium">Fecha a registrar:</span> {formData.fechaTraslado ? new Date(formData.fechaTraslado).toLocaleString() : 'N/A'}</p>
+                    </div>
+
+                    <div className="flex justify-end space-x-3 pt-2">
+                        <button
+                            onClick={handleCancelDuplicado}
+                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            onClick={handleConfirmDuplicado}
+                            disabled={loading}
+                            className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors"
+                        >
+                            {loading ? 'Guardando...' : 'Aceptar y continuar'}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+        )}
+        </>
     );
 }
