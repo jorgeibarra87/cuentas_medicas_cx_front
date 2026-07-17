@@ -6,7 +6,7 @@ import { iniciarSesionAction } from "../../../actions/loginActions";
 import spinnerLoginText from "../../../shared/components/Loading";
 
 const initailForm = {username: "",password: "",};
-const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://dev.soluciones.local:8100";
+const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://dev.soluciones.local";
 
 const Login = () => {
 
