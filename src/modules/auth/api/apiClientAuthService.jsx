@@ -1,6 +1,6 @@
 import { createApiClient } from "../../../shared/api/apiClientFactory";
 // IMPORTAR CLAVES ENV DE VITE 
-const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://dev.soluciones:8100";
+const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://dev.soluciones.local";
 
 const apiClientAuthService = createApiClient(`${ruta}/api-auth/`);
 
