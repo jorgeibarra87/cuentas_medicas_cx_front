@@ -11,7 +11,17 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
-      window.API_URL = "__VALOR_DE_LA_IP_DEL_GATEWAY__";
+      window.env = {
+        VITE_URL_API_GATEWAY: import.meta.env.VITE_URL_API_GATEWAY || "http://dev.soluciones.local/",
+        VITE_URL_AUTH: import.meta.env.VITE_URL_AUTH || "api-auth-service",
+        VITE_URL_DINAMICA: import.meta.env.VITE_URL_DINAMICA || "dinamica-microservicio",
+        VITE_URL_REFERENCIA_CONTRAREFERENCIA: import.meta.env.VITE_URL_REFERENCIA_CONTRAREFERENCIA || "refecontrareferencia",
+        VITE_URL_TURNOS: import.meta.env.VITE_URL_TURNOS || "asignacion-turnos-enfermeria",
+        VITE_URL_LABORATORIO: import.meta.env.VITE_URL_LABORATORIO || "laboratorio-microservice",
+        VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://dev.soluciones.local/",
+        VITE_API_TIMEOUT: import.meta.env.VITE_API_TIMEOUT || "10000",
+        VITE_DEV_MODE: import.meta.env.VITE_DEV_MODE || "true"
+      };
     </script>
   </body>
 </html>
