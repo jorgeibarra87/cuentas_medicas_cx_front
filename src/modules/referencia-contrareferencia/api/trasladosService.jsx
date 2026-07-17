@@ -63,6 +63,16 @@ export const actualizarTraslado = async (id, trasladoData) => {
     }
 }
 
+export const verificarDuplicadoTraslado = async (trasladoData) => {
+    try {
+        const response = await apiClientReferenciaContrareferencia.post('/traslados/verificar-duplicado', trasladoData);
+        return response.data;
+    } catch (error) {
+        console.error('Error al verificar duplicado', error);
+        throw error;
+    }
+}
+
 export const obtenerReporteTraslados = async (fechaInicio, fechaFin) => {
     const response = await apiClientReferenciaContrareferencia.get('/reporte/traslados', {
         params: {
