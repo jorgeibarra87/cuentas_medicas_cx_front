@@ -3,7 +3,9 @@
 //import apiClienteDinamica from "./apiClienteDinamica";
 import { createApiClient } from "../../../shared/api/apiClientFactory";
 
-const apiClienteDinamica = createApiClient("http://soluciones.local/api-dinamica/");
+const ruta = "http://soluciones.local";
+const apiClienteDinamica = createApiClient(`${ruta}/api-dinamica/`)
+
 
 
 /**
