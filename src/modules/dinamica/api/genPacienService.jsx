@@ -1,8 +1,9 @@
 // src/services/adnIngresoService.js
 
 //import apiClienteDinamica from "./apiClienteDinamica";
+import { createApiClient } from "../../../shared/api/apiClientFactory";
 
-const apiClienteDinamica = "http://soluciones.local/api-dinamica/";
+const apiClienteDinamica = createApiClient("http://soluciones.local/api-dinamica/");
 
 
 /**
