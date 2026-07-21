@@ -1,10 +1,10 @@
 // src/services/adnIngresoService.js
 
-import apiClienteDinamica from "./apiClienteDinamica";
-//import { createApiClient } from "../../../shared/api/apiClientFactory";
+//import apiClienteDinamica from "./apiClienteDinamica";
+import { createApiClient } from "../../../shared/api/apiClientFactory";
 
-//const ruta = "http://soluciones.local";
-//const apiClienteDinamica = createApiClient(`${ruta}/api-dinamica/`)
+const ruta = "http://soluciones.local";
+const apiClienteDinamica = createApiClient(`${ruta}/api-dinamica/`);
 
 
 
