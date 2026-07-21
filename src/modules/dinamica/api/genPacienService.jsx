@@ -1,6 +1,9 @@
 // src/services/adnIngresoService.js
 
-import apiClienteDinamica from "./apiClienteDinamica";
+//import apiClienteDinamica from "./apiClienteDinamica";
+
+const apiClienteDinamica = "http://soluciones.local/api-dinamica/";
+
 
 /**
  * Llama al endpoint POST para obtener información de ingresos y pacientes
