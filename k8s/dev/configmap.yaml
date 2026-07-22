@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: frontend-config
 data:
-  VITE_URL_API_GATEWAY: "http://dev.soluciones:30080/"
+  VITE_URL_API_GATEWAY: "http://localhost:30080/"
