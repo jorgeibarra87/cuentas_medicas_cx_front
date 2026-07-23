@@ -22,7 +22,7 @@ export function createApiClient(baseURL, options = {}) {
   
     // Adjunta interceptores para este cliente
     attachInterceptors(instance, {
-      refreshPath: options.refreshPath || "refresh",
+      refreshPath: options.refreshPath || "auth/refresh",
     });
   
     return instance;

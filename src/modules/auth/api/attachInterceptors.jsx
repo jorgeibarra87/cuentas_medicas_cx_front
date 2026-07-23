@@ -28,7 +28,7 @@ import {getAccessToken,setAccessToken,getRefreshToken,setRefreshToken,clearToken
   
   export default function attachInterceptors(
     instance,
-    { refreshPath = "refresh" } = {}
+    { refreshPath = "auth/refresh" } = {}
   ) {
     // 1) Interceptor de request
     instance.interceptors.request.use((config) => {
