@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://localhost:8100";;
+const rutaDinamica = (window.env?.VITE_URL_DINAMICA_BASE) ? window.env.VITE_URL_DINAMICA_BASE : "http://dev.soluciones.local/api-dinamica/";
 
 const apiClienteDinamicaPublica = axios.create({
-  baseURL: `${ruta}/api-dinamica/`,
+  baseURL: rutaDinamica,
   headers: {
     'X-Public-Route': 'true',
   }

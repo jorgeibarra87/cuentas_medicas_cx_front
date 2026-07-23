@@ -6,6 +6,7 @@ import FormSolDocumento from '../forgetpass/FormSolDocumento';
 import { getDinamicaRoutes } from '../../modules/dinamica';
 import { getAppRoutes } from '../../shared';
 import { getMonitorizacionHcRoutes } from '../../modules/monitorizacionHc';
+import { getAnexo1Routes } from '../../modules/anexo1/routes';
 import { getRehabilitacionRoutes } from '../../modules/rehabilitacion';
 import { getReferenciacontrarreferenciaRoutes } from '../../modules/referencia-contrareferencia';
 import { getNutricionRoutes } from '../../modules/nutricion';
@@ -42,6 +43,7 @@ export default function RutasConfig() {
                 {getAppRoutes(isLogged, loading)}
                 <Route path='/dinamica'> {getDinamicaRoutes(isLogged, loading)} </Route>
                 <Route path='/referenciacontrareferencia'> {getReferenciacontrarreferenciaRoutes(isLogged, loading)} </Route>
+                <Route path='/anexo1'> {getAnexo1Routes(isLogged, loading)} </Route>
                 <Route path='/rehabilitacion'> {getRehabilitacionRoutes(isLogged, loading)}</Route>
                 <Route path='/nutricion'>{getNutricionRoutes(isLogged, loading)} </Route>
                 <Route path='/monitorizacionhc'> {getMonitorizacionHcRoutes(isLogged, loading)} </Route>
