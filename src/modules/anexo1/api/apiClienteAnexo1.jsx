@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const ruta = import.meta.env.VITE_API_BASE_URL || "http://localhost:8086/";
+const ruta = import.meta.env.VITE_API_BASE_URL || "http://dev.soluciones.local/";
 
 const apiClienteAnexo1 = axios.create({
   baseURL: ruta,
