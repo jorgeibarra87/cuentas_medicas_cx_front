@@ -7,7 +7,7 @@ import usePostSeguimientoAmbulatorio from "../../hooks/usePostSeguimientoAmbulat
 import { actualizar } from "../../api/seguimientoAmbulatorioService";
 import { listarTramites } from "../../api/tramiteService";
 import { crear as crearEgreso, actualizar as actualizarEgreso, obtenerPorTramiteId as obtenerEgreso } from "../../api/egresoService";
-import apiClienteAnexo1 from "../../api/apiClienteAnexo1";
+import { obtenerInformacionCompletaPaciente, obtenerInformacionPacienteEgreso } from "../../../dinamica/api/genPacienService";
 import Loader from "../../../../shared/components/Loader";
 
 const MOCK_EGRESOS = [
@@ -67,8 +67,7 @@ export default function SeguimientoAmbulatorioForm({ item, onSaved }) {
   const buscarEgresoPorIngreso = async (numeroIngreso) => {
     let egresoData = null;
     try {
-      const response = await apiClienteAnexo1.get(`/api/proxy/egreso/${numeroIngreso}`);
-      const data = response.data;
+      const data = await obtenerInformacionPacienteEgreso(numeroIngreso);
       if (data && data.fechaEgreso) {
         egresoData = {
           egresoFecha: data.fechaEgreso,
@@ -112,8 +111,7 @@ export default function SeguimientoAmbulatorioForm({ item, onSaved }) {
 
     let ingresoNum = null;
     try {
-      const response = await apiClienteAnexo1.get(`/api/proxy/ingreso/${busquedaDoc.trim()}`);
-      const data = response.data;
+      const data = await obtenerInformacionCompletaPaciente(busquedaDoc.trim());
       if (data && data.ingreso) {
         ingresoNum = String(data.ingreso);
       }

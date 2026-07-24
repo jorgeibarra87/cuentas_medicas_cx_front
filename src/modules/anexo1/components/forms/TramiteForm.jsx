@@ -7,7 +7,7 @@ import usePostTramite from "../../hooks/usePostTramite";
 import useFetchTipoSolicitudCatalogo from "../../hooks/useFetchTipoSolicitudCatalogo";
 import { actualizarTramite, cambiarEstadoTramite } from "../../api/tramiteService";
 import { listarPacientes, crearPaciente } from "../../api/pacienteService";
-import apiClienteAnexo1 from "../../api/apiClienteAnexo1";
+import { obtenerInformacionCompletaPaciente } from "../../../dinamica/api/genPacienService";
 import Loader from "../../../../shared/components/Loader";
 
 export default function TramiteForm({ tramite, onSaved }) {
@@ -107,9 +107,7 @@ export default function TramiteForm({ tramite, onSaved }) {
     }
     let pacData = null;
     try {
-      
-      const response = await apiClienteAnexo1.get(`/api/proxy/ingreso/${busqueda}`);
-      const data = response.data;
+      const data = await obtenerInformacionCompletaPaciente(busqueda);
       if (data && data.pacNumDoc) {
         pacData = {
           tipoDocumento: "CC",
