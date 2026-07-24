@@ -2,7 +2,7 @@ import { faCheckCircle, faExchangeAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { jwtDecode } from "jwt-decode";
+import { getTokenPayload } from "../../../../shared/api/tokenStorage";
 import usePostTramite from "../../hooks/usePostTramite";
 import useFetchTipoSolicitudCatalogo from "../../hooks/useFetchTipoSolicitudCatalogo";
 import { actualizarTramite, cambiarEstadoTramite } from "../../api/tramiteService";
@@ -28,7 +28,7 @@ export default function TramiteForm({ tramite, onSaved }) {
 
   const token = localStorage.getItem("tokenhusjp");
   let nombreUsuario = "";
-  const payload = token ? jwtDecode(token) : {};
+  const payload = getTokenPayload();
   const roles = Array.isArray(payload.authorities)
     ? payload.authorities
     : payload.authorities?.split(',').map(r => r.trim()) || [];

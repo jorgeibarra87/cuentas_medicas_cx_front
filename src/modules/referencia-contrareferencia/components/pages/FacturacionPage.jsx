@@ -3,14 +3,14 @@ import FacturacionForm from '../forms/FactutracionForm';
 import FacturacionTable from '../tables/FacturacionTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faDollar, faFileEdit, faFile } from '@fortawesome/free-solid-svg-icons';
+import { getTokenPayload } from '../../../../shared/api/tokenStorage';
 
 export default function FacturacionPage() {
     const [modo, setModo] = useState('lista');
     const [selectedFacturacion, setSelectedFacturacion] = useState(null);
     const [reloadFlag, setReloadFlag] = useState(0);
     // Lee los roles del token directamente
-    const token = localStorage.getItem('tokenhusjp');
-    const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+    const payload = getTokenPayload();
     // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
     const roles = Array.isArray(payload.authorities)
         ? payload.authorities

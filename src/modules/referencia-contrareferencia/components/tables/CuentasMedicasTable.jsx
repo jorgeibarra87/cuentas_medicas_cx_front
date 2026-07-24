@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../../shared/components/Pagination';
 import { obtenerCuentasMedicas, cambiarEstadoCuentaMedica } from '../../api/cuentasMedicasService';
+import { getTokenPayload } from '../../../../shared/api/tokenStorage';
 const PAGE_SIZE = 50; // máximo por página
 
 export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) {
@@ -14,8 +15,7 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
     const [procesando, setProcesando] = useState(false);
 
     // Lee los roles del token
-    const token = localStorage.getItem('tokenhusjp');
-    const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+    const payload = getTokenPayload();
     // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
     const roles = Array.isArray(payload.authorities)
         ? payload.authorities

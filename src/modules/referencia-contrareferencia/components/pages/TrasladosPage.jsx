@@ -3,6 +3,7 @@ import TrasladosForm from '../forms/TrasladosForm';
 import TrasladosTable from '../tables/TrasladosTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTruckMedical, faFileEdit } from '@fortawesome/free-solid-svg-icons';
+import { getTokenPayload } from '../../../../shared/api/tokenStorage';
 
 export default function TrasladosPage() {
     const [modo, setModo] = useState('lista'); // 'lista', 'editar', 'crear'
@@ -10,8 +11,7 @@ export default function TrasladosPage() {
     const [reloadFlag, setReloadFlag] = useState(0);
 
     // Lee los roles del token directamente
-    const token = localStorage.getItem('tokenhusjp');
-    const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+    const payload = getTokenPayload();
     // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
     const roles = Array.isArray(payload.authorities)
         ? payload.authorities

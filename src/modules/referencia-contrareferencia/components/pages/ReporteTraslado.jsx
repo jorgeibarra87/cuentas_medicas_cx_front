@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExcel, faFilter, faTable, faSpinner, faChevronDown, faChevronRight, faAmbulance, faTruckMedical, faFileEdit, faFileAlt, faDollar, faBookMedical, faSearch
 } from '@fortawesome/free-solid-svg-icons';
 import { obtenerReporteTraslados } from '../../../referencia-contrareferencia/api/trasladosService';
+import { getTokenPayload } from '../../../../shared/api/tokenStorage';
 
 export default function ReporteTraslado() {
     const [fechaInicio, setFechaInicio] = useState('');
@@ -15,8 +16,7 @@ export default function ReporteTraslado() {
     const navigate = useNavigate();
 
     // Lee los roles del token directamente
-    const token = localStorage.getItem('tokenhusjp');
-    const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+    const payload = getTokenPayload();
     // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
     const roles = Array.isArray(payload.authorities)
         ? payload.authorities
