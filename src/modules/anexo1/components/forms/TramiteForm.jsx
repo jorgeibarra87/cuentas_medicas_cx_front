@@ -198,7 +198,7 @@ export default function TramiteForm({ tramite, onSaved }) {
       pacienteId,
       fechaTramite: fechaTramiteVal,
       ingreso: data.ingreso || null,
-      servicio: esEdicion ? data.servicio : (infoPaciente?.servicio || data.servicio || null),
+      servicio: data.servicio || infoPaciente?.servicio || null,
       tipoSolicitudId: data.tipoSolicitudId ? parseInt(data.tipoSolicitudId) : null,
       descripcion: data.descripcion,
       estado: "PENDIENTE",
@@ -325,15 +325,9 @@ export default function TramiteForm({ tramite, onSaved }) {
                 {infoPaciente && (
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">Servicio:</label>
-                    
 
-                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_ANEXO1_LIDER') ? (
-                      <input name="servicio" defaultValue={infoPaciente.servicio || ""}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"/>
-                    ) : (
-                        <input name="servicio" defaultValue={infoPaciente.servicio || ""}
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" readOnly />
-                    )}
+                    <input name="servicio" defaultValue={infoPaciente.servicio || ""}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5" />
 
                   </div>
                 )}
