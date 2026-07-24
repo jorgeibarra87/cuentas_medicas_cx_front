@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const ruta = import.meta.env.VITE_API_BASE_URL || "http://dev.soluciones.local/";
+const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://dev.soluciones.local";
 
 const apiClienteAnexo1 = axios.create({
-  baseURL: ruta,
+  baseURL: `${ruta}/api-referencia/`,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
