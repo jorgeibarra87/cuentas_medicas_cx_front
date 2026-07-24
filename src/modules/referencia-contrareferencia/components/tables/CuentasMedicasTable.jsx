@@ -123,30 +123,30 @@ ${seleccionados.size} cuenta(s) médica(s)?`
             >
                 <FontAwesomeIcon icon={faTruckMedical} className="w-4 h-4 text-white pr-2" />Traslados
             </button>
-            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_LIDER', 'ROLE_REFERENCIA_ASISTENTE') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_LIDER', 'ROLE_REFERENCIA_ASISTENTE', 'ROLE_REFERENCIA_VISTA') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/traslados')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faFileEdit} className="w-4 h-4 text-white pr-2" />Referencia
             </button>)}
-            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_FACTURACION_LIDER', 'ROLE_FACTURACION_ASISTENTE') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_FACTURACION_LIDER', 'ROLE_FACTURACION_ASISTENTE', 'ROLE_FACTURACION_VISTA') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/facturaciones')}
                 className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
             >
                 <FontAwesomeIcon icon={faDollar} className="w-4 h-4 text-white pr-2" />Facturación
             </button>)}
-            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_MEDICAS_LIDER', 'ROLE_CUENTAS_MEDICAS_ASISTENTE') && (<button
+            {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_CUENTAS_MEDICAS_LIDER', 'ROLE_CUENTAS_MEDICAS_ASISTENTE', 'ROLE_CUENTAS_MEDICAS_VISTA') && (<button
                 onClick={() => navigate('/referenciacontrareferencia/cuentas-medicas')}
-                className="font-bold mx-2 my-6 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="font-bold mx-2 my-6 px-6 py-2 bg-blue-700 text-white rounded hover:bg-blue-700"
             >
                 <FontAwesomeIcon icon={faBookMedical} className="w-4 h-4 text-white pr-2" />Cuentas Medicas
             </button>)}
             <button
-                            onClick={() => navigate('/referenciacontrareferencia/reporte')}
-                            className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
-                        >
-                            <FontAwesomeIcon icon={faFileAlt} className="w-4 h-4 text-white pr-2" />Reporte
-                        </button>
+                onClick={() => navigate('/referenciacontrareferencia/reporte')}
+                className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+            >
+                <FontAwesomeIcon icon={faFileAlt} className="w-4 h-4 text-white pr-2" />Reporte
+            </button>
 
             <div className="flex justify-between items-center mb-2 text-xs text-gray-600">
                 {/* Buscador */}

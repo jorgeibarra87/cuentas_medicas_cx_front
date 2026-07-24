@@ -43,9 +43,10 @@ export const cambiarEstadoTraslado = async (id, nuevoEstado) => {
     }
 };
 
-export const guardarTraslado = async (trasladoData) => {
+export const guardarTraslado = async (trasladoData, force = false) => {
     try {
-        const response = await apiClientReferenciaContrareferencia.post('/traslados', trasladoData);
+        const params = force ? { force: 'true' } : {};
+        const response = await apiClientReferenciaContrareferencia.post('/traslados', trasladoData, { params });
         return response.data;
     } catch (error) {
         console.error('Error al guardar el traslado', error);
@@ -59,6 +60,16 @@ export const actualizarTraslado = async (id, trasladoData) => {
         return response.data;
     } catch (error) {
         console.error('Error al actualizar el traslado', error);
+        throw error;
+    }
+}
+
+export const verificarDuplicadoTraslado = async (trasladoData) => {
+    try {
+        const response = await apiClientReferenciaContrareferencia.post('/traslados/verificar-duplicado', trasladoData);
+        return response.data;
+    } catch (error) {
+        console.error('Error al verificar duplicado', error);
         throw error;
     }
 }

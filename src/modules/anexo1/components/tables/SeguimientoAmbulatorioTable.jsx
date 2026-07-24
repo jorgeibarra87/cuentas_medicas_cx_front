@@ -1,0 +1,172 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencilAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useState } from 'react';
+import { listarPorTramite as listarTodosAmb } from '../../api/seguimientoAmbulatorioService';
+import { listarTramitesCompletos } from '../../api/tramiteService';
+import Pagination from '../../../../shared/components/Pagination';
+import TextoColapsable from '../../../../components/utilities/TextoColapsable';
+
+const PAGE_SIZE = 50;
+
+export default function SeguimientoAmbulatorioTable({ onEdit = () => {}, reloadFlag }) {
+  const [data, setData] = useState([]);
+  const [tramites, setTramites] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
+  const [page, setPage] = useState(0);
+  const [filtroSolicitud, setFiltroSolicitud] = useState('');
+  const [filtroEstado, setFiltroEstado] = useState('');
+
+  const token = localStorage.getItem('tokenhusjp');
+  let payload = {};
+  try {
+    payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+  } catch (e) {
+    payload = {};
+  }
+  const roles = Array.isArray(payload.authorities)
+    ? payload.authorities
+    : payload.authorities?.split(',').map(r => r.trim()) || [];
+
+  const tieneRol = (...rolesRequeridos) => rolesRequeridos.some(rol => roles.includes(rol));
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const tramitesData = await listarTramitesCompletos();
+      setTramites(tramitesData);
+
+      let all = [];
+      for (const t of tramitesData) {
+        try {
+          const items = await listarTodosAmb(t.id);
+          all = all.concat(items.map((item) => ({
+            ...item,
+            tramiteId: t.id,
+            pacienteNombre: t.pacienteNombre,
+            pacienteDocumento: t.pacienteDocumento,
+            ingreso: t.ingreso,
+            servicio: t.servicio,
+            estado: t.estado,
+            tipoSolicitudDescripcion: t.tipoSolicitudDescripcion,
+            egresoServicio: t.egresoServicio,
+            egresoFecha: t.egresoFecha
+          })));
+        } catch {}
+      }
+      setData(all);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => { loadData(); }, [reloadFlag]);
+
+  const opcionesSolicitud = [...new Set(tramites.map(t => t.tipoSolicitudDescripcion).filter(Boolean))].sort();
+  const opcionesEstado = ["CERRADO", "PENDIENTE"];
+
+  const dataFiltrada = data.filter((item) => {
+    if (filtroSolicitud && item.tipoSolicitudDescripcion !== filtroSolicitud) return false;
+    if (filtroEstado && item.estado !== filtroEstado) return false;
+    if (!busqueda.trim()) return true;
+    const q = busqueda.toLowerCase();
+    return (
+      String(item.tramiteId).includes(q) ||
+      (item.pacienteNombre || '').toLowerCase().includes(q) ||
+      (item.pacienteDocumento || '').toLowerCase().includes(q) ||
+      (item.servicio || '').toLowerCase().includes(q)
+    );
+  });
+
+  const totalPages = Math.ceil(dataFiltrada.length / PAGE_SIZE);
+  const paginatedData = dataFiltrada.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+
+  const getEstadoBadge = (estado) => {
+    if (estado === "CERRADO") return "bg-green-400 text-green-900";
+    return "bg-yellow-300 text-yellow-900";
+  };
+
+  if (loading) return <p className="text-center py-4">Cargando seguimientos...</p>;
+
+  return (
+    <div className="bg-white shadow-md rounded-lg p-2 w-full">
+      <div className="flex items-center gap-2 mb-2 text-xs text-gray-600 flex-wrap">
+        <span className="font-medium"><FontAwesomeIcon icon={faSearch} className="w-4 h-4" /> Buscar:</span>
+        <input type="text" value={busqueda}
+          onChange={(e) => { setBusqueda(e.target.value); setPage(0); }}
+          placeholder="Paciente, documento o servicio"
+          className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 w-48"
+        />
+        <select value={filtroSolicitud} onChange={(e) => { setFiltroSolicitud(e.target.value); setPage(0); }}
+          className="border border-gray-300 rounded px-2 py-1 text-xs bg-white">
+          <option value="">Todas las solicitudes</option>
+          {opcionesSolicitud.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <select value={filtroEstado} onChange={(e) => { setFiltroEstado(e.target.value); setPage(0); }}
+          className="border border-gray-300 rounded px-2 py-1 text-xs bg-white">
+          <option value="">Todos los estados</option>
+          {opcionesEstado.map(e => <option key={e} value={e}>{e}</option>)}
+        </select>
+      </div>
+
+      <div className="relative mb-4 border border-gray-300 rounded-lg shadow-md bg-white flex flex-col"
+        style={{ minHeight: '300px', maxHeight: '700px' }}>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-xs text-gray-700">
+            <thead className="bg-gray-800 text-white">
+              <tr>
+                <th className="px-3 py-2 text-left border-r border-gray-300">ID Trámite</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Paciente</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Documento</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Ingreso</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Servicio</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Servicio Egreso</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Fecha Egreso</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Fecha Nota</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Nota Seguimiento</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Estado Trámite</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Auxiliar</th>
+                <th className="px-3 py-2 text-left border-r border-gray-300">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedData.map((item, i) => (
+                <tr key={item.id || i} className="border-b hover:bg-blue-50">
+                  <td className="px-3 py-1.5 font-semibold text-blue-700 border-r border-gray-300">{item.tramiteId}</td>
+                  <td className="px-3 py-1.5 border-r border-gray-300">{item.pacienteNombre || ""}</td>
+                  <td className="px-3 py-1.5 border-r border-gray-300">{item.pacienteDocumento || ""}</td>
+                  <td className="px-3 py-1.5 border-r border-gray-300">{item.ingreso || ""}</td>
+                  <td className="px-3 py-1.5 border-r border-gray-300">{item.servicio || ""}</td>
+                  <td className="px-3 py-1.5 border-r border-gray-300">{item.egresoServicio || ""}</td>
+                  <td className="px-3 py-1.5 border-r border-gray-300">{item.egresoFecha ? new Date(item.egresoFecha).toLocaleDateString() : ""}</td>
+                  <td className="px-3 py-1.5 border-r border-gray-300">{item.fechaNota ? new Date(item.fechaNota).toLocaleString() : ""}</td>
+                  <td className="px-3 py-1.5 max-w-xs border-r border-gray-300"><TextoColapsable texto={item.notaSeguimiento} /></td>
+                  <td className="px-3 py-1.5 border-r border-gray-300">
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getEstadoBadge(item.estado)}`}>
+                      {item.estado}
+                    </span>
+                  </td>
+                  <td className="px-3 py-1.5 border-r border-gray-300">{item.usuario || item.auxiliarReferencia || ""}</td>
+                  <td className="px-3 py-1.5">
+                    {tieneRol('ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_ANEXO1') && (
+                      <button onClick={() => onEdit?.(item)} className="text-blue-600 hover:text-blue-800">
+                        <FontAwesomeIcon icon={faPencilAlt} className="w-5 h-5" />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {data.length === 0 && (
+                <tr><td colSpan={11} className="text-center py-4 text-gray-500">No hay seguimientos ambulatorios registrados.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <div className="flex-shrink-0 p-2 bg-gray-50 border-t">
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        </div>
+      </div>
+    </div>
+  );
+}

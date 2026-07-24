@@ -21,6 +21,11 @@ export const referenciaContrareferenciaMenu = {
       nombre: 'Traslados de ambulancia',
       ruta: '/referenciacontrareferencia/totaltraslados',
       roles: ['ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_TRASLADOS_INDEX']
+    },
+    {
+      nombre: 'Anexo 1',
+      ruta: '/anexo1/general',
+      roles: ['ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_ANEXO1']
     }
   ]
 };
