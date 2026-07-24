@@ -111,7 +111,7 @@ export default function TramiteForm({ tramite, onSaved }) {
       if (data && data.pacNumDoc) {
         pacData = {
           tipoDocumento: "CC",
-          numeroDocumento: data.pacNumDoc,
+          numeroDocumento: String(data.pacNumDoc),
           nombreCompleto: data.nombreCompleto || "",
           eps: data.entidad || "",
           ingreso: String(data.ingreso || ""),
