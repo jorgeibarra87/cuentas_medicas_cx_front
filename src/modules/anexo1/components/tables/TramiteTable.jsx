@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { listarTramites, cambiarEstadoTramite } from '../../api/tramiteService';
 import Pagination from '../../../../shared/components/Pagination';
 import TextoColapsable from '../../../../components/utilities/TextoColapsable';
+import { decodePayload } from '../../../../shared/utils/tokenUtils';
 
 const PAGE_SIZE = 50;
 
@@ -15,13 +16,7 @@ export default function TramiteTable({ onEdit = () => {}, reloadFlag }) {
   const [filtroSolicitud, setFiltroSolicitud] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
 
-  const token = localStorage.getItem('tokenhusjp');
-  let payload = {};
-  try {
-    payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
-  } catch (e) {
-    payload = {};
-  }
+  const payload = decodePayload(localStorage.getItem('tokenhusjp'));
   const roles = Array.isArray(payload.authorities)
     ? payload.authorities
     : payload.authorities?.split(',').map(r => r.trim()) || [];

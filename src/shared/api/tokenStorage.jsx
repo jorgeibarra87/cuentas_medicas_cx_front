@@ -14,15 +14,9 @@ export const clearTokens = () => {
     removeRefreshToken();
 };
 
-export const decodeJwt = (token) => {
-    try {
-        if (!token) return {};
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload || {};
-    } catch {
-        return {};
-    }
-};
+import { decodePayload } from '../utils/tokenUtils';
+
+export const decodeJwt = (token) => decodePayload(token);
 
 export const getTokenPayload = () => {
     const token = getAccessToken();

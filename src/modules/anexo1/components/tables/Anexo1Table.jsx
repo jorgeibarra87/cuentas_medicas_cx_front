@@ -8,15 +8,10 @@ import * as XLSX from 'xlsx';
 import TextoColapsable from "../../../../components/utilities/TextoColapsable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { decodePayload } from '../../../../shared/utils/tokenUtils';
 
 export default function Anexo1Table() {
-  const token = localStorage.getItem('tokenhusjp');
-  let payload = {};
-  try {
-    payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
-  } catch (e) {
-    payload = {};
-  }
+  const payload = decodePayload(localStorage.getItem('tokenhusjp'));
   const roles = Array.isArray(payload.authorities)
     ? payload.authorities
     : payload.authorities?.split(',').map(r => r.trim()) || [];
