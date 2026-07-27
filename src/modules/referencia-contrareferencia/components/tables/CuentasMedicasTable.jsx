@@ -14,8 +14,7 @@ export default function CuentasMedicasTable({ onEdit = () => { }, reloadFlag }) 
     const [seleccionados, setSeleccionados] = useState(new Set());
     const [procesando, setProcesando] = useState(false);
 
-    // Lee los roles del token
-    const payload = getTokenPayload();
+    const payload = decodePayload(localStorage.getItem('tokenhusjp'));
     // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
     const roles = Array.isArray(payload.authorities)
         ? payload.authorities
