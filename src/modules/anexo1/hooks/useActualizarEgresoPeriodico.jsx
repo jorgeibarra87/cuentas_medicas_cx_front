@@ -25,12 +25,12 @@ export default function useActualizarEgresoPeriodico(activo = true) {
                 servicioEgreso: egresoExterno.servicio
               });
             }
-          } catch {
-            // Paciente aun no tiene egreso
+          } catch (e) {
+            console.warn('Sin egreso externo para ingreso', t.ingreso, e?.response?.data || e.message);
           }
         }
-      } catch {
-        // Error de red o servidor
+      } catch (e) {
+        console.error('Error al actualizar egresos:', e?.response?.data || e.message);
       }
     };
 
