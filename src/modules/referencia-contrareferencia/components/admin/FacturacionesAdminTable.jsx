@@ -5,7 +5,7 @@ import { faEye, faEdit, faTrash, faPlus, faChevronLeft, faChevronRight, faCog } 
 import { facturacionService } from '../../api/adminService';
 import Modal from '../../../../shared/components/Modal';
 
-const ESTADO_OPTS = ['ACTIVO', 'INACTIVO'];
+const ESTADO_OPTS = ['PENDIENTE', 'ACTIVO', 'INACTIVO'];
 const ITEMS_PER_PAGE_OPTS = [5, 10, 25, 50];
 
 export function CreateEdit({ item, onClose, onActualizar }) {
@@ -72,7 +72,7 @@ export function CreateEdit({ item, onClose, onActualizar }) {
   const labelClass = "block text-sm font-medium text-gray-700 mb-1";
 
   return (
-    <Modal onClose={onClose}>
+    <Modal isOpen onClose={onClose}>
       <div className="bg-white shadow-md rounded-lg p-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">{isEdit ? 'Editar Facturación' : 'Nueva Facturación'}</h2>
         <form onSubmit={handleSubmit}>
@@ -151,7 +151,7 @@ export function View({ item, onClose }) {
   );
 
   return (
-    <Modal onClose={onClose}>
+    <Modal isOpen onClose={onClose}>
       <div className="bg-white shadow-md rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-800">Detalle de Facturación #{item.id}</h2>
