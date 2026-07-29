@@ -6,7 +6,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { appMenu } from '../menu';
 import { filtrarMenu } from '../menu/filterMenu';
 import SidebarItem from './SidebarItem';
-import useActualizarEgresoPeriodico from '../../modules/anexo1/hooks/useActualizarEgresoPeriodico';
 
 export default function Sidebar({ componente: Componente }) {
 
@@ -15,7 +14,6 @@ export default function Sidebar({ componente: Componente }) {
   const usuario = statelogin.decodeToken;
   const [abierto, setAbierto] = useState(null);
 
-  useActualizarEgresoPeriodico(!!usuario);
 
   const [submenuAbierto, setSubmenuAbierto] = useState(null);
   const location = useLocation();
