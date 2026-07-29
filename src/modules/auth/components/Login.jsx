@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { iniciarSesionAction } from "../../../actions/loginActions";
 
 import spinnerLoginText from "../../../shared/components/Loading";
 
-const initailForm = {username: "",password: "",};
+const initailForm = { username: "", password: "", };
 const ruta = (window.API_URL && !window.API_URL.startsWith("__")) ? window.API_URL : "http://dev.soluciones.local";
 
 const Login = () => {
@@ -27,24 +27,23 @@ const Login = () => {
     }, []);
 
     const handleChange = (e) => {
-        setDatos({...datos, [e.target.name]: e.target.value,});
+        setDatos({ ...datos, [e.target.name]: e.target.value, });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!datos.username || datos.username.trim().length === 0 || !datos.password || datos.password.trim().length === 0) {
             setMessage("Campo(s) vacio(s)");
-            setError("campos vacios")
+            setError("campos vacios");
             return;
         }
         spinnerLoginText("Por favor espere...");
-        try{
-            //const token2 = await axios.post(`${ruta}api/proxy/login`, datos);
-            const token2 = await  axios.post(`${ruta}/api-auth/auth/login`, datos);
+        try {
+            const token2 = await axios.post(`${ruta}/api-auth/auth/login`, datos);
             dispatch(iniciarSesionAction(token2.data));
             // Swal.close();
             //navigate('/'); // Redirige al usuario a '/'
-        }catch(error){
+        } catch (error) {
             console.error(error);
             if (error && error.code === 'ERR_NETWORK') {
                 // Swal.fire({
@@ -62,10 +61,10 @@ const Login = () => {
 
     const showPass = () => {
         setMostrarContrasena(true);
-    }
+    };
     const hidePass = () => {
         setMostrarContrasena(false);
-    }
+    };
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-200" style={{ background: "#1B244025" }}>
@@ -160,7 +159,7 @@ const Login = () => {
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;
