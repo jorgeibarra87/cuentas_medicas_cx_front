@@ -235,18 +235,6 @@ export default function SeguimientoAmbulatorioForm({ item, onSaved }) {
                     </button>
                   </div>
                 </div>
-                <div className="w-full md:w-1/2 px-3">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Buscar por Documento:</label>
-                  <div className="flex items-center">
-                    <input type="text" value={busquedaDoc} onChange={(e) => setBusquedaDoc(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                      placeholder="N° de documento del paciente" />
-                    <button type="button" onClick={handleBuscarDocumento}
-                      className="ml-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm">
-                      <FontAwesomeIcon icon={faSearch} className="mr-1" />Buscar
-                    </button>
-                  </div>
-                </div>
               </div>
             )}
 

@@ -1,5 +1,10 @@
 import apiClienteAnexo1 from "./apiClienteAnexo1";
 
+export const listarTodos = async () => {
+  const res = await apiClienteAnexo1.get("/seguimientos-ambulatorios");
+  return res.data;
+};
+
 export const listarPorTramite = async (tramiteId) => {
   const res = await apiClienteAnexo1.get(`/seguimientos-ambulatorios/tramite/${tramiteId}`);
   return res.data;
