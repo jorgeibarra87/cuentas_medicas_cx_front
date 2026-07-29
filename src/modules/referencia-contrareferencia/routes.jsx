@@ -9,6 +9,7 @@ import FacturacionPage from './components/pages/FacturacionPage';
 import CuentasMedicasPage from './components/pages/CuentasMedicasPage';
 import ReporteTraslado from './components/pages/ReporteTraslado';
 import HospitalTableRefContraRef from './components/tables/HospitalTableRefContraRef';
+import AjustesAdmin from './components/admin/AjustesAdmin';
 
 export const getReferenciacontrarreferenciaRoutes = (isLogged, loading) => [
     <Route key='refcontraref-formulario' path='formulario' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FormDatos} /></RequireAuth>} />,
@@ -18,5 +19,6 @@ export const getReferenciacontrarreferenciaRoutes = (isLogged, loading) => [
     <Route key='refcontraref-traslados' path='traslados' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={TrasladosPage} /></RequireAuth>} />,
     <Route key='refcontraref-facturaciones' path='facturaciones' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={FacturacionPage} /></RequireAuth>} />,
     <Route key='refcontraref-cuentas-medicas' path='cuentas-medicas' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={CuentasMedicasPage} /></RequireAuth>} />,
-    <Route key='refcontraref-reporte' path='reporte' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReporteTraslado} /></RequireAuth>} />
+    <Route key='refcontraref-reporte' path='reporte' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={ReporteTraslado} /></RequireAuth>} />,
+    <Route key='refcontraref-ajustes' path='ajustes' element={<RequireAuth isLogged={isLogged} loading={loading}><Sidebar componente={AjustesAdmin} /></RequireAuth>} />
 ];

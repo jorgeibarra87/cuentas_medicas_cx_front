@@ -26,22 +26,11 @@ export const referenciaContrareferenciaMenu = {
       nombre: 'Anexo 1',
       ruta: '/anexo1/general',
       roles: ['ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_ANEXO1']
+    },
+    {
+      nombre: 'Ajustes',
+      ruta: '/referenciacontrareferencia/ajustes',
+      roles: ['ROLE_ADMINISTRADOR']
     }
-  ]
-};
-
-export const adminMenu = {
-  nombre: 'Admin Referencia',
-  roles: ['ROLE_ADMINISTRADOR'],
-  children: [
-    { nombre: 'Referencia - Traslados', ruta: '/admin/traslados', roles: ['ROLE_ADMINISTRADOR'] },
-    { nombre: 'Referencia - Cuentas Médicas', ruta: '/admin/cuentas-medicas', roles: ['ROLE_ADMINISTRADOR'] },
-    { nombre: 'Referencia - Facturaciones', ruta: '/admin/facturaciones', roles: ['ROLE_ADMINISTRADOR'] },
-    { nombre: 'Anexo 1 - Pacientes', ruta: '/admin/pacientes', roles: ['ROLE_ADMINISTRADOR'] },
-    { nombre: 'Anexo 1 - Trámites', ruta: '/admin/tramites', roles: ['ROLE_ADMINISTRADOR'] },
-    { nombre: 'Anexo 1 - Seg. Intra', ruta: '/admin/seguimiento-intra', roles: ['ROLE_ADMINISTRADOR'] },
-    { nombre: 'Anexo 1 - Seg. Amb.', ruta: '/admin/seguimiento-ambulatorio', roles: ['ROLE_ADMINISTRADOR'] },
-    { nombre: 'Anexo 1 - Egresos', ruta: '/admin/egresos', roles: ['ROLE_ADMINISTRADOR'] },
-    { nombre: 'Anexo 1 - Tipos Solicitud', ruta: '/admin/tipos-solicitud', roles: ['ROLE_ADMINISTRADOR'] }
   ]
 };
