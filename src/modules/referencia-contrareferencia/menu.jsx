@@ -31,7 +31,7 @@ export const referenciaContrareferenciaMenu = {
 };
 
 export const adminMenu = {
-  nombre: 'Administración',
+  nombre: 'Admin Referencia',
   roles: ['ROLE_ADMINISTRADOR'],
   children: [
     { nombre: 'Referencia - Traslados', ruta: '/admin/traslados', roles: ['ROLE_ADMINISTRADOR'] },
