@@ -4,6 +4,7 @@ import SeguimientoIntraTable from '../tables/SeguimientoIntraTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faArrowLeft, faHospitalUser, faFileEdit, faFileMedical, faHomeUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import { decodePayload } from '../../../../shared/utils/tokenUtils';
 
 export default function SeguimientoIntraPage() {
   const [modo, setModo] = useState('lista');
@@ -11,13 +12,7 @@ export default function SeguimientoIntraPage() {
   const [reloadFlag, setReloadFlag] = useState(0);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem('tokenhusjp');
-  let payload = {};
-  try {
-    payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
-  } catch (e) {
-    payload = {};
-  }
+  const payload = decodePayload(localStorage.getItem('tokenhusjp'));
   const roles = Array.isArray(payload.authorities)
     ? payload.authorities
     : payload.authorities?.split(',').map(r => r.trim()) || [];
@@ -82,23 +77,23 @@ export default function SeguimientoIntraPage() {
           </button>)}
         </div>
         <div className="flex flex-wrap gap-2 mb-4">
-                  <button onClick={() => navigate('/anexo1/general')}
-                    className="font-bold px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
-                    <FontAwesomeIcon icon={faHomeUser} className="pr-1" />Inicio
-                  </button>
-                  <button onClick={() => navigate('/anexo1/tramite')}
-                    className="font-bold px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
-                    <FontAwesomeIcon icon={faFileEdit} className="pr-1" />Trámite Inicial
-                  </button>
-                  <button onClick={() => navigate('/anexo1/seguimiento-intra')}
-                    className="font-bold px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
-                    <FontAwesomeIcon icon={faHospitalUser} className="pr-1" />Seg. Intrahospitalario
-                  </button>
-                  <button onClick={() => navigate('/anexo1/seguimiento-ambulatorio')}
-                    className="font-bold px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
-                    <FontAwesomeIcon icon={faFileMedical} className="pr-1" />Seg. Ambulatorio
-                  </button>
-                </div>
+          <button onClick={() => navigate('/anexo1/general')}
+            className="font-bold px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
+            <FontAwesomeIcon icon={faHomeUser} className="pr-1" />Inicio
+          </button>
+          <button onClick={() => navigate('/anexo1/tramite')}
+            className="font-bold px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
+            <FontAwesomeIcon icon={faFileEdit} className="pr-1" />Trámite Inicial
+          </button>
+          <button onClick={() => navigate('/anexo1/seguimiento-intra')}
+            className="font-bold px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+            <FontAwesomeIcon icon={faHospitalUser} className="pr-1" />Seg. Intrahospitalario
+          </button>
+          <button onClick={() => navigate('/anexo1/seguimiento-ambulatorio')}
+            className="font-bold px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
+            <FontAwesomeIcon icon={faFileMedical} className="pr-1" />Seg. Ambulatorio
+          </button>
+        </div>
         <SeguimientoIntraTable onEdit={handleEdit} reloadFlag={reloadFlag} />
       </div>
     </div>

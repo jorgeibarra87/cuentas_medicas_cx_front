@@ -4,6 +4,7 @@ import TramiteTable from '../tables/TramiteTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faArrowLeft, faFileEdit, faHospitalUser, faFileMedical, faHomeUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import { decodePayload } from '../../../../shared/utils/tokenUtils';
 
 export default function TramitePage() {
   const [modo, setModo] = useState('lista');
@@ -11,13 +12,7 @@ export default function TramitePage() {
   const [reloadFlag, setReloadFlag] = useState(0);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem('tokenhusjp');
-  let payload = {};
-  try {
-    payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
-  } catch (e) {
-    payload = {};
-  }
+  const payload = decodePayload(localStorage.getItem('tokenhusjp'));
   const roles = Array.isArray(payload.authorities)
     ? payload.authorities
     : payload.authorities?.split(',').map(r => r.trim()) || [];

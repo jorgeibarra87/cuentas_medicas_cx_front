@@ -2,7 +2,7 @@ import { faExchangeAlt, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { jwtDecode } from "jwt-decode";
+import { getTokenPayload } from "../../../../shared/api/tokenStorage";
 import usePostSeguimientoAmbulatorio from "../../hooks/usePostSeguimientoAmbulatorio";
 import { actualizar } from "../../api/seguimientoAmbulatorioService";
 import { listarTramites } from "../../api/tramiteService";
@@ -26,21 +26,14 @@ export default function SeguimientoAmbulatorioForm({ item, onSaved }) {
   const [busquedaDoc, setBusquedaDoc] = useState("");
 
   const esEdicion = !!item;
-  const token = localStorage.getItem("tokenhusjp");
-  const payload = token ? jwtDecode(token) : {};
+  const payload = getTokenPayload();
   const roles = Array.isArray(payload.authorities)
     ? payload.authorities
     : payload.authorities?.split(',').map(r => r.trim()) || [];
 
   const tieneRol = (...rolesRequeridos) => rolesRequeridos.some(rol => roles.includes(rol));
 
-  let nombreUsuario = "";
-  if (token) {
-    try {
-      const decoded = jwtDecode(token);
-      nombreUsuario = decoded.name_user || decoded.sub || "";
-    } catch {}
-  }
+  let nombreUsuario = payload.name_user || payload.sub || "";
 
   useEffect(() => {
     if (!seguimientoCreado) return;
@@ -238,18 +231,6 @@ export default function SeguimientoAmbulatorioForm({ item, onSaved }) {
                       placeholder="N° de ingreso del paciente" />
                     <button type="button" onClick={handleBuscarIngreso}
                       className="ml-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg text-sm">
-                      <FontAwesomeIcon icon={faSearch} className="mr-1" />Buscar
-                    </button>
-                  </div>
-                </div>
-                <div className="w-full md:w-1/2 px-3">
-                  <label className="block text-gray-700 text-sm font-bold mb-2">Buscar por Documento:</label>
-                  <div className="flex items-center">
-                    <input type="text" value={busquedaDoc} onChange={(e) => setBusquedaDoc(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                      placeholder="N° de documento del paciente" />
-                    <button type="button" onClick={handleBuscarDocumento}
-                      className="ml-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm">
                       <FontAwesomeIcon icon={faSearch} className="mr-1" />Buscar
                     </button>
                   </div>

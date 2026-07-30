@@ -1,5 +1,10 @@
 import apiClienteAnexo1 from "./apiClienteAnexo1";
 
+export const listarTodos = async () => {
+  const res = await apiClienteAnexo1.get("/egresos");
+  return res.data;
+};
+
 export const obtenerPorTramiteId = async (tramiteId) => {
   const res = await apiClienteAnexo1.get(`/egresos/tramite/${tramiteId}`);
   return res.data;
