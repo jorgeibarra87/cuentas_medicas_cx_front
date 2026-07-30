@@ -14,7 +14,6 @@ export default function Sidebar({ componente: Componente }) {
   const usuario = statelogin.decodeToken;
   const [abierto, setAbierto] = useState(null);
 
-
   const [submenuAbierto, setSubmenuAbierto] = useState(null);
   const location = useLocation();
 
