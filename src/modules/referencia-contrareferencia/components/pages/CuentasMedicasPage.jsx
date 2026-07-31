@@ -3,14 +3,14 @@ import CuentasMedicasForm from '../forms/CuentasMedicasForm';
 import CuentasMedicasTable from '../tables/CuentasMedicasTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faBookMedical, faFileEdit, faFile } from '@fortawesome/free-solid-svg-icons';
+import { getTokenPayload } from '../../../../shared/api/tokenStorage';
 
 export default function CuentasMedicasPage() {
     const [modo, setModo] = useState('lista');
     const [selectedCuentas, setSelectedCuentas] = useState(null);
     const [reloadFlag, setReloadFlag] = useState(0);
     // Lee los roles del token directamente
-    const token = localStorage.getItem('tokenhusjp');
-    const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+    const payload = getTokenPayload();
     // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
     const roles = Array.isArray(payload.authorities)
         ? payload.authorities

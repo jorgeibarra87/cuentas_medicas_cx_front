@@ -4,6 +4,7 @@ import { faChevronDown, faChevronRight, faAmbulance, faTruckMedical, faFileEdit,
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../../shared/components/Pagination';
 import { obtenerTrasladosCompletos } from '../../../referencia-contrareferencia/api/trasladosService';
+import { getTokenPayload } from '../../../../shared/api/tokenStorage';
 
 const PAGE_SIZE = 50; // máximo por página
 
@@ -13,8 +14,7 @@ export default function TrasladosTotalPage() {
     const [loading, setLoading] = useState(true);
 
     // Lee los roles del token directamente
-    const token = localStorage.getItem('tokenhusjp');
-    const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+    const payload = getTokenPayload();
     // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
     const roles = Array.isArray(payload.authorities)
         ? payload.authorities

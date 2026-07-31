@@ -2,7 +2,7 @@ import { faExchangeAlt, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { jwtDecode } from "jwt-decode";
+import { getTokenPayload } from "../../../../shared/api/tokenStorage";
 import usePostSeguimientoIntra from "../../hooks/usePostSeguimientoIntra";
 import { actualizar } from "../../api/seguimientoIntrahospitalarioService";
 import { listarTramites, cambiarEstadoTramite } from "../../api/tramiteService";
@@ -16,21 +16,14 @@ export default function SeguimientoIntraForm({ item, onSaved }) {
   const [tramiteEstado, setTramiteEstado] = useState("");
 
   const esEdicion = !!item;
-  const token = localStorage.getItem("tokenhusjp");
-  const payload = token ? jwtDecode(token) : {};
+  const payload = getTokenPayload();
   const roles = Array.isArray(payload.authorities)
     ? payload.authorities
     : payload.authorities?.split(',').map(r => r.trim()) || [];
 
   const tieneRol = (...rolesRequeridos) => rolesRequeridos.some(rol => roles.includes(rol));
 
-  let nombreUsuario = "";
-  if (token) {
-    try {
-      const decoded = jwtDecode(token);
-      nombreUsuario = decoded.name_user || decoded.sub || "";
-    } catch {}
-  }
+  let nombreUsuario = payload.name_user || payload.sub || "";
 
   const fechaActual = new Date().toISOString().slice(0, 16);
 

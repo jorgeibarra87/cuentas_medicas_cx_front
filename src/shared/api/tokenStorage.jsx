@@ -13,3 +13,17 @@ export const clearTokens = () => {
     removeAccessToken();
     removeRefreshToken();
 };
+
+import { decodePayload } from '../utils/tokenUtils';
+
+export const decodeJwt = (token) => decodePayload(token);
+
+export const getTokenPayload = () => {
+    const token = getAccessToken();
+    if (!token) return {};
+    const payload = decodeJwt(token);
+    if (!payload || Object.keys(payload).length === 0) {
+        clearTokens();
+    }
+    return payload;
+};

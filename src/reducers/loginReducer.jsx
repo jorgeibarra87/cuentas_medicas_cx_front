@@ -1,5 +1,5 @@
-import { jwtDecode } from "jwt-decode";
 import { CERRAR_SESION, INICIAR_SESION, OBTENER_TOKEN } from "../types";
+import { decodeJwt, getTokenPayload, getAccessToken } from "../shared/api/tokenStorage";
 
 export const loginInitialState = {
     token: null,
@@ -11,12 +11,12 @@ export function loginReducer(state= loginInitialState, action){
         case INICIAR_SESION:{
             localStorage.setItem('tokenhusjp', action.payload.jwt);
             localStorage.setItem('tokenhusjp_refresh', action.payload.refreshToken)
-            return {...state, token: action.payload.jwt, decodeToken: jwtDecode(action.payload.jwt)};
+            return {...state, token: action.payload.jwt, decodeToken: decodeJwt(action.payload.jwt)};
         }   
 
         case OBTENER_TOKEN:{
-            if(state.token === null && localStorage.getItem('tokenhusjp')){
-                return {...state, token: localStorage.getItem('tokenhusjp'), decodeToken: jwtDecode(localStorage.getItem('tokenhusjp'))};
+            if(state.token === null && getAccessToken()){
+                return {...state, token: getAccessToken(), decodeToken: getTokenPayload()};
             }
             return state;
         }

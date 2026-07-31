@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../../shared/components/Pagination';
 import { cambiarEstadoFactura, obtenerFacturas } from '../../api/facturacionService';
+import { getTokenPayload } from '../../../../shared/api/tokenStorage';
+import { decodePayload } from '../../../../shared/utils/tokenUtils';
 
 const PAGE_SIZE = 50; // máximo por página
 
@@ -14,9 +16,7 @@ export default function FacturacionTable({ onEdit = () => { }, reloadFlag }) {
     const [seleccionados, setSeleccionados] = useState(new Set());
     const [procesando, setProcesando] = useState(false);
 
-    // Lee los roles del token
-    const token = localStorage.getItem('tokenhusjp');
-    const payload = token ? JSON.parse(atob(token.split('.')[1])) : {};
+    const payload = decodePayload(localStorage.getItem('tokenhusjp'));
     // authorities: "ROLE_X" (string) o ["ROLE_X", "ROLE_Y"]
     const roles = Array.isArray(payload.authorities)
         ? payload.authorities

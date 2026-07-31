@@ -26,6 +26,11 @@ export const referenciaContrareferenciaMenu = {
       nombre: 'Anexo 1',
       ruta: '/anexo1/general',
       roles: ['ROLE_ADMINISTRADOR', 'ROLE_REFERENCIA_ANEXO1']
+    },
+    {
+      nombre: 'Ajustes',
+      ruta: '/referenciacontrareferencia/ajustes',
+      roles: ['ROLE_ADMINISTRADOR']
     }
   ]
 };
