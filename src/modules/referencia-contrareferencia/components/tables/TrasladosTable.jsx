@@ -284,7 +284,7 @@ ${seleccionados.size} traslado(s)?`
                                     <td className="border-r px-1 py-0.5">{t.autorizacion}</td>
                                     <td className="border-r px-1 py-0.5">{t.auxiliarReferencia}</td>
                                     <td className="border-r px-1 py-0.5">{t.auxiliarAmbulancia}</td>
-                                    <td className="border-r px-1 py-0.5">{t.medicamentos?.join(', ') || ''}</td>
+                                    <td className="border-r px-1 py-0.5">{Array.isArray(t.medicamentos) ? t.medicamentos.join(', ') : (t.medicamentos || '')}</td>
                                     <td className="border-r px-1 py-0.5">{t.archivo}</td>
                                     <td className="border-r px-1 py-0.5">{t.observaciones}</td>
                                     <td className={`border-r px-1 py-0.5 font-semibold ${t.estado === "PENDIENTE" ? "bg-yellow-300" : ""} ${t.estado === "VALIDADO" ? "bg-green-400" : ""}`}
