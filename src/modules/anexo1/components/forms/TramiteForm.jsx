@@ -201,6 +201,7 @@ export default function TramiteForm({ tramite, onSaved }) {
       servicio: data.servicio || infoPaciente?.servicio || null,
       tipoSolicitudId: data.tipoSolicitudId ? parseInt(data.tipoSolicitudId) : null,
       descripcion: data.descripcion,
+      eps: data.eps || infoPaciente?.eps || null,
       estado: "PENDIENTE",
       auxiliarReferencia: tramite?.auxiliarReferencia || nombreUsuario
     };
