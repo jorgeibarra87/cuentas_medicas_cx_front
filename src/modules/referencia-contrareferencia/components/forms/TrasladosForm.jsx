@@ -26,7 +26,7 @@ export default function TrasladosForm({ traslado, onSaved }) {
         autorizacion: '',
         auxiliarReferencia: '',
         auxiliarAmbulancia: '',
-        medicamentos: [],
+        medicamentos: '',
         archivo: '',
         estado: '',
         observaciones: ''
@@ -53,12 +53,12 @@ export default function TrasladosForm({ traslado, onSaved }) {
                 autorizacion: traslado.autorizacion || '',
                 auxiliarReferencia: traslado.auxiliarReferencia || '',
                 auxiliarAmbulancia: traslado.auxiliarAmbulancia || '',
-                medicamentos: traslado.medicamentos || [],
+                medicamentos: traslado.medicamentos || '',
                 archivo: traslado.archivo || '',
                 estado: traslado.estado || '',
                 observaciones: traslado.observaciones || ''
             });
-            setMedicamentosTexto((traslado.medicamentos || []).join(', '));
+            setMedicamentosTexto(traslado.medicamentos || '');
         } else {
             const now = new Date();
             const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
@@ -94,9 +94,6 @@ export default function TrasladosForm({ traslado, onSaved }) {
         const payload = {
             ...formData,
             medicamentos: medicamentosTexto
-                .split(',')
-                .map(m => m.trim())
-                .filter(Boolean)
         };
 
         // Verificar duplicado antes de guardar (solo en creación, no en edición)
@@ -150,9 +147,6 @@ export default function TrasladosForm({ traslado, onSaved }) {
             const payload = {
                 ...formData,
                 medicamentos: medicamentosTexto
-                    .split(',')
-                    .map(m => m.trim())
-                    .filter(Boolean)
             };
             ejecutarGuardado(payload, true);
         }

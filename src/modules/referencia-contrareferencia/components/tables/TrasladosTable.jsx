@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../../shared/components/Pagination';
 import { cambiarEstadoTraslado, obtenerTraslados } from '../../../referencia-contrareferencia/api/trasladosService';
-import { getTokenPayload } from '../../../../shared/api/tokenStorage';
 import { decodePayload } from '../../../../shared/utils/tokenUtils';
 
 const PAGE_SIZE = 50; // máximo por página
@@ -143,11 +142,11 @@ ${seleccionados.size} traslado(s)?`
                 <FontAwesomeIcon icon={faBookMedical} className="w-4 h-4 text-white pr-2" />Cuentas Medicas
             </button>)}
             <button
-                            onClick={() => navigate('/referenciacontrareferencia/reporte')}
-                            className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
-                        >
-                            <FontAwesomeIcon icon={faFileAlt} className="w-4 h-4 text-white pr-2" />Reporte
-                        </button>
+                onClick={() => navigate('/referenciacontrareferencia/reporte')}
+                className="font-bold mx-2 my-6 px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+            >
+                <FontAwesomeIcon icon={faFileAlt} className="w-4 h-4 text-white pr-2" />Reporte
+            </button>
 
 
             <div className="flex justify-between items-center mb-2 text-xs text-gray-600">
@@ -284,7 +283,7 @@ ${seleccionados.size} traslado(s)?`
                                     <td className="border-r px-1 py-0.5">{t.autorizacion}</td>
                                     <td className="border-r px-1 py-0.5">{t.auxiliarReferencia}</td>
                                     <td className="border-r px-1 py-0.5">{t.auxiliarAmbulancia}</td>
-                                    <td className="border-r px-1 py-0.5">{t.medicamentos?.join(', ') || ''}</td>
+                                    <td className="border-r px-1 py-0.5">{Array.isArray(t.medicamentos) ? t.medicamentos.join(', ') : (t.medicamentos || '')}</td>
                                     <td className="border-r px-1 py-0.5">{t.archivo}</td>
                                     <td className="border-r px-1 py-0.5">{t.observaciones}</td>
                                     <td className={`border-r px-1 py-0.5 font-semibold ${t.estado === "PENDIENTE" ? "bg-yellow-300" : ""} ${t.estado === "VALIDADO" ? "bg-green-400" : ""}`}

@@ -65,7 +65,6 @@ export function CreateEdit({ item, onClose, onActualizar }) {
     try {
       const payload = {
         ...formData,
-        medicamentos: formData.medicamentos.split(',').map(s => s.trim()).filter(Boolean),
       };
       if (isEdit) {
         await trasladoService.actualizar(item.id, payload);
