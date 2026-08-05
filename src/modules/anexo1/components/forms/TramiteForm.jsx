@@ -2,7 +2,8 @@ import { faCheckCircle, faExchangeAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { getTokenPayload } from "../../../../shared/api/tokenStorage";
+import { getAccessToken } from "../../../../shared/api/tokenStorage";
+import { decodePayload } from "../../../../shared/utils/tokenUtils";
 import usePostTramite from "../../hooks/usePostTramite";
 import useFetchTipoSolicitudCatalogo from "../../hooks/useFetchTipoSolicitudCatalogo";
 import { actualizarTramite, cambiarEstadoTramite } from "../../api/tramiteService";
@@ -28,7 +29,7 @@ export default function TramiteForm({ tramite, onSaved }) {
 
   const token = localStorage.getItem("tokenhusjp");
   let nombreUsuario = "";
-  const payload = getTokenPayload();
+  const payload = decodePayload(getAccessToken());
   const roles = Array.isArray(payload.authorities)
     ? payload.authorities
     : payload.authorities?.split(',').map(r => r.trim()) || [];
@@ -360,9 +361,7 @@ export default function TramiteForm({ tramite, onSaved }) {
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
                   )}
                 </div>
-                
               </div>
-
             </div>
 
             {/* Descripción: ancho completo */}
