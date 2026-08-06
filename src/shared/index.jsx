@@ -1,0 +1,1 @@
+export { getAppRoutes } from "./routes";
