@@ -1,0 +1,1 @@
+export {getNutricionRoutes} from "./routes";
