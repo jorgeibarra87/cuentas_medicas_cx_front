@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faSearch, faCalendarAlt, faDatabase, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import * as XLSX from 'xlsx';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Pagination from '../../Pagination';
 import { importarCirugias, obtenerCirugiasPageable, actualizarCirugia, duplicarCirugia, exportarCirugias } from '../../../api/auditoria_cuentas_medicas/cirugiasService';
 import { obtenerEntidadesSalud } from '../../../api/auditoria_cuentas_medicas/entidadesService';
@@ -10,6 +10,16 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const PAGE_SIZE = 50;
+
+const toDateOnly = (datetime) => {
+    if (!datetime) return null;
+    return datetime.split('T')[0];
+};
+const toDatetimeStr = (fecha, hora) => {
+    if (!fecha) return null;
+    if (!hora) return fecha;
+    return `${fecha}T${hora}`;
+};
 
 const INPUT_CLASS = "border-2 border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 const INPUT_READONLY = "border-2 border-gray-200 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed text-gray-500";
@@ -32,14 +42,18 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
     const [fontSize, setFontSize] = useState(10);
 
     const [fechaInicio, setFechaInicio] = useState('');
+    const [horaInicio, setHoraInicio] = useState('');
     const [fechaFin, setFechaFin] = useState('');
+    const [horaFin, setHoraFin] = useState('');
     const [importando, setImportando] = useState(false);
     const [buscando, setBuscando] = useState(false);
     const [importResult, setImportResult] = useState(null);
 
     const [busqueda, setBusqueda] = useState('');
     const [filtroTipo, setFiltroTipo] = useState('');
-    const [filtroEntidad, setFiltroEntidad] = useState('');
+    const [filtroEntidades, setFiltroEntidades] = useState([]);
+    const [showEntidadDropdown, setShowEntidadDropdown] = useState(false);
+    const entidadDropdownRef = useRef(null);
     const [filtroEspecialidad, setFiltroEspecialidad] = useState('');
     const [entidades, setEntidades] = useState([]);
     const [especialidades, setEspecialidades] = useState([]);
@@ -57,8 +71,8 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
             toast.error('Debes seleccionar fecha de inicio y fecha fin');
             return false;
         }
-        const inicio = new Date(fechaInicio);
-        const fin = new Date(fechaFin);
+        const inicio = new Date(toDatetimeStr(fechaInicio, horaInicio));
+        const fin = new Date(toDatetimeStr(fechaFin, horaFin));
         const diffMeses = (fin.getFullYear() - inicio.getFullYear()) * 12 + (fin.getMonth() - inicio.getMonth());
         if (diffMeses > mesesMax) {
             toast.error(`El rango máximo permitido es de ${mesesMax} mes${mesesMax > 1 ? 'es' : ''}`);
@@ -75,7 +89,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(fechaInicio || null, fechaFin || null, busqueda || null, filtroTipo || null, filtroEntidad || null, filtroEspecialidad || null, pagina, PAGE_SIZE);
+            const response = await obtenerCirugiasPageable(toDatetimeStr(fechaInicio, horaInicio), toDatetimeStr(fechaFin, horaFin), busqueda || null, filtroTipo || null, filtroEntidades, filtroEspecialidad || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -90,7 +104,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setLoading(true);
         setError('');
         try {
-            const response = await obtenerCirugiasPageable(null, null, busqueda || null, filtroTipo || null, filtroEntidad || null, filtroEspecialidad || null, pagina, PAGE_SIZE);
+            const response = await obtenerCirugiasPageable(null, null, busqueda || null, filtroTipo || null, filtroEntidades, filtroEspecialidad || null, pagina, PAGE_SIZE);
             setData(response.contenido || []);
             setTotalPages(response.totalPaginas || 0);
             setTotalElementos(response.totalElementos || 0);
@@ -119,7 +133,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         setImportResult(null);
 
         try {
-            const result = await importarCirugias(fechaInicio, fechaFin);
+            const result = await importarCirugias(toDatetimeStr(fechaInicio, horaInicio), toDatetimeStr(fechaFin, horaFin));
             setImportResult(result);
             setPage(0);
             await loadDataSinFiltro(0);
@@ -235,7 +249,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
         let datosExportar;
         if (fechaInicio && fechaFin) {
             try {
-                datosExportar = await exportarCirugias(fechaInicio, fechaFin);
+                datosExportar = await exportarCirugias(toDateOnly(fechaInicio), toDateOnly(fechaFin));
             } catch (err) {
                 toast.error('Error al obtener datos para exportar');
                 return;
@@ -283,11 +297,21 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
 
     useEffect(() => {
         setPage(0);
-    }, [filtroTipo, filtroEntidad, filtroEspecialidad]);
+    }, [filtroTipo, filtroEntidades, filtroEspecialidad]);
 
     useEffect(() => {
         loadData(0);
-    }, [filtroTipo, filtroEntidad, filtroEspecialidad]);
+    }, [filtroTipo, filtroEntidades, filtroEspecialidad]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (entidadDropdownRef.current && !entidadDropdownRef.current.contains(event.target)) {
+                setShowEntidadDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     useEffect(() => {
         const cargarEntidades = async () => {
@@ -322,7 +346,7 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             <FontAwesomeIcon icon={faCalendarAlt} className="mr-1" />
-                            Fecha Inicio
+                            Fecha/Hora Inicio
                         </label>
                         <input
                             type="date"
@@ -331,11 +355,20 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                             className={INPUT_CLASS}
                             required
                         />
+                        <select value={horaInicio.split(':')[0] || ''} onChange={e => setHoraInicio(e.target.value + ':' + (horaInicio.split(':')[1] || '00'))} className={INPUT_CLASS + " w-20"}>
+                        <option value="">HH</option>
+                        {Array.from({length: 24}, (_, i) => String(i).padStart(2, '0')).map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                    <span className="text-lg font-bold px-0.5">:</span>
+                    <select value={horaInicio.split(':')[1] || ''} onChange={e => setHoraInicio((horaInicio.split(':')[0] || '00') + ':' + e.target.value)} className={INPUT_CLASS + " w-20"}>
+                        <option value="">MM</option>
+                        {Array.from({length: 12}, (_, i) => String(i * 5).padStart(2, '0')).map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             <FontAwesomeIcon icon={faCalendarAlt} className="mr-1" />
-                            Fecha Fin
+                            Fecha/Hora Fin
                         </label>
                         <input
                             type="date"
@@ -344,6 +377,15 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                             className={INPUT_CLASS}
                             required
                         />
+                        <select value={horaFin.split(':')[0] || ''} onChange={e => setHoraFin(e.target.value + ':' + (horaFin.split(':')[1] || '00'))} className={INPUT_CLASS + " w-20"}>
+                        <option value="">HH</option>
+                        {Array.from({length: 24}, (_, i) => String(i).padStart(2, '0')).map(h => <option key={h} value={h}>{h}</option>)}
+                    </select>
+                    <span className="text-lg font-bold px-0.5">:</span>
+                    <select value={horaFin.split(':')[1] || ''} onChange={e => setHoraFin((horaFin.split(':')[0] || '00') + ':' + e.target.value)} className={INPUT_CLASS + " w-20"}>
+                        <option value="">MM</option>
+                        {Array.from({length: 12}, (_, i) => String(i * 5).padStart(2, '0')).map(m => <option key={m} value={m}>{m}</option>)}
+                    </select>
                     </div>
                     <button
                         type="submit"
@@ -399,12 +441,30 @@ export default function CirugiasTable({ onEdit = () => { }, reloadFlag }) {
                             <option value="CIRUGIA">Cirugía</option>
                             <option value="ENDOSCOPIA">Endoscopía</option>
                         </select>
-                        <select value={filtroEntidad} onChange={e => setFiltroEntidad(e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent max-w-48 truncate">
-                            <option value="">Todas las entidades</option>
-                            {entidades.map(e => (
-                                <option key={e.id} value={e.id}>{e.nombre}</option>
-                            ))}
-                        </select>
+                        <div className="relative" ref={entidadDropdownRef}>
+                            <button type="button" onClick={() => setShowEntidadDropdown(!showEntidadDropdown)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent max-w-48 truncate text-left flex items-center gap-2">
+                                <span className="truncate flex-1">{filtroEntidades.length === 0 ? 'Todas las entidades' : `${filtroEntidades.length} seleccionada(s)`}</span>
+                                <svg className={`w-4 h-4 transition-transform ${showEntidadDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                            </button>
+                            {showEntidadDropdown && (
+                                <div className="absolute z-30 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto min-w-[220px]">
+                                    <label className="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-gray-100 cursor-pointer border-b border-gray-200">
+                                        <input type="checkbox" checked={filtroEntidades.length === 0} onChange={() => setFiltroEntidades([])} className="rounded" />
+                                        <span className="font-medium">Todas</span>
+                                    </label>
+                                    {entidades.map(e => (
+                                        <label key={e.id} className="flex items-center gap-2 px-3 py-1.5 text-sm hover:bg-gray-100 cursor-pointer">
+                                            <input type="checkbox" checked={filtroEntidades.includes(e.id)} onChange={() => {
+                                                setFiltroEntidades(prev =>
+                                                    prev.includes(e.id) ? prev.filter(id => id !== e.id) : [...prev, e.id]
+                                                );
+                                            }} className="rounded" />
+                                            <span className="truncate">{e.nombre}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         <select value={filtroEspecialidad} onChange={e => setFiltroEspecialidad(e.target.value)} className="border-2 border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent max-w-48 truncate">
                             <option value="">Todas las especialidades</option>
                             {especialidades.map(e => (
